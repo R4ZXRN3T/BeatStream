@@ -120,18 +120,18 @@ class SongController
      */
     public static function insertSong(Song $song)
 	{
-		/*$song->setAll(
-			"",
+		$song->setAll(
+			$song->getSongID(),
 			str_replace("'", "\'", $song->getTitle()),
 			str_replace("'", "\'", $song->getArtists()),
 			str_replace("'", "\'", $song->getGenre()),
-			"",
+			$song->getReleaseDate(),
 			str_replace("'", "\'", $song->getRating()),
-			"",
+			$song->getSongLength(),
 			str_replace("'", "\'", $song->getFilePath()),
 			str_replace("'", "\'", $song->getImagePath()),
 
-		);*/
+		);
 
 		$songList = SongController::getSongList();
 		$artistList = SongController::getArtistList();
