@@ -1,101 +1,110 @@
-CREATE TABLE Song (
-	songID INT,
-	title VARCHAR(255) NOT NULL,
-	genre VARCHAR(255),
-	releaseDate DATE,
-	imagePath VARCHAR(255),
-	rating FLOAT,
-	songLength TIME,
+CREATE TABLE Song
+(
+    songID      INT,
+    title       VARCHAR(255) NOT NULL,
+    genre       VARCHAR(255),
+    releaseDate DATE,
+    imagePath   VARCHAR(255),
+    rating      FLOAT,
+    songLength  TIME,
 
-	filePath VARCHAR(255),
+    filePath    VARCHAR(255),
 
-	PRIMARY KEY (songID)
+    PRIMARY KEY (songID)
 );
 
-CREATE TABLE Album (
-	albumID INT,
-	title VARCHAR(255),
-	imagePath VARCHAR(255),
-	length INT,
-	duration TIME,	
+CREATE TABLE Album
+(
+    albumID   INT,
+    title     VARCHAR(255),
+    imagePath VARCHAR(255),
+    length    INT,
+    duration  TIME,
 
-	PRIMARY KEY (albumID)
+    PRIMARY KEY (albumID)
 );
 
-CREATE TABLE User (
-	userID INT,
-	username VARCHAR(255) NOT NULL,
-	email VARCHAR(255) NOT NULL,
-	userPassword VARCHAR(255) NOT NULL,
-	imagePath VARCHAR(255),
+CREATE TABLE User
+(
+    userID       INT,
+    username     VARCHAR(255) NOT NULL,
+    email        VARCHAR(255) NOT NULL,
+    userPassword VARCHAR(255) NOT NULL,
+    imagePath    VARCHAR(255),
 
-	PRIMARY KEY (userID)
+    PRIMARY KEY (userID)
 );
 
-CREATE TABLE Playlist (
-	playlistID INT,
-	imagePath VARCHAR(255),
-	name VARCHAR(255),
-	length INT,
-	duration TIME,
+CREATE TABLE Playlist
+(
+    playlistID INT,
+    imagePath  VARCHAR(255),
+    name       VARCHAR(255),
+    length     INT,
+    duration   TIME,
 
-	creatorID INT,
+    creatorID  INT,
 
-	PRIMARY KEY (playlistID),
+    PRIMARY KEY (playlistID),
 
-	FOREIGN KEY (creatorID) REFERENCES User (userID)
+    FOREIGN KEY (creatorID) REFERENCES User (userID)
 );
 
-CREATE TABLE Artist (
-	artistID INT,
-	name VARCHAR(255),
-	imagePath VARCHAR(255),
-	follower INT,
-	activeSince DATE,
+CREATE TABLE Artist
+(
+    artistID    INT,
+    name        VARCHAR(255),
+    imagePath   VARCHAR(255),
+    follower    INT,
+    activeSince DATE,
 
-	userID INT,
+    userID      INT,
 
-	FOREIGN KEY (userID) REFERENCES User (userID),
+    FOREIGN KEY (userID) REFERENCES User (userID),
 
-	PRIMARY KEY (artistID)
+    PRIMARY KEY (artistID)
 );
 
-CREATE TABLE ReleasesSong (
-	artistID INT,
-	songID INT,
+CREATE TABLE ReleasesSong
+(
+    artistID INT,
+    songID   INT,
 
-	FOREIGN KEY (artistID) REFERENCES Artist (artistID),
-	FOREIGN KEY (songID) REFERENCES Song (songID),
+    FOREIGN KEY (artistID) REFERENCES Artist (artistID),
+    FOREIGN KEY (songID) REFERENCES Song (songID),
 
-	CONSTRAINT releaseSongKey PRIMARY KEY (artistID, songID)
+    CONSTRAINT releaseSongKey PRIMARY KEY (artistID, songID)
 );
 
-CREATE TABLE ReleasesAlbum (
-	artistID INT,
-	albumID INT,
+CREATE TABLE ReleasesAlbum
+(
+    artistID INT,
+    albumID  INT,
 
-	FOREIGN KEY (artistID) REFERENCES Artist (artistID),
-	FOREIGN KEY (albumID) REFERENCES Album (albumID),
+    FOREIGN KEY (artistID) REFERENCES Artist (artistID),
+    FOREIGN KEY (albumID) REFERENCES Album (albumID),
 
-	CONSTRAINT releaseAlbumKey PRIMARY KEY (artistID, albumID)
+    CONSTRAINT releaseAlbumKey PRIMARY KEY (artistID, albumID)
 );
 
-CREATE TABLE InAlbum (
-	songID INT,
-	albumId INT,
+CREATE TABLE InAlbum
+(
+    songID  INT,
+    albumId INT,
 
-	FOREIGN KEY (songID) REFERENCES Song (songID),
-	FOREIGN KEY (albumID) REFERENCES Album (albumID),
+    FOREIGN KEY (songID) REFERENCES Song (songID),
+    FOREIGN KEY (albumID) REFERENCES Album (albumID),
 
-	CONSTRAINT inAlbumKey PRIMARY KEY (songID, albumID)
+    CONSTRAINT inAlbumKey PRIMARY KEY (songID, albumID)
 );
 
-CREATE TABLE InPlaylist (
-	songID INT,
-	playlistID INT,
+CREATE TABLE InPlaylist
+(
+    songID     INT,
+    playlistID INT,
 
-	FOREIGN KEY (songID) REFERENCES Song (songID),
-	FOREIGN KEY (playlistID) REFERENCES Playlist (playlistID),
+    FOREIGN KEY (songID) REFERENCES Song (songID),
+    FOREIGN KEY (playlistID) REFERENCES Playlist (playlistID),
 
-	CONSTRAINT inPlaylistKey PRIMARY KEY (songID, playlistID)
+    CONSTRAINT inPlaylistKey PRIMARY KEY (songID, playlistID)
 );

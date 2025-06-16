@@ -2,88 +2,100 @@
 <html lang="en">
 
 <head>
-	<title>Songs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>add playlist</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../addStyle.css" rel="stylesheet">
 </head>
 
 <body>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<div class="container-fluid">
-			<div class="collapse navbar-collapse myNavbar">
-				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="../../">Home</a></li>
-					<li class="nav-item"><a class="nav-link" href="../song">add songs</a></li>
-					<li class="nav-item"><a class="nav-link" href="../artist">add artist</a></li>
-					<li class="nav-item"><a class="nav-link" href="../user">add user</a></li>
-					<li class="nav-item"><a class="nav-link" href="../playlist">add playlist</a></li>
-					<li class="nav-item"><a class="nav-link" href="../album">add album</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse myNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="../">Add content</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-	<?php
-	include("../../SongController.php");
-	include("../../Objects/Playlist.php");
-	$userList = SongController::getUserList();
+<div class="tab">
+    <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item"><a class="nav-link" href="../song">Song</a></li>
+        <li class="nav-item"><a class="nav-link" href="../artist">Artist</a></li>
+        <li class="nav-item"><a class="nav-link" href="../user">User</a></li>
+        <li class="nav-item"><a class="nav-link active" href="../playlist">Playlist</a></li>
+        <li class="nav-item"><a class="nav-link" href="../album">Album</a></li>
+    </ul>
+</div>
 
-	$isValid = true;
+<?php
+include("../../SongController.php");
+include("../../Objects/Playlist.php");
+$userList = SongController::getUserList();
 
-	if (!(
-		!empty($_POST["nameInput"]) && !empty($_POST["lengthInput"]) && !empty($_POST["durationInput"]) && !empty($_POST["imagePathInput"]) && !empty($_POST["creatorInput"])
-	)) {
-		echo "Error: Please fill all fields";
-		$isValid = false;
-	}
+$isValid = true;
 
-	if ($isValid) {
-		SongController::insertPlaylist(new Playlist(
-			"",
-			$_POST["imagePathInput"],
-			$_POST["nameInput"],
-			$_POST["durationInput"],
-			$_POST["lengthInput"],
-			$_POST["creatorInput"],
-		));
-	}
-	?>
+if (!(
+	!empty($_POST["nameInput"]) && !empty($_POST["lengthInput"]) && !empty($_POST["durationInput"]) && !empty($_POST["imagePathInput"]) && !empty($_POST["creatorInput"])
+)) {
+	$isValid = false;
+}
 
-	<div class="content">
-		<h1>Playlist Einfügen</h1>
+if ($isValid) {
+	SongController::insertPlaylist(new Playlist(
+		"",
+		$_POST["imagePathInput"],
+		$_POST["nameInput"],
+		$_POST["durationInput"],
+		$_POST["lengthInput"],
+		$_POST["creatorInput"],
+	));
+}
+?>
 
-		<form action="index.php" method="post" id="addPlaylistForm">
-			<div class="form-group">
-				<label for="name">Playlist title:</label><br>
-				<input type="text" id="name" name="nameInput"><br><br>
-			</div>
-			<div class="form-group">
-				<label for="length">Länge:</label><br>
-				<input type="number" id="length" name="lengthInput"><br><br>
-			</div>
-			<div class="form-group">
-				<label for="duration">Dauer:</label><br>
-				<input type="time" id="duration" name="durationInput" style="width: 175px" step="1"><br><br>
-			</div>
-			<div class="form-group">
-				<label for="imagePath">Image path:</label><br>
-				<input type="text" id="imagePath" name="imagePathInput"><br><br>
-			</div>
-			<div class="form-group">
-				<label for="creator">Ersteller:</label><br>
-				<select name="creatorInput" id="creator" style="width: 175px;">
-					<option value=none>--Please Select--</option>
-					<?php
-					for ($i = 0; $i < count($userList); $i++) {
+<div class="container mt-5">
+    <h1>Playlist Einfügen</h1>
+
+    <form action="index.php" method="post" id="addPlaylistForm">
+        <div class="form-group">
+            <label for="name">Playlist title:</label>
+            <input type="text" id="name" name="nameInput" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="length">Länge:</label>
+            <input type="number" id="length" name="lengthInput" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="duration">Dauer:</label>
+            <input type="time" id="duration" name="durationInput" style="width: 175px" step="1" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="imagePath">Image path:</label>
+            <input type="text" id="imagePath" name="imagePathInput" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="creator">Ersteller:</label>
+            <select name="creatorInput" id="creator" style="width: 175px;" class="form-control" required>
+                <option value=none>--Please Select--</option>
+				<?php
+				for ($i = 0; $i < count($userList); $i++) {
 					?>
-						<option value="<?php echo $userList[$i]->getUserID() ?>"><?php echo $userList[$i]->getUsername() ?></option>
+                    <option value="<?php echo $userList[$i]->getUserID() ?>"><?php echo $userList[$i]->getUsername() ?></option>
 					<?php
-					}
-					?>
-				</select><br><br>
-			</div>
-			<input type="submit" class="btn btn-primary">
-		</form>
-	</div>
+				}
+				?>
+            </select>
+        </div>
+        <input type="submit" class="btn btn-primary">
+    </form>
+</div>
+
+<!-- Bootstrap JS (optional for some interactive components) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
