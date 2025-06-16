@@ -1,4 +1,5 @@
 <?php
+
 class Artist
 {
 	private $artistID;

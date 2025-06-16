@@ -281,7 +281,7 @@ class SongController
 }
 
 /*INSERT INTO User VALUES (12345, "user1", "email1", "password1", "imagePath1");
-INSERT INTO User VALUES (*user ID*, "*username*", "*email*", "*password*", "*imagePath*");
+INSERT INTO User VALUES (123456, "user2", "email2", "password2", "imagePath2");
 
 INSERT INTO Artist VALUES (12345, "artist1", "imagePath3", 1, '2025-05-10', 12345);
 INSERT INTO Artist VALUES (123456, "artist2", "imagePath4", 1, '2025-05-10', 123456);

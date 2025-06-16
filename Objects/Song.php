@@ -1,4 +1,5 @@
 <?php
+
 class Song
 {
 	private $songID;
@@ -11,10 +12,10 @@ class Song
 	private $filePath;
 	private $imagePath;
 
-    /**
-     * @throws Exception
-     */
-    function __construct($songID, $title, $artists, $genre, $releaseDate, $rating, $songLength, $filePath, $imagePath)
+	/**
+	 * @throws Exception
+	 */
+	function __construct($songID, $title, $artists, $genre, $releaseDate, $rating, $songLength, $filePath, $imagePath)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
@@ -50,7 +51,7 @@ class Song
 	}
 
 	public function getReleaseDate(): DateTime
-    {
+	{
 		return $this->releaseDate;
 	}
 
@@ -60,7 +61,7 @@ class Song
 	}
 
 	public function getSongLength(): DateTime
-    {
+	{
 		return $this->songLength;
 	}
 
@@ -135,7 +136,7 @@ class Song
 	}
 
 	public function getAll(): array
-    {
+	{
 		return [$this->songID, $this->title, $this->artists, $this->genre, $this->releaseDate, $this->rating, $this->songLength, $this->filePath, $this->imagePath];
 	}
 

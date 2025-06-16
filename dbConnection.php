@@ -1,10 +1,11 @@
 <?php
+
 class DBConn
 {
 	private static $servername = "localhost";
 	private static $username = "dbuser";
 	private static $password = "dbpassword";
-	private static $dbname = "ArianFabianKeineAhnungWegenNamen";
+	private static $dbname = "BeatStream";
 	private static $conn;
 
 	public static function getConn()
