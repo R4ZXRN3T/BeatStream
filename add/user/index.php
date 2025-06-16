@@ -78,7 +78,7 @@ if ($isValid) {
             <label for="imagePath">Image path:</label>
             <input type="text" id="imagePath" name="imagePathInput" class="form-control" required>
         </div>
-        <input type="submit" class="btn btn-primary">
+        <input type="submit" class="btn btn-primary mt-3" value="Submit">
     </form>
 </div>
 
