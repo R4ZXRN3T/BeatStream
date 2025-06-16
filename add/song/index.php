@@ -67,7 +67,7 @@ if ($isValid) {
     <form action="index.php" method="post" id="addSongForm">
         <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="titleInput" class="form-control" required>
+            <input type="text" id="title" name="titleInput" class="form-control" placeholder="Enter song title" required>
         </div>
 
         <div class="form-group">
@@ -85,33 +85,32 @@ if ($isValid) {
 
         <div class="form-group">
             <label for="genre">Genre:</label>
-            <input type="text" id="genre" name="genreInput" class="form-control" required>
+            <input type="text" id="genre" name="genreInput" class="form-control" placeholder="Enter genre" required>
         </div>
 
         <div class="form-group">
             <label for="releaseDate">Release Date:</label>
-            <input type="date" id="releaseDate" name="releaseDateInput" class="form-control" required>
+            <input type="date" id="releaseDate" name="releaseDateInput" class="form-control" placeholder="Enter release date" required>
         </div>
 
         <div class="form-group">
             <label for="rating">Rating:</label>
-            <input type="number" id="rating" name="ratingInput" class="form-control" step="0.1" min="0" max="5"
-                   required>
+            <input type="number" id="rating" name="ratingInput" class="form-control" step="0.1" min="1" max="5" placeholder="Enter rating (1.0 - 5.0)" required>
         </div>
 
         <div class="form-group">
             <label for="songLength">Song Length:</label>
-            <input type="time" id="songLength" name="songLengthInput" class="form-control" step="1" required>
+            <input type="time" id="songLength" name="songLengthInput" class="form-control" step="1" placeholder="Enter song length" required>
         </div>
 
         <div class="form-group">
             <label for="filePath">File Path:</label>
-            <input type="text" id="filePath" name="filePathInput" class="form-control" required>
+            <input type="text" id="filePath" name="filePathInput" class="form-control" placeholder="Enter file path" required>
         </div>
 
         <div class="form-group">
             <label for="imagePath">Image Path:</label>
-            <input type="text" id="imagePath" name="imagePathInput" class="form-control" required>
+            <input type="text" id="imagePath" name="imagePathInput" class="form-control" placeholder="Enter image path" required>
         </div>
 
         <input type="submit" class="btn btn-primary mt-3" value="Submit">

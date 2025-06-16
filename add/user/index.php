@@ -64,19 +64,19 @@ if ($isValid) {
     <form action="index.php" method="post" id="addUserForm">
         <div class="form-group">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="usernameInput" class="form-control" required>
+            <input type="text" id="username" name="usernameInput" class="form-control" placeholder="Enter username" required>
         </div>
         <div class="form-group">
             <label for="email">E-Mail:</label>
-            <input type="text" id="email" name="emailInput" class="form-control" required>
+            <input type="text" id="email" name="emailInput" class="form-control" placeholder="Enter email" required>
         </div>
         <div class="form-group">
             <label for="userPassword">Password:</label>
-            <input type="text" id="userPassword" name="userPasswordInput" class="form-control" required>
+            <input type="text" id="userPassword" name="userPasswordInput" class="form-control" placeholder="Enter password" required>
         </div>
         <div class="form-group">
             <label for="imagePath">Image path:</label>
-            <input type="text" id="imagePath" name="imagePathInput" class="form-control" required>
+            <input type="text" id="imagePath" name="imagePathInput" class="form-control" placeholder="Enter image path" required>
         </div>
         <input type="submit" class="btn btn-primary mt-3" value="Submit">
     </form>

@@ -63,19 +63,19 @@ if ($isValid) {
     <form action="index.php" method="post" id="addPlaylistForm">
         <div class="form-group">
             <label for="name">Playlist title:</label>
-            <input type="text" id="name" name="nameInput" class="form-control" required>
+            <input type="text" id="name" name="nameInput" class="form-control" placeholder="Enter playlist name" required>
         </div>
         <div class="form-group">
             <label for="length">Länge:</label>
-            <input type="number" id="length" name="lengthInput" class="form-control" required>
+            <input type="number" id="length" name="lengthInput" class="form-control" placeholder="Enter amount of songs" required>
         </div>
         <div class="form-group">
             <label for="duration">Dauer:</label>
-            <input type="time" id="duration" name="durationInput" style="width: 175px" step="1" class="form-control" required>
+            <input type="time" id="duration" name="durationInput" style="width: 175px" step="1" class="form-control" placeholder="Enter total duration" required>
         </div>
         <div class="form-group">
             <label for="imagePath">Image path:</label>
-            <input type="text" id="imagePath" name="imagePathInput" class="form-control" required>
+            <input type="text" id="imagePath" name="imagePathInput" class="form-control" placeholder="Enter image path" required>
         </div>
         <div class="form-group">
             <label for="creator">Ersteller:</label>
