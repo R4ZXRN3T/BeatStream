@@ -65,19 +65,19 @@ if ($isValid) {
     <form action="index.php" method="post" id="addArtistForm">
         <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="nameInput" class="form-control" required>
+            <input type="text" id="name" name="nameInput" class="form-control" placeholder="Enter artist name" required>
         </div>
         <div class="form-group">
             <label for="imagePath">Image Path:</label>
-            <input type="text" id="imagePath" name="imagePathInput" class="form-control" required>
+            <input type="text" id="imagePath" name="imagePathInput" class="form-control" placeholder="Enter image path" required>
         </div>
         <div class="form-group">
             <label for="follower">Follower:</label>
-            <input type="number" id="follower" name="followerInput" class="form-control" required>
+            <input type="number" id="follower" name="followerInput" class="form-control" placeholder="Enter follower count" required>
         </div>
         <div class="form-group">
             <label for="activeSince">active since:</label>
-            <input type="date" id="activeSince" name="activeSinceInput" class="form-control" required>
+            <input type="date" id="activeSince" name="activeSinceInput" class="form-control" placeholder="Enter creation date" required>
         </div>
         <div class="form-group">
             <label for="user">User:</label>
