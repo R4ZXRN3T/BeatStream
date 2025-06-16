@@ -90,7 +90,7 @@ if ($isValid) {
 				?>
             </select>
         </div>
-        <input type="submit" class="btn btn-primary">
+        <input type="submit" class="btn btn-primary mt-3" value="Submit">
     </form>
 </div>
 
