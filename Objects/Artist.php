@@ -1,0 +1,84 @@
+<?php
+class Artist
+{
+	private $artistID;
+	private $name;
+	private $imagePath;
+	private $follower;
+	private $activeSince;
+	private $userID;
+
+	public function __construct($artistID, $name, $imagePath, $follower, $activeSince, $userID)
+	{
+		$this->artistID = $artistID;
+		$this->name = $name;
+		$this->imagePath = $imagePath;
+		$this->follower = $follower;
+		$this->activeSince = $activeSince;
+		$this->userID = $userID;
+	}
+
+	// getter methods
+
+	public function getArtistID()
+	{
+		return $this->artistID;
+	}
+
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	public function getImagePath()
+	{
+		return $this->imagePath;
+	}
+
+	public function getFollower()
+	{
+		return $this->follower;
+	}
+
+	public function getActiveSince()
+	{
+		return $this->activeSince;
+	}
+
+	public function getUserID()
+	{
+		return $this->userID;
+	}
+
+	// setter methods
+
+	public function setArtistID($artistID)
+	{
+		$this->artistID = $artistID;
+	}
+
+	public function setName($name)
+	{
+		$this->name = $name;
+	}
+
+	public function setImagePath($imagePath)
+	{
+		$this->imagePath = $imagePath;
+	}
+
+	public function setFollower($follower)
+	{
+		$this->follower = $follower;
+	}
+
+	public function setActiveSince($activeSince)
+	{
+		$this->activeSince = $activeSince;
+	}
+
+	public function setUserID($userID)
+	{
+		$this->userID = $userID;
+	}
+}
