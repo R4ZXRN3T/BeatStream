@@ -364,22 +364,47 @@ class SongController
 			unlink("images/artists/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
 		} catch (Exception $e) {}
 
+		// Get all songIDs by this artist
+		$songIDs = [];
+		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID = ?");
+		$stmt->bind_param("i", $artistID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		while ($row = $result->fetch_assoc()) {
+			$songIDs[] = $row['songID'];
+		}
+		$stmt->close();
+
+		// Delete all relations and the songs themselves
+		if (!empty($songIDs)) {
+			$in = implode(',', array_fill(0, count($songIDs), '?'));
+			// in_album
+			$stmt = $conn->prepare("DELETE FROM in_album WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+
+			// in_playlist
+			$stmt = $conn->prepare("DELETE FROM in_playlist WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+
+			// song
+			$stmt = $conn->prepare("DELETE FROM song WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+		}
+
+		// Delete releases_song, albums, etc.
 		$queries = [
 			"DELETE FROM releases_song WHERE artistID = ?;",
-			"DELETE FROM in_album WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID = ?);",
-			"DELETE FROM in_playlist WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID = ?);",
-			"DELETE FROM song WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID = ?);",
 			"DELETE FROM releases_album WHERE artistID = ?;",
-			"DELETE FROM in_album WHERE albumID IN (
-			    SELECT albumID FROM releases_album WHERE artistID = ?);",
-			"DELETE FROM album WHERE albumID IN (
-			    SELECT albumID FROM releases_album WHERE artistID = ?);",
-			"DELETE FROM artist WHERE artist.artistID=?"
+			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
+			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
+			"DELETE FROM artist WHERE artistID = ?;"
 		];
-
 		foreach ($queries as $sql) {
 			$stmt = $conn->prepare($sql);
 			$stmt->bind_param("i", $artistID);
@@ -397,39 +422,60 @@ class SongController
 			unlink("images/users/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
 		} catch (Exception $e) {}
 
+		// Get all songIDs by this user's artist(s)
+		$songIDs = [];
+		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)");
+		$stmt->bind_param("i", $userID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		while ($row = $result->fetch_assoc()) {
+			$songIDs[] = $row['songID'];
+		}
+		$stmt->close();
+
+		// Delete playlists created by the user
 		$queries = [
-			// 1. Delete all playlists created by the user (and their songs in playlists)
 			"DELETE FROM in_playlist WHERE playlistID IN (SELECT playlistID FROM playlist WHERE creatorID = ?);",
 			"DELETE FROM playlist WHERE creatorID = ?;",
+		];
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $userID);
+			$stmt->execute();
+			$stmt->close();
+		}
 
-			// 2. Delete all songs by the artist (and their relations)
+		// Delete all relations and the songs themselves
+		if (!empty($songIDs)) {
+			$in = implode(',', array_fill(0, count($songIDs), '?'));
+			// in_album
+			$stmt = $conn->prepare("DELETE FROM in_album WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+
+			// in_playlist
+			$stmt = $conn->prepare("DELETE FROM in_playlist WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+
+			// song
+			$stmt = $conn->prepare("DELETE FROM song WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+		}
+
+		// Delete releases_song and artist, albums, etc. as before
+		$queries = [
 			"DELETE FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?);",
-			"DELETE FROM in_album WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
-			);",
-			"DELETE FROM in_playlist WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
-			);",
-			"DELETE FROM song WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
-			);",
-
-			// 3. Delete all albums by the artist (and their relations)
 			"DELETE FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?);",
-			"DELETE FROM in_album WHERE albumID IN (
-			    SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
-			);",
-			"DELETE FROM album WHERE albumID IN (
-			    SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
-			);",
-
-			// 4. Delete the artist entry
+			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?));",
+			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?));",
 			"DELETE FROM artist WHERE userID = ?;",
-
-			// 5. Finally, delete the user
 			"DELETE FROM user WHERE userID = ?;"
 		];
-
 		foreach ($queries as $sql) {
 			$stmt = $conn->prepare($sql);
 			$stmt->bind_param("i", $userID);
