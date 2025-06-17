@@ -289,6 +289,11 @@ class SongController
 	public static function deleteSong(int $songID)
 	{
 		$conn = DBConn::getConn();
+		$deleteImage = $conn->prepare("SELECT imagePath FROM song WHERE songID = $songID");
+		$deleteImage->execute();
+		try {
+			unlink("images/songs/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+		} catch (Exception $e) {}
 
 		$queries = [
 			"DELETE FROM releases_song WHERE releases_song.songID=?",
@@ -308,6 +313,11 @@ class SongController
 	public static function deleteAlbum(int $albumID)
 	{
 		$conn = DBConn::getConn();
+		$deleteImage = $conn->prepare("SELECT imagePath FROM album WHERE albumID = $albumID");
+		$deleteImage->execute();
+		try {
+			unlink("images/albums/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+		} catch (Exception $e) {}
 
 		$queries = [
 			"DELETE FROM in_album WHERE in_album.albumID=?",
@@ -326,6 +336,11 @@ class SongController
 	public static function deletePlaylist(int $playlistID)
 	{
 		$conn = DBConn::getConn();
+		$deleteImage = $conn->prepare("SELECT imagePath FROM playlist WHERE playlistID = $playlistID");
+		$deleteImage->execute();
+		try {
+			unlink("images/playlists/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+		} catch (Exception $e) {}
 
 		$queries = [
 			"DELETE FROM in_playlist WHERE in_playlist.playlistID=?",
@@ -343,6 +358,11 @@ class SongController
 	public static function deleteArtist(int $artistID)
 	{
 		$conn = DBConn::getConn();
+		$deleteImage = $conn->prepare("SELECT imagePath FROM artist WHERE artistID = $artistID");
+		$deleteImage->execute();
+		try {
+			unlink("images/artists/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+		} catch (Exception $e) {}
 
 		$queries = [
 			"DELETE FROM releases_song WHERE artistID = ?;",
@@ -371,6 +391,11 @@ class SongController
 	public static function deleteUser(int $userID)
 	{
 		$conn = DBConn::getConn();
+		$deleteImage = $conn->prepare("SELECT imagePath FROM user WHERE userID = $userID");
+		$deleteImage->execute();
+		try {
+			unlink("images/users/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+		} catch (Exception $e) {}
 
 		$queries = [
 			// 1. Delete all playlists created by the user (and their songs in playlists)
