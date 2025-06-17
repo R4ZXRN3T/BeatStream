@@ -345,8 +345,18 @@ class SongController
 		$conn = DBConn::getConn();
 
 		$queries = [
-			"DELETE FROM releases_song WHERE releases_song.artistID=?",
-			"DELETE FROM releases_album WHERE releases_album.artistID=?",
+			"DELETE FROM releases_song WHERE artistID = ?;",
+			"DELETE FROM in_album WHERE songID IN (
+			    SELECT songID FROM releases_song WHERE artistID = ?);",
+			"DELETE FROM in_playlist WHERE songID IN (
+			    SELECT songID FROM releases_song WHERE artistID = ?);",
+			"DELETE FROM song WHERE songID IN (
+			    SELECT songID FROM releases_song WHERE artistID = ?);",
+			"DELETE FROM releases_album WHERE artistID = ?;",
+			"DELETE FROM in_album WHERE albumID IN (
+			    SELECT albumID FROM releases_album WHERE artistID = ?);",
+			"DELETE FROM album WHERE albumID IN (
+			    SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"DELETE FROM artist WHERE artist.artistID=?"
 		];
 
@@ -364,39 +374,40 @@ class SongController
 
 		$queries = [
 			// 1. Delete all playlists created by the user (and their songs in playlists)
-			"DELETE FROM in_playlist WHERE playlistID IN (SELECT playlistID FROM playlist WHERE creatorID = $userID);",
-			"DELETE FROM playlist WHERE creatorID = $userID;",
+			"DELETE FROM in_playlist WHERE playlistID IN (SELECT playlistID FROM playlist WHERE creatorID = ?);",
+			"DELETE FROM playlist WHERE creatorID = ?;",
 
 			// 2. Delete all songs by the artist (and their relations)
-			"DELETE FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = $userID);",
+			"DELETE FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?);",
 			"DELETE FROM in_album WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = $userID)
+			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
 			);",
 			"DELETE FROM in_playlist WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = $userID)
+			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
 			);",
 			"DELETE FROM song WHERE songID IN (
-			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = $userID)
+			    SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
 			);",
 
 			// 3. Delete all albums by the artist (and their relations)
-			"DELETE FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = $userID);",
+			"DELETE FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?);",
 			"DELETE FROM in_album WHERE albumID IN (
-			    SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = $userID)
+			    SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
 			);",
 			"DELETE FROM album WHERE albumID IN (
-			    SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = $userID)
+			    SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)
 			);",
 
 			// 4. Delete the artist entry
-			"DELETE FROM artist WHERE userID = $userID;",
+			"DELETE FROM artist WHERE userID = ?;",
 
 			// 5. Finally, delete the user
-			"DELETE FROM user WHERE userID = $userID;"
+			"DELETE FROM user WHERE userID = ?;"
 		];
 
 		foreach ($queries as $sql) {
 			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $userID);
 			$stmt->execute();
 			$stmt->close();
 		}
