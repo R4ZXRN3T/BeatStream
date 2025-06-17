@@ -66,19 +66,25 @@ if ($isValid) {
 			<label for="name">Album title:</label>
 			<input type="text" id="name" name="nameInput" class="form-control" placeholder="Enter album title" required>
 		</div>
+
 		<div class="form-group">
-			<label for="artists">Artist:</label>
-			<select name="artistsInput" id="artists" class="form-control" style="width: 100%;" required>
-				<option value="none">--Please Select--</option>
-				<?php
-				for ($i = 0; $i < count($artistList); $i++) {
-					?>
-					<option value='<?php echo $artistList[$i]->getName() ?>'><?php echo $artistList[$i]->getName() ?></option>
-					<?php
-				}
-				?>
-			</select>
+			<label for="artist">Artists:</label>
+			<div id="artistFields">
+				<div class="artist-field d-flex mb-2">
+					<select name="artistInput[]" class="form-control me-2" required>
+						<option value="">--Please Select--</option>
+						<?php
+						foreach ($artistList as $artist) {
+							echo "<option value='{$artist->getName()}'>{$artist->getName()}</option>";
+						}
+						?>
+					</select>
+					<button type="button" class="btn btn-danger remove-artist" style="display:none;" onclick="removeArtist(this)">-</button>
+				</div>
+			</div>
+			<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
 		</div>
+
 		<div class="form-group">
 			<label for="imagePath">Image path:</label>
 			<input type="text" id="imagePath" name="imagePathInput" class="form-control" placeholder="Enter image path"
@@ -87,6 +93,32 @@ if ($isValid) {
 		<input type="submit" class="btn btn-primary mt-3" value="Submit">
 	</form>
 </div>
+
+<script>
+	function updateRemoveButtons() {
+		const fields = document.querySelectorAll('#artistFields .artist-field');
+		fields.forEach((field, idx) => {
+			const btn = field.querySelector('.remove-artist');
+			btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
+		});
+	}
+
+	function addArtist() {
+		const artistFields = document.getElementById('artistFields');
+		const firstField = artistFields.querySelector('.artist-field');
+		const newField = firstField.cloneNode(true);
+		newField.querySelector('select').value = '';
+		artistFields.appendChild(newField);
+		updateRemoveButtons();
+	}
+
+	function removeArtist(btn) {
+		btn.closest('.artist-field').remove();
+		updateRemoveButtons();
+	}
+
+	document.addEventListener('DOMContentLoaded', updateRemoveButtons);
+</script>
 
 <!-- Bootstrap JS (optional for some interactive components) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
