@@ -12,6 +12,12 @@
 
 <body>
 
+<script>
+	if ( window.history.replaceState ) {
+		window.history.replaceState( null, null, window.location.href );
+	}
+</script>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse myNavbar">
@@ -37,6 +43,11 @@
 <?php
 include("../../SongController.php");
 $userList = SongController::getUserList();
+
+if (array_key_exists('removeButton', $_POST)) {
+	SongController::deleteUser($_POST['removeButton']);
+	header("Refresh:0");
+}
 ?>
 
 
@@ -63,6 +74,13 @@ $userList = SongController::getUserList();
 			<td><?php echo $userList[$i]->getUserPassword() ?></td>
 			<td><?php echo $userList[$i]->getSalt() ?></td>
 			<td><?php echo $userList[$i]->getImagePath() ?></td>
+			<td>
+				<form method="post" action="">
+					<button name="removeButton" id="remove" value="<?php echo $userList[$i]->getUserID() ?>"
+							class="btn btn-danger" type="submit" title="Remove User">🗑️
+					</button>
+				</form>
+			</td>
 		</tr>
 		<?php
 	}

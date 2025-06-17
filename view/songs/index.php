@@ -87,6 +87,7 @@ if (array_key_exists('removeButton', $_POST)) {
 							class="btn btn-danger" type="submit" title="Remove Song">🗑️
 					</button>
 				</form>
+			</td>
 		</tr>
 		<?php
 	}

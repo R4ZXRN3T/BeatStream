@@ -1,3 +1,12 @@
+<?php
+session_start();
+// If the user is logged in, redirect to the home page
+if (isset($_SESSION['account_loggedin'])) {
+	header('Location: home.php');
+	exit;
+}
+?>
+
 <!Doctype html>
 <html lang="en">
 

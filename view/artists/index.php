@@ -12,6 +12,12 @@
 
 <body>
 
+<script>
+	if ( window.history.replaceState ) {
+		window.history.replaceState( null, null, window.location.href );
+	}
+</script>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse myNavbar">
@@ -36,6 +42,11 @@
 <?php
 include("../../SongController.php");
 $artistList = SongController::getArtistList();
+
+if (array_key_exists('removeButton', $_POST)) {
+	SongController::deleteArtist($_POST['removeButton']);
+	header("Refresh:0");
+}
 ?>
 
 
@@ -62,6 +73,13 @@ $artistList = SongController::getArtistList();
 			<td><?php echo $artistList[$i]->getFollower() ?></td>
 			<td><?php echo $artistList[$i]->getActiveSince()->format('d.m.Y') ?></td>
 			<td><?php echo $artistList[$i]->getUserID() ?></td>
+			<td>
+				<form method="post" action="">
+					<button name="removeButton" id="remove" value="<?php echo $artistList[$i]->getArtistID() ?>"
+							class="btn btn-danger" type="submit" title="Remove Artist">🗑️
+					</button>
+				</form>
+			</td>
 		</tr>
 		<?php
 	}
