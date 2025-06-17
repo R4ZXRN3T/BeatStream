@@ -2,8 +2,8 @@
 session_start();
 // If the user is logged in, redirect to the home page
 if (isset($_SESSION['account_loggedin'])) {
-	header('Location: home.php');
-	exit;
+	/*echo "already logged in";
+	header("location: ../");*/
 }
 ?>
 
@@ -13,7 +13,7 @@ if (isset($_SESSION['account_loggedin'])) {
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>BeatStream - login</title>
+	<title>BeatStream - sign up</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../favicon.ico" rel="icon">
 </head>
@@ -98,6 +98,7 @@ if ($isValid) {
 		"",
 		$_FILES["imageToUpload"]["name"]
 	));
+	$_SESSION['account_loggedin'] = true; // Set session variable to indicate user is logged in
 	?>
 	<h1>Success!</h1>
 	<?php

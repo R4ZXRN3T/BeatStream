@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!Doctype html>
 <html lang="en">
 
@@ -24,6 +28,9 @@
 			<ul class="navbar-nav">
 				<li class="nav-item"><a class="nav-link" href="../songs">Home</a></li>
 				<li class="nav-item"><a class="nav-link" href="../../add/song">Add content</a></li>
+				<li class="nav-item"><a class="nav-link" href="../../session%20destroyer.php">logout</a></li>
+				<li class="nav-item"><a class="nav-link" href="../../account/signup.php">sign up</a></li>
+				<li> <?php echo $_SESSION['username'] ?> </li>
 			</ul>
 		</div>
 	</div>
