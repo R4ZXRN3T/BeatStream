@@ -91,32 +91,6 @@ if ($isValid) {
 			<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
 		</div>
 
-		<script>
-			function updateRemoveButtons() {
-				const fields = document.querySelectorAll('#artistFields .artist-field');
-				fields.forEach((field, idx) => {
-					const btn = field.querySelector('.remove-artist');
-					btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
-				});
-			}
-
-			function addArtist() {
-				const artistFields = document.getElementById('artistFields');
-				const firstField = artistFields.querySelector('.artist-field');
-				const newField = firstField.cloneNode(true);
-				newField.querySelector('select').value = '';
-				artistFields.appendChild(newField);
-				updateRemoveButtons();
-			}
-
-			function removeArtist(btn) {
-				btn.closest('.artist-field').remove();
-				updateRemoveButtons();
-			}
-
-			document.addEventListener('DOMContentLoaded', updateRemoveButtons);
-		</script>
-
 		<div class="form-group">
 			<label for="genre">Genre:</label>
 			<input type="text" id="genre" name="genreInput" class="form-control" placeholder="Enter genre" required>
@@ -155,6 +129,32 @@ if ($isValid) {
 		<input type="submit" class="btn btn-primary mt-3" value="Submit">
 	</form>
 </div>
+
+<script>
+	function updateRemoveButtons() {
+		const fields = document.querySelectorAll('#artistFields .artist-field');
+		fields.forEach((field, idx) => {
+			const btn = field.querySelector('.remove-artist');
+			btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
+		});
+	}
+
+	function addArtist() {
+		const artistFields = document.getElementById('artistFields');
+		const firstField = artistFields.querySelector('.artist-field');
+		const newField = firstField.cloneNode(true);
+		newField.querySelector('select').value = '';
+		artistFields.appendChild(newField);
+		updateRemoveButtons();
+	}
+
+	function removeArtist(btn) {
+		btn.closest('.artist-field').remove();
+		updateRemoveButtons();
+	}
+
+	document.addEventListener('DOMContentLoaded', updateRemoveButtons);
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
