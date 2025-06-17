@@ -1,17 +1,16 @@
->
 body {
-    background-color: #f8f9fa;
+	background-color: #f8f9fa;
 }
 
 .myNavbar {
-    margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 .tab {
-    margin-top: 20px;
+	margin-top: 20px;
 }
 
 .nav-tabs .nav-link.active {
-    background-color: #343a40;
-    color: white;
+	background-color: #343a40;
+	color: white;
 }

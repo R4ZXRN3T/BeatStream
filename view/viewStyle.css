@@ -1,0 +1,42 @@
+body {
+	background-color: #f8f9fa;
+}
+
+table {
+	width: 50%;
+	border-collapse: collapse;
+	margin: 0px auto;
+}
+
+th,
+td {
+	padding: 7px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+th {
+	background-color: #343a40;
+	color: white;
+}
+
+tr:nth-child(even) {
+	background-color: #c7c7c7;
+}
+
+body {
+	background-color: #f8f9fa;
+}
+
+.myNavbar {
+	margin-bottom: 20px;
+}
+
+.tab {
+	margin-top: 20px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #343a40;
+	color: white;
+}
