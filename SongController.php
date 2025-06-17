@@ -390,6 +390,12 @@ class SongController
 			$stmt->execute();
 			$stmt->close();
 
+			// releases_song
+			$stmt = $conn->prepare("DELETE FROM releases_song WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+
 			// song
 			$stmt = $conn->prepare("DELETE FROM song WHERE songID IN ($in)");
 			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
@@ -460,6 +466,12 @@ class SongController
 			$stmt->execute();
 			$stmt->close();
 
+			// releases_song
+			$stmt = $conn->prepare("DELETE FROM releases_song WHERE songID IN ($in)");
+			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+			$stmt->execute();
+			$stmt->close();
+
 			// song
 			$stmt = $conn->prepare("DELETE FROM song WHERE songID IN ($in)");
 			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
@@ -469,7 +481,6 @@ class SongController
 
 		// Delete releases_song and artist, albums, etc. as before
 		$queries = [
-			"DELETE FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?);",
 			"DELETE FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?);",
 			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?));",
 			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?));",
