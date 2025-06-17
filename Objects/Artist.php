@@ -15,7 +15,11 @@ class Artist
 		$this->name = $name;
 		$this->imagePath = $imagePath;
 		$this->follower = $follower;
-		$this->activeSince = $activeSince;
+		try {
+			$this->activeSince = new DateTime($activeSince);
+		} catch (Exception $e) {
+			throw new RuntimeException("Invalid date format for activeSince: " . $e->getMessage());
+		}
 		$this->userID = $userID;
 	}
 
@@ -41,7 +45,7 @@ class Artist
 		return $this->follower;
 	}
 
-	public function getActiveSince()
+	public function getActiveSince(): DateTime
 	{
 		return $this->activeSince;
 	}
@@ -75,7 +79,11 @@ class Artist
 
 	public function setActiveSince($activeSince)
 	{
-		$this->activeSince = $activeSince;
+		try {
+			$this->activeSince = new DateTime($activeSince);
+		} catch (Exception $e) {
+			throw new RuntimeException("Invalid date format for activeSince: " . $e->getMessage());
+		}
 	}
 
 	public function setUserID($userID)

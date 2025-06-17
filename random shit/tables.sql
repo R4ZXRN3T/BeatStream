@@ -30,6 +30,7 @@ CREATE TABLE User
     username     VARCHAR(255) NOT NULL,
     email        VARCHAR(255) NOT NULL,
     userPassword VARCHAR(255) NOT NULL,
+    salt         VARCHAR(255) NOT NULL,
     imagePath    VARCHAR(255),
 
     PRIMARY KEY (userID)
