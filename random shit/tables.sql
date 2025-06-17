@@ -1,6 +1,6 @@
 CREATE TABLE Song
 (
-    songID      INT,
+    songID      INT PRIMARY KEY,
     title       VARCHAR(255) NOT NULL,
     genre       VARCHAR(255),
     releaseDate DATE,
@@ -8,37 +8,31 @@ CREATE TABLE Song
     rating      FLOAT,
     songLength  TIME,
 
-    filePath    VARCHAR(255),
-
-    PRIMARY KEY (songID)
+    filePath    VARCHAR(255)
 );
 
 CREATE TABLE Album
 (
-    albumID   INT,
+    albumID   INT PRIMARY KEY,
     title     VARCHAR(255),
     imagePath VARCHAR(255),
     length    INT,
-    duration  TIME,
-
-    PRIMARY KEY (albumID)
+    duration  TIME
 );
 
 CREATE TABLE User
 (
-    userID       INT,
-    username     VARCHAR(255) NOT NULL,
-    email        VARCHAR(255) NOT NULL,
+    userID       INT PRIMARY KEY,
+    username     VARCHAR(255) NOT NULL UNIQUE,
+    email        VARCHAR(255) NOT NULL UNIQUE,
     userPassword VARCHAR(255) NOT NULL,
     salt         VARCHAR(255) NOT NULL,
-    imagePath    VARCHAR(255),
-
-    PRIMARY KEY (userID)
+    imagePath    VARCHAR(255)
 );
 
 CREATE TABLE Playlist
 (
-    playlistID INT,
+    playlistID INT PRIMARY KEY,
     imagePath  VARCHAR(255),
     name       VARCHAR(255),
     length     INT,
@@ -46,24 +40,20 @@ CREATE TABLE Playlist
 
     creatorID  INT,
 
-    PRIMARY KEY (playlistID),
-
     FOREIGN KEY (creatorID) REFERENCES User (userID)
 );
 
 CREATE TABLE Artist
 (
-    artistID    INT,
-    name        VARCHAR(255),
+    artistID    INT PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL UNIQUE,
     imagePath   VARCHAR(255),
     follower    INT,
     activeSince DATE,
 
     userID      INT,
 
-    FOREIGN KEY (userID) REFERENCES User (userID),
-
-    PRIMARY KEY (artistID)
+    FOREIGN KEY (userID) REFERENCES User (userID)
 );
 
 CREATE TABLE Releases_Song
