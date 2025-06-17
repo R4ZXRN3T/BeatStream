@@ -18,6 +18,7 @@
 			<ul class="navbar-nav">
 				<li class="nav-item"><a class="nav-link" href="../songs">Home</a></li>
 				<li class="nav-item"><a class="nav-link" href="../../add/song">Add content</a></li>
+				<li class="nav-item"><a class="nav-link" href="../../view/songs">View content</a></li>
 			</ul>
 		</div>
 	</div>

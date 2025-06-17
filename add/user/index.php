@@ -35,7 +35,6 @@
 
 <?php
 include("../../SongController.php");
-$artistList = SongController::getArtistList();
 
 $isValid = true;
 
