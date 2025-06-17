@@ -65,7 +65,7 @@ CREATE TABLE Artist
     PRIMARY KEY (artistID)
 );
 
-CREATE TABLE ReleasesSong
+CREATE TABLE Releases_Song
 (
     artistID INT,
     songID   INT,
@@ -76,7 +76,7 @@ CREATE TABLE ReleasesSong
     CONSTRAINT releaseSongKey PRIMARY KEY (artistID, songID)
 );
 
-CREATE TABLE ReleasesAlbum
+CREATE TABLE Releases_Album
 (
     artistID INT,
     albumID  INT,
@@ -87,7 +87,7 @@ CREATE TABLE ReleasesAlbum
     CONSTRAINT releaseAlbumKey PRIMARY KEY (artistID, albumID)
 );
 
-CREATE TABLE InAlbum
+CREATE TABLE In_Album
 (
     songID  INT,
     albumId INT,
@@ -98,7 +98,7 @@ CREATE TABLE InAlbum
     CONSTRAINT inAlbumKey PRIMARY KEY (songID, albumID)
 );
 
-CREATE TABLE InPlaylist
+CREATE TABLE In_Playlist
 (
     songID     INT,
     playlistID INT,
