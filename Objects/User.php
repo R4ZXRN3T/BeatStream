@@ -6,14 +6,16 @@ class User
 	private $username;
 	private $email;
 	private $userPassword;
+	private $salt;
 	private $imagePath;
 
-	public function __construct($userID, $username, $email, $userPassword, $imagePath)
+	public function __construct($userID, $username, $email, $userPassword, $salt, $imagePath)
 	{
 		$this->userID = $userID;
 		$this->username = $username;
 		$this->email = $email;
 		$this->userPassword = $userPassword;
+		$this->salt = $salt;
 		$this->imagePath = $imagePath;
 	}
 
@@ -36,6 +38,11 @@ class User
 	public function getUserPassword()
 	{
 		return $this->userPassword;
+	}
+
+	public function getSalt()
+	{
+		return $this->salt;
 	}
 
 	public function getImagePath()
@@ -62,6 +69,11 @@ class User
 	public function setUserPassword($userPassword)
 	{
 		$this->userPassword = $userPassword;
+	}
+
+	public function setSalt($salt)
+	{
+		$this->salt = $salt;
 	}
 
 	public function setImagePath($imagePath)

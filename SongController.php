@@ -1,4 +1,7 @@
 <?php
+
+use Random\RandomException;
+
 include_once("dbConnection.php");
 include("Objects/Song.php");
 include("Objects/Artist.php");
@@ -63,7 +66,7 @@ class SongController
 
 		$userList = array();
 		while ($row = $result->fetch_assoc()) {
-			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["imagePath"]);
+			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["imagePath"]);
 		}
 
 		$stmt->close();
@@ -205,6 +208,9 @@ class SongController
 	{
 		$userList = SongController::getUserList();
 
+		$salt = SongController::generateRandomString(16);
+		$password = hash("sha256", $user->getUserPassword() . $salt);
+
 		$changeMade = false;
 		$newUserID = rand();
 		do {
@@ -216,7 +222,7 @@ class SongController
 			}
 		} while ($changeMade == true);
 
-		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $user->getUserPassword() . "', '" . $user->getImagePath() . "')";
+		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', '" . $user->getImagePath() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlUser);
 		$stmt->execute();
 		$stmt->close();
@@ -282,92 +288,107 @@ class SongController
 
 	public static function deleteSong(int $songID)
 	{
-	    $conn = DBConn::getConn();
+		$conn = DBConn::getConn();
 
-	    $queries = [
-	        "DELETE FROM releases_song WHERE releases_song.songID=?",
-	        "DELETE FROM in_album WHERE in_album.songID=?",
-	        "DELETE FROM in_playlist WHERE in_playlist.songID=?",
-	        "DELETE FROM song WHERE song.songID=?"
-	    ];
+		$queries = [
+			"DELETE FROM releases_song WHERE releases_song.songID=?",
+			"DELETE FROM in_album WHERE in_album.songID=?",
+			"DELETE FROM in_playlist WHERE in_playlist.songID=?",
+			"DELETE FROM song WHERE song.songID=?"
+		];
 
-	    foreach ($queries as $sql) {
-	        $stmt = $conn->prepare($sql);
-	        $stmt->bind_param("i", $songID);
-	        $stmt->execute();
-	        $stmt->close();
-	    }
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $songID);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function deleteAlbum(int $albumID)
 	{
-	    $conn = DBConn::getConn();
+		$conn = DBConn::getConn();
 
-	    $queries = [
-	        "DELETE FROM in_album WHERE in_album.albumID=?",
-	        "DELETE FROM releases_album WHERE releases_album.albumID=?",
-	        "DELETE FROM album WHERE album.albumID=?"
-	    ];
+		$queries = [
+			"DELETE FROM in_album WHERE in_album.albumID=?",
+			"DELETE FROM releases_album WHERE releases_album.albumID=?",
+			"DELETE FROM album WHERE album.albumID=?"
+		];
 
-	    foreach ($queries as $sql) {
-	        $stmt = $conn->prepare($sql);
-	        $stmt->bind_param("i", $albumID);
-	        $stmt->execute();
-	        $stmt->close();
-	    }
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $albumID);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function deletePlaylist(int $playlistID)
 	{
-	    $conn = DBConn::getConn();
+		$conn = DBConn::getConn();
 
-	    $queries = [
-	        "DELETE FROM in_playlist WHERE in_playlist.playlistID=?",
-	        "DELETE FROM playlist WHERE playlist.playlistID=?"
-	    ];
+		$queries = [
+			"DELETE FROM in_playlist WHERE in_playlist.playlistID=?",
+			"DELETE FROM playlist WHERE playlist.playlistID=?"
+		];
 
-	    foreach ($queries as $sql) {
-	        $stmt = $conn->prepare($sql);
-	        $stmt->bind_param("i", $playlistID);
-	        $stmt->execute();
-	        $stmt->close();
-	    }
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $playlistID);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function deleteArtist(int $artistID)
 	{
-	    $conn = DBConn::getConn();
+		$conn = DBConn::getConn();
 
-	    $queries = [
-	        "DELETE FROM releases_song WHERE releases_song.artistID=?",
-	        "DELETE FROM releases_album WHERE releases_album.artistID=?",
-	        "DELETE FROM artist WHERE artist.artistID=?"
-	    ];
+		$queries = [
+			"DELETE FROM releases_song WHERE releases_song.artistID=?",
+			"DELETE FROM releases_album WHERE releases_album.artistID=?",
+			"DELETE FROM artist WHERE artist.artistID=?"
+		];
 
-	    foreach ($queries as $sql) {
-	        $stmt = $conn->prepare($sql);
-	        $stmt->bind_param("i", $artistID);
-	        $stmt->execute();
-	        $stmt->close();
-	    }
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $artistID);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function deleteUser(int $userID)
 	{
-	    $conn = DBConn::getConn();
+		$conn = DBConn::getConn();
 
-	    $queries = [
-	        "DELETE FROM playlist WHERE playlist.creatorID=?",
-	        "DELETE FROM artist WHERE artist.userID=?",
-	        "DELETE FROM user WHERE user.userID=?"
-	    ];
+		$queries = [
+			"DELETE FROM playlist WHERE playlist.creatorID=?",
+			"DELETE FROM artist WHERE artist.userID=?",
+			"DELETE FROM user WHERE user.userID=?"
+		];
 
-	    foreach ($queries as $sql) {
-	        $stmt = $conn->prepare($sql);
-	        $stmt->bind_param("i", $userID);
-	        $stmt->execute();
-	        $stmt->close();
-	    }
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $userID);
+			$stmt->execute();
+			$stmt->close();
+		}
+	}
+
+	public static function generateRandomString(int $length = 10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?,.:;()<>$#&*+-/=@%'): string
+	{
+		$charactersLength = strlen($characters);
+		$randomString = '';
+
+		for ($i = 0; $i < $length; $i++) {
+			try {
+				$randomString .= $characters[random_int(0, $charactersLength - 1)];
+			} catch (RandomException $e) {
+				return '';
+			}
+		}
+		return $randomString;
 	}
 }
 

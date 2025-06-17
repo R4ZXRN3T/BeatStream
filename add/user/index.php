@@ -51,6 +51,7 @@ if ($isValid) {
 		$_POST["usernameInput"],
 		$_POST["emailInput"],
 		$_POST["userPasswordInput"],
+		"",
 		$_POST["imagePathInput"]
 	));
 	?>

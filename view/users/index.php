@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>BeatStream - Home</title>
+	<title>BeatStream - view users</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../viewStyle.css" rel="stylesheet">
 	<link href="../../favicon.ico" rel="icon">
@@ -48,6 +48,7 @@ $userList = SongController::getUserList();
 		<th style="width:16.7%;">Username</th>
 		<th style="width:16.7%;">E-Mail</th>
 		<th style="width:16.7%;">User Password</th>
+		<th style="width:16.7%;">Salt</th>
 		<th style="width:16.7%;">Image Path</th>
 		<th style="width:1%;"></th>
 	</tr>
@@ -59,6 +60,7 @@ $userList = SongController::getUserList();
 			<td><?php echo $userList[$i]->getUsername() ?></td>
 			<td><?php echo $userList[$i]->getEmail() ?></td>
 			<td><?php echo $userList[$i]->getUserPassword() ?></td>
+			<td><?php echo $userList[$i]->getSalt() ?></td>
 			<td><?php echo $userList[$i]->getImagePath() ?></td>
 		</tr>
 		<?php
