@@ -28,13 +28,21 @@ session_start();
 			<ul class="navbar-nav">
 				<li class="nav-item"><a class="nav-link" href="../songs">Home</a></li>
 				<li class="nav-item"><a class="nav-link" href="../../add/song">Add content</a></li>
-				<li class="nav-item"><a class="nav-link" href="../../session%20destroyer.php">logout</a></li>
+				<li class="nav-item"><a class="nav-link" href="../../account/logout.php">logout</a></li>
 				<li class="nav-item"><a class="nav-link" href="../../account/signup.php">sign up</a></li>
-				<li> <?php echo $_SESSION['username'] ?> </li>
 			</ul>
 		</div>
 	</div>
 </nav>
+
+<?php
+if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
+	echo "User ID: " . $_SESSION['userID'] . "<br>" . "Username: " . $_SESSION['username'] . "<br>" . "Email: " . $_SESSION['email'] . "<br>";
+} else {
+	echo "not logged in";
+}
+
+?>
 
 <div class="tab">
 	<ul class="nav nav-tabs justify-content-center">
