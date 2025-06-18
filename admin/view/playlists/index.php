@@ -8,10 +8,10 @@ session_start();
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>BeatStream - view albums</title>
+	<title>BeatStream - view playlists</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../viewStyle.css" rel="stylesheet">
-	<link href="../../favicon.ico" rel="icon">
+	<link href="../../../favicon.ico" rel="icon">
 </head>
 
 <body>
@@ -38,17 +38,17 @@ session_start();
 		<li class="nav-item"><a class="nav-link" href="../songs">Songs</a></li>
 		<li class="nav-item"><a class="nav-link" href="../artists">Artists</a></li>
 		<li class="nav-item"><a class="nav-link" href="../users">Users</a></li>
-		<li class="nav-item"><a class="nav-link" href="../playlists">Playlists</a></li>
-		<li class="nav-item"><a class="nav-link active" href="../albums">Albums</a></li>
+		<li class="nav-item"><a class="nav-link active" href="">Playlists</a></li>
+		<li class="nav-item"><a class="nav-link" href="../albums">Albums</a></li>
 	</ul>
 </div>
 
 <?php
-include("../../SongController.php");
-$albumList = SongController::getAlbumList();
+include("../../../SongController.php");
+$playlistList = SongController::getPlaylistList();
 
 if (array_key_exists('removeButton', $_POST)) {
-	SongController::deleteAlbum($_POST['removeButton']);
+	SongController::deletePlaylist($_POST['removeButton']);
 	header("Refresh:0");
 }
 ?>
@@ -59,28 +59,28 @@ if (array_key_exists('removeButton', $_POST)) {
 		<col span="9" style="background-color:lightgray">
 	</colgroup>
 	<tr>
-		<th style="width:14.3%;">Album ID</th>
-		<th style="width:14.3%;">Name</th>
-		<th style="width:14.3%;">Artists</th>
+		<th style="width:14.3%;">Playlist ID</th>
 		<th style="width:14.3%;">Image Path</th>
-		<th style="width:14.3%;">Album Length</th>
-		<th style="width:14.3%;">Album Duration</th>
+		<th style="width:14.3%;">Name</th>
+		<th style="width:14.3%;">Duration</th>
+		<th style="width:14.3%;">Length</th>
+		<th style="width:14.3%;">Creator ID</th>
 		<th style="width:1%;"></th>
 	</tr>
 	<?php
-	for ($i = 0; $i < count($albumList); $i++) {
+	for ($i = 0; $i < count($playlistList); $i++) {
 		?>
 		<tr>
-			<td><?php echo $albumList[$i]->getAlbumID() ?></td>
-			<td><?php echo $albumList[$i]->getName() ?></td>
-			<td><?php echo $albumList[$i]->getArtists() ?></td>
-			<td><?php echo $albumList[$i]->getImagePath() ?></td>
-			<td><?php echo $albumList[$i]->getAlbumLength() ?></td>
-			<td><?php echo $albumList[$i]->getAlbumDuration()->format('i:s') ?></td>
+			<td><?php echo $playlistList[$i]->getPlaylistID() ?></td>
+			<td><?php echo $playlistList[$i]->getImagePath() ?></td>
+			<td><?php echo $playlistList[$i]->getName() ?></td>
+			<td><?php echo $playlistList[$i]->getDuration()->format('i:s') ?></td>
+			<td><?php echo $playlistList[$i]->getLength() ?></td>
+			<td><?php echo $playlistList[$i]->getCreatorID() ?></td>
 			<td>
 				<form method="post" action="">
-					<button name="removeButton" id="remove" value="<?php echo $albumList[$i]->getAlbumID() ?>"
-							class="btn btn-danger" type="submit" title="Remove Album">🗑️
+					<button name="removeButton" id="remove" value="<?php echo $playlistList[$i]->getPlaylistID() ?>"
+							class="btn btn-danger" type="submit" title="Remove Playlist">🗑️
 					</button>
 				</form>
 			</td>

@@ -11,7 +11,7 @@ session_start();
 	<title>BeatStream - add a user</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../addStyle.css" rel="stylesheet">
-	<link href="../../favicon.ico" rel="icon">
+	<link href="../../../favicon.ico" rel="icon">
 </head>
 
 <body>
@@ -21,7 +21,7 @@ session_start();
 		<div class="collapse navbar-collapse myNavbar">
 			<ul class="navbar-nav">
 				<li class="nav-item"><a class="nav-link" href="../../view/songs">Home</a></li>
-				<li class="nav-item"><a class="nav-link" href="../">Add content</a></li>
+				<li class="nav-item"><a class="nav-link" href="..">Add content</a></li>
 			</ul>
 		</div>
 	</div>
@@ -31,14 +31,14 @@ session_start();
 	<ul class="nav nav-tabs justify-content-center">
 		<li class="nav-item"><a class="nav-link" href="../song">Song</a></li>
 		<li class="nav-item"><a class="nav-link" href="../artist">Artist</a></li>
-		<li class="nav-item"><a class="nav-link active" href="../user">User</a></li>
+		<li class="nav-item"><a class="nav-link active" href="">User</a></li>
 		<li class="nav-item"><a class="nav-link" href="../playlist">Playlist</a></li>
 		<li class="nav-item"><a class="nav-link" href="../album">Album</a></li>
 	</ul>
 </div>
 
 <?php
-include("../../SongController.php");
+include("../../../SongController.php");
 
 $isValid = true;
 
@@ -55,6 +55,8 @@ if ($isValid) {
 		$_POST["emailInput"],
 		$_POST["userPasswordInput"],
 		"",
+		$_POST["isAdminInput"],
+		FALSE,
 		$_POST["imagePathInput"]
 	));
 	?>
@@ -80,6 +82,10 @@ if ($isValid) {
 			<label for="userPassword">Password:</label>
 			<input type="text" id="userPassword" name="userPasswordInput" class="form-control"
 				   placeholder="Enter password" required>
+		</div>
+		<div class="form-group">
+			<label for="isAdminInput">Admin</label>
+			<input type="checkbox" id="isAdminInput" name="isAdminInput">
 		</div>
 		<div class="form-group">
 			<label for="imagePath">Image path:</label>

@@ -11,7 +11,7 @@ session_start();
 	<title>BeatStream - view artists</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../viewStyle.css" rel="stylesheet">
-	<link href="../../favicon.ico" rel="icon">
+	<link href="../../../favicon.ico" rel="icon">
 </head>
 
 <body>
@@ -36,7 +36,7 @@ session_start();
 <div class="tab">
 	<ul class="nav nav-tabs justify-content-center">
 		<li class="nav-item"><a class="nav-link" href="../songs">Songs</a></li>
-		<li class="nav-item"><a class="nav-link active" href="../artists">Artists</a></li>
+		<li class="nav-item"><a class="nav-link active" href="">Artists</a></li>
 		<li class="nav-item"><a class="nav-link" href="../users">Users</a></li>
 		<li class="nav-item"><a class="nav-link" href="../playlists">Playlists</a></li>
 		<li class="nav-item"><a class="nav-link" href="../albums">Albums</a></li>
@@ -44,7 +44,7 @@ session_start();
 </div>
 
 <?php
-include("../../SongController.php");
+include("../../../SongController.php");
 $artistList = SongController::getArtistList();
 
 if (array_key_exists('removeButton', $_POST)) {
