@@ -41,6 +41,8 @@ if (isset($_SESSION['account_loggedin'])) {
 include("../SongController.php");
 
 $isValid = true;
+$loginOk = true;
+$errorMessage = "";
 
 if (!(
 	!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"]) && isset($_FILES["imageToUpload"]) && $_FILES["imageToUpload"]["error"] == UPLOAD_ERR_OK
@@ -50,70 +52,79 @@ if (!(
 
 if ($isValid) {
 	$targetDir = "../images/user/";
-	$targetFile = $targetDir . basename($_FILES["imageToUpload"]["name"]);
+	$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
+	$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . SongController::generateRandomString() . "." . $fileExtension);
 	$uploadOk = 1;
 	$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 	// Check if image file is an actual image or fake image
 	if (isset($_POST["submit"])) {
 		$check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
 		if ($check !== false) {
-			echo "File is an image - " . $check["mime"] . ".";
 			$uploadOk = 1;
 		} else {
 			echo "File is not an image.";
 			$uploadOk = 0;
 		}
 	}
+
+	echo $targetFile;
+
 	if (file_exists($targetFile)) {
-		echo "Sorry, file already exists.";
+		$errorMessage = "Sorry, file already exists.";
 		$uploadOk = 0;
 	}
 
 	if ($_FILES["imageToUpload"]["size"] > 500000) {
-		echo "Sorry, your file is too large.";
+		$errorMessage = "Sorry, your file is too large.";
 		$uploadOk = 0;
 	}
 
 	if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
 		&& $imageFileType != "gif") {
-		echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+		$errorMessage = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
 		$uploadOk = 0;
 	}
 
-	if ($uploadOk == 0) {
-		echo "Sorry, your file was not uploaded.";
+	if ($uploadOk == 1) {
+		move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile);
 	} else {
-		if (move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile)) {
-			echo "The file " . htmlspecialchars(basename($_FILES["imageToUpload"]["name"])) . " has been uploaded.";
-		} else {
-			echo "Sorry, there was an error uploading your file.";
-		}
+		$errorMessage = "Sorry, there was an error uploading your file.";
 	}
 
-	SongController::insertUser(new User(
-		"",
-		$_POST["usernameInput"],
-		$_POST["emailInput"],
-		$_POST["userPasswordInput"],
-		"",
-		$_FILES["imageToUpload"]["name"]
-	));
-	$_SESSION['account_loggedin'] = true; // Set session variable to indicate user is logged in
-	$_SESSION['email'] = $_POST['emailInput'];
-	$_SESSION['username'] = $_POST['usernameInput'];
-	$stmt = DBConn::getConn()->prepare("SELECT userID FROM user WHERE email = ?");
-	$stmt->bind_param("s", $_POST['emailInput']);
-	$stmt->execute();
-	$_SESSION['userID'] = $stmt->get_result()->fetch_assoc()['userID'];
-	$stmt->close();
-	header("location: loginSuccess.php");
-	?>
-	<?php
+	if ($uploadOk == 1) {
+		SongController::insertUser(new User(
+			"",
+			$_POST["usernameInput"],
+			$_POST["emailInput"],
+			$_POST["userPasswordInput"],
+			"",
+			FALSE,
+			FALSE,
+			pathinfo($targetFile, PATHINFO_BASENAME)
+		));
+		$_SESSION['account_loggedin'] = true; // Set session variable to indicate user is logged in
+		$_SESSION['email'] = $_POST['emailInput'];
+		$_SESSION['username'] = $_POST['usernameInput'];
+		$stmt = DBConn::getConn()->prepare("SELECT userID FROM user WHERE email = ?");
+		$stmt->bind_param("s", $_POST['emailInput']);
+		$stmt->execute();
+		$_SESSION['userID'] = $stmt->get_result()->fetch_assoc()['userID'];
+		$stmt->close();
+		header("location: loginSuccess.php");
+	} else {
+		$loginOk = false;
+	}
 }
 ?>
 
 <div class="container mt-5">
 	<h1>Sign Up</h1>
+
+	<?php
+	if (!$loginOk) {
+		echo '<div class="alert alert-danger" role="alert">' . $errorMessage . '</div>';
+	}
+	?>
 
 	<form action="signup.php" method="post" id="addUserForm" enctype="multipart/form-data">
 		<div class="form-group">

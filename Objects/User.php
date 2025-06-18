@@ -7,15 +7,19 @@ class User
 	private $email;
 	private $userPassword;
 	private $salt;
+	private $isAdmin = false;
+	private $isArtist = false;
 	private $imagePath;
 
-	public function __construct($userID, $username, $email, $userPassword, $salt, $imagePath)
+	public function __construct($userID, $username, $email, $userPassword, $salt, $isAdmin, $isArtist, $imagePath)
 	{
 		$this->userID = $userID;
 		$this->username = $username;
 		$this->email = $email;
 		$this->userPassword = $userPassword;
 		$this->salt = $salt;
+		$this->isAdmin = $isAdmin;
+		$this->isArtist = $isArtist;
 		$this->imagePath = $imagePath;
 	}
 
@@ -43,6 +47,16 @@ class User
 	public function getSalt()
 	{
 		return $this->salt;
+	}
+
+	public function isAdmin()
+	{
+		return $this->isAdmin;
+	}
+
+	public function isArtist()
+	{
+		return $this->isArtist;
 	}
 
 	public function getImagePath()
@@ -74,6 +88,16 @@ class User
 	public function setSalt($salt)
 	{
 		$this->salt = $salt;
+	}
+
+	public function setIsAdmin($isAdmin)
+	{
+		$this->isAdmin = $isAdmin;
+	}
+
+	public function setIsArtist($isArtist)
+	{
+		$this->isArtist = $isArtist;
 	}
 
 	public function setImagePath($imagePath)
