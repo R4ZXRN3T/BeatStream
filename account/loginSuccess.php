@@ -37,7 +37,7 @@ if (!isset($_SESSION['account_loggedin'])) {
 
 <div>
 	<div class="container mt-5 text-center">
-		<a href="../view/songs" class="btn btn-primary">Go to Home</a>
+		<a href="../admin/view/songs" class="btn btn-primary">Go to Home</a>
 		<a href="../account/logout.php" class="btn btn-secondary">Logout</a>
 	</div>
 </div>

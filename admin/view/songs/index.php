@@ -11,7 +11,7 @@ session_start();
 	<title>BeatStream - view songs</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../viewStyle.css" rel="stylesheet">
-	<link href="../../favicon.ico" rel="icon">
+	<link href="../../../favicon.ico" rel="icon">
 </head>
 
 <body>
@@ -26,10 +26,10 @@ session_start();
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse myNavbar">
 			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="../songs">Home</a></li>
+				<li class="nav-item"><a class="nav-link" href="">Home</a></li>
 				<li class="nav-item"><a class="nav-link" href="../../add/song">Add content</a></li>
-				<li class="nav-item"><a class="nav-link" href="../../account/logout.php">logout</a></li>
-				<li class="nav-item"><a class="nav-link" href="../../account/signup.php">sign up</a></li>
+				<li class="nav-item"><a class="nav-link" href="../../../account/logout.php">logout</a></li>
+				<li class="nav-item"><a class="nav-link" href="../../../account/signup.php">sign up</a></li>
 			</ul>
 		</div>
 	</div>
@@ -46,7 +46,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <div class="tab">
 	<ul class="nav nav-tabs justify-content-center">
-		<li class="nav-item"><a class="nav-link active" href="../songs">Songs</a></li>
+		<li class="nav-item"><a class="nav-link active" href="">Songs</a></li>
 		<li class="nav-item"><a class="nav-link" href="../artists">Artists</a></li>
 		<li class="nav-item"><a class="nav-link" href="../users">Users</a></li>
 		<li class="nav-item"><a class="nav-link" href="../playlists">Playlists</a></li>
@@ -55,7 +55,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 </div>
 
 <?php
-include("../../SongController.php");
+include("../../../SongController.php");
 $songList = SongController::getSongList();
 ?>
 

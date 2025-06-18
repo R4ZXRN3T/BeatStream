@@ -11,7 +11,7 @@ session_start();
 	<title>BeatStream - add a playlist</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../addStyle.css" rel="stylesheet">
-	<link href="../../favicon.ico" rel="icon">
+	<link href="../../../favicon.ico" rel="icon">
 </head>
 
 <body>
@@ -21,7 +21,7 @@ session_start();
 		<div class="collapse navbar-collapse myNavbar">
 			<ul class="navbar-nav">
 				<li class="nav-item"><a class="nav-link" href="../../view/songs">Home</a></li>
-				<li class="nav-item"><a class="nav-link" href="../">Add content</a></li>
+				<li class="nav-item"><a class="nav-link" href="..">Add content</a></li>
 			</ul>
 		</div>
 	</div>
@@ -32,14 +32,14 @@ session_start();
 		<li class="nav-item"><a class="nav-link" href="../song">Song</a></li>
 		<li class="nav-item"><a class="nav-link" href="../artist">Artist</a></li>
 		<li class="nav-item"><a class="nav-link" href="../user">User</a></li>
-		<li class="nav-item"><a class="nav-link active" href="../playlist">Playlist</a></li>
+		<li class="nav-item"><a class="nav-link active" href="">Playlist</a></li>
 		<li class="nav-item"><a class="nav-link" href="../album">Album</a></li>
 	</ul>
 </div>
 
 <?php
-include("../../SongController.php");
-include("../../Objects/Playlist.php");
+include("../../../SongController.php");
+include("../../../Objects/Playlist.php");
 $userList = SongController::getUserList();
 
 $isValid = true;
