@@ -2,10 +2,10 @@
 
 class DBConn
 {
-	private static $servername = "localhost";
-	private static $username = "dbuser";
-	private static $password = "dbpassword";
-	private static $dbname = "BeatStream";
+	private static string $servername = "localhost";
+	private static string $username = "dbuser";
+	private static string $password = "dbpassword";
+	private static string $dbname = "BeatStream";
 	private static $conn;
 
 	public static function getConn()

@@ -122,7 +122,7 @@ class SongController
 	/**
 	 * @throws Exception
 	 */
-	public static function insertSong(Song $song)
+	public static function insertSong(Song $song): void
 	{
 		$song->setAll(
 			$song->getSongID(),
@@ -174,7 +174,7 @@ class SongController
 		}
 	}
 
-	public static function insertArtist(Artist $artist)
+	public static function insertArtist(Artist $artist): void
 	{
 		$artistList = SongController::getArtistList();
 		$userList = SongController::getUserList();
@@ -206,7 +206,7 @@ class SongController
 		$stmt->close();
 	}
 
-	public static function insertUser(User $user)
+	public static function insertUser(User $user): void
 	{
 		$userList = SongController::getUserList();
 
@@ -230,7 +230,7 @@ class SongController
 		$stmt->close();
 	}
 
-	public static function insertPlaylist(Playlist $playlist)
+	public static function insertPlaylist(Playlist $playlist): void
 	{
 		$playlistList = SongController::getPlaylistList();
 
@@ -251,7 +251,7 @@ class SongController
 		$stmt->close();
 	}
 
-	public static function insertAlbum(Album $album)
+	public static function insertAlbum(Album $album): void
 	{
 		$albumList = SongController::getAlbumList();
 		$artistList = SongController::getArtistList();
@@ -288,7 +288,7 @@ class SongController
 		}
 	}
 
-	public static function deleteSong(int $songID)
+	public static function deleteSong(int $songID): void
 	{
 		$conn = DBConn::getConn();
 		$deleteImage = $conn->prepare("SELECT imagePath FROM song WHERE songID = $songID");
@@ -313,7 +313,7 @@ class SongController
 		}
 	}
 
-	public static function deleteAlbum(int $albumID)
+	public static function deleteAlbum(int $albumID): void
 	{
 		$conn = DBConn::getConn();
 		$deleteImage = $conn->prepare("SELECT imagePath FROM album WHERE albumID = $albumID");
@@ -337,7 +337,7 @@ class SongController
 		}
 	}
 
-	public static function deletePlaylist(int $playlistID)
+	public static function deletePlaylist(int $playlistID): void
 	{
 		$conn = DBConn::getConn();
 		$deleteImage = $conn->prepare("SELECT imagePath FROM playlist WHERE playlistID = $playlistID");
@@ -360,7 +360,7 @@ class SongController
 		}
 	}
 
-	public static function deleteArtist(int $artistID)
+	public static function deleteArtist(int $artistID): void
 	{
 		$conn = DBConn::getConn();
 		$deleteImage = $conn->prepare("SELECT imagePath FROM artist WHERE artistID = $artistID");
@@ -426,7 +426,7 @@ class SongController
 		}
 	}
 
-	public static function deleteUser(int $userID)
+	public static function deleteUser(int $userID): void
 	{
 		$conn = DBConn::getConn();
 		$deleteImage = $conn->prepare("SELECT imagePath FROM user WHERE userID = $userID");
