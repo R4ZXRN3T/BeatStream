@@ -66,7 +66,7 @@ class SongController
 
 		$userList = array();
 		while ($row = $result->fetch_assoc()) {
-			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["imagePath"]);
+			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["isAdmin"], $row["isArtist"], $row["imagePath"]);
 		}
 
 		$stmt->close();
@@ -201,6 +201,8 @@ class SongController
 		$sqlArtist = "INSERT INTO artist VALUES (" . $newArtistID . ", '" . $artist->getName() . "', '" . $artist->getImagePath() . "', '" . $artist->getFollower() . "', '" . $artist->getActiveSince()->format("Y-m-d") . "', '" . $artist->getUserID() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlArtist);
 		$stmt->execute();
+		$stmt = DBConn::getConn()->prepare("UPDATE user SET isArtist = TRUE WHERE userID = " . $artist->getUserID());
+		$stmt->execute();
 		$stmt->close();
 	}
 
@@ -222,7 +224,7 @@ class SongController
 			}
 		} while ($changeMade == true);
 
-		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', '" . $user->getImagePath() . "')";
+		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', FALSE, FALSE, '" . $user->getImagePath() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlUser);
 		$stmt->execute();
 		$stmt->close();
@@ -293,7 +295,8 @@ class SongController
 		$deleteImage->execute();
 		try {
 			unlink("images/songs/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+		}
 
 		$queries = [
 			"DELETE FROM releases_song WHERE releases_song.songID=?",
@@ -317,7 +320,8 @@ class SongController
 		$deleteImage->execute();
 		try {
 			unlink("images/albums/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+		}
 
 		$queries = [
 			"DELETE FROM in_album WHERE in_album.albumID=?",
@@ -340,7 +344,8 @@ class SongController
 		$deleteImage->execute();
 		try {
 			unlink("images/playlists/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+		}
 
 		$queries = [
 			"DELETE FROM in_playlist WHERE in_playlist.playlistID=?",
@@ -362,7 +367,8 @@ class SongController
 		$deleteImage->execute();
 		try {
 			unlink("images/artists/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+		}
 
 		// Get all songIDs by this artist
 		$songIDs = [];
@@ -409,7 +415,8 @@ class SongController
 			"DELETE FROM releases_album WHERE artistID = ?;",
 			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
-			"DELETE FROM artist WHERE artistID = ?;"
+			"DELETE FROM artist WHERE artistID = ?;",
+			"UPDATE user SET isArtist = FALSE WHERE userID IN (SELECT userID FROM artist WHERE artistID = ?);"
 		];
 		foreach ($queries as $sql) {
 			$stmt = $conn->prepare($sql);
@@ -426,7 +433,8 @@ class SongController
 		$deleteImage->execute();
 		try {
 			unlink("images/users/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+		}
 
 		// Get all songIDs by this user's artist(s)
 		$songIDs = [];
@@ -544,16 +552,16 @@ INSERT INTO song VALUES (0018, "Golden Horizon", "Country", '2025-05-09', "image
 INSERT INTO song VALUES (0019, "Reflections", "Electronic", '2025-05-09', "imagePath19", 4.5, '03:45:05', "filepath19");
 INSERT INTO song VALUES (0020, "Into the Wild", "Rock", '2025-05-09', "imagePath20", 4.0, '04:30:25', "filepath20");
 
-INSERT INTO user VALUES (0001, "john_doe", "john.doe@example.com", "password123", "salt", "imagePath1");
-INSERT INTO user VALUES (0002, "sara_smith", "sara.smith@example.com", "securePass456", "salt", "imagePath2");
-INSERT INTO user VALUES (0003, "alex_lee", "alex.lee@example.com", "alexPass789", "salt", "imagePath3");
-INSERT INTO user VALUES (0004, "emily_jones", "emily.jones@example.com", "emilySecret101", "salt", "imagePath4");
-INSERT INTO user VALUES (0005, "michael_brown", "michael.brown@example.com", "mikePass202", "salt", "imagePath5");
-INSERT INTO user VALUES (0006, "laura_wilson", "laura.wilson@example.com", "laura1234", "salt", "imagePath6");
-INSERT INTO user VALUES (0007, "daniel_white", "daniel.white@example.com", "danielPass567", "salt", "imagePath7");
-INSERT INTO user VALUES (0008, "lisa_clark", "lisa.clark@example.com", "lisaSecure890", "salt", "imagePath8");
-INSERT INTO user VALUES (0009, "james_harris", "james.harris@example.com", "james2021", "salt", "imagePath9");
-INSERT INTO user VALUES (0010, "olivia_martin", "olivia.martin@example.com", "oliviaPass345", "salt", "imagePath10");
+INSERT INTO user VALUES (0001, "john_doe", "john.doe@example.com", "password123", "salt", FALSE, TRUE, "imagePath1");
+INSERT INTO user VALUES (0002, "sara_smith", "sara.smith@example.com", "securePass456", "salt", FALSE, TRUE, "imagePath2");
+INSERT INTO user VALUES (0003, "alex_lee", "alex.lee@example.com", "alexPass789", "salt", FALSE, TRUE, "imagePath3");
+INSERT INTO user VALUES (0004, "emily_jones", "emily.jones@example.com", "emilySecret101", "salt", FALSE, TRUE, "imagePath4");
+INSERT INTO user VALUES (0005, "michael_brown", "michael.brown@example.com", "mikePass202", "salt", FALSE, TRUE, "imagePath5");
+INSERT INTO user VALUES (0006, "laura_wilson", "laura.wilson@example.com", "laura1234", "salt", FALSE, TRUE, "imagePath6");
+INSERT INTO user VALUES (0007, "daniel_white", "daniel.white@example.com", "danielPass567", "salt", FALSE, TRUE, "imagePath7");
+INSERT INTO user VALUES (0008, "lisa_clark", "lisa.clark@example.com", "lisaSecure890", "salt", FALSE, TRUE, "imagePath8");
+INSERT INTO user VALUES (0009, "james_harris", "james.harris@example.com", "james2021", "salt", FALSE, TRUE, "imagePath9");
+INSERT INTO user VALUES (0010, "olivia_martin", "olivia.martin@example.com", "oliviaPass345", "salt", FALSE, TRUE, "imagePath10");
 
 INSERT INTO artist VALUES (12345, "The Midnight Echo", "imagePath1", 1, '2025-05-10', 0001);
 INSERT INTO artist VALUES (12346, "Nova Sparks", "imagePath2", 1, '2025-05-10', 0002);
