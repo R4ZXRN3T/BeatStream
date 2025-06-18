@@ -1,2 +1,2 @@
 <?php
-header("Location: ./view/songs/");
+header("Location: admin/view/songs/");
