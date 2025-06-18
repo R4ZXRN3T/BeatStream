@@ -23,8 +23,8 @@ if (isset($_SESSION['account_loggedin'])) {
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse myNavbar">
 			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="../view/songs">Home</a></li>
-				<li class="nav-item"><a class="nav-link" href="../add/song">Add content</a></li>
+				<li class="nav-item"><a class="nav-link" href="../admin/view/songs/">View</a></li>
+				<li class="nav-item"><a class="nav-link" href="../admin/add/song/">Add content</a></li>
 			</ul>
 		</div>
 	</div>
@@ -38,7 +38,7 @@ if (isset($_SESSION['account_loggedin'])) {
 </div>
 
 <?php
-include("../SongController.php");
+include("../DataController.php");
 
 $isValid = true;
 $credentialsCorrect = true;
@@ -50,7 +50,7 @@ if (!(
 }
 
 if ($isValid) {
-	$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID FROM user WHERE email = ?");
+	$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, imagePath FROM user WHERE email = ?");
 	$stmt->bind_param("s", $_POST['emailInput']);
 	$stmt->execute();
 	$result = $stmt->get_result()->fetch_assoc();
@@ -63,6 +63,8 @@ if ($isValid) {
 			$_SESSION['email'] = $_POST['emailInput'];
 			$_SESSION['username'] = $result['username'];
 			$_SESSION['userID'] = $result['userID'];
+			$_SESSION['isAdmin'] = $result['isAdmin'] == 1;
+			$_SESSION['imagePath'] = $result['imagePath'];
 			header("location: loginSuccess.php");
 		} else {
 			$credentialsCorrect = false;

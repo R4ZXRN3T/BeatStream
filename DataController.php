@@ -7,7 +7,7 @@ include("Objects/Song.php");
 include("Objects/Artist.php");
 include("Objects/User.php");
 
-class SongController
+class dataController
 {
 	/**
 	 * @throws Exception
@@ -137,8 +137,8 @@ class SongController
 
 		);
 
-		$songList = SongController::getSongList();
-		$artistList = SongController::getArtistList();
+		$songList = dataController::getSongList();
+		$artistList = dataController::getArtistList();
 
 		$changeMade = false;
 		$newSongID = rand();
@@ -176,8 +176,8 @@ class SongController
 
 	public static function insertArtist(Artist $artist): void
 	{
-		$artistList = SongController::getArtistList();
-		$userList = SongController::getUserList();
+		$artistList = dataController::getArtistList();
+		$userList = dataController::getUserList();
 
 		$changeMade = false;
 		$newArtistID = rand();
@@ -208,9 +208,9 @@ class SongController
 
 	public static function insertUser(User $user): void
 	{
-		$userList = SongController::getUserList();
+		$userList = dataController::getUserList();
 
-		$salt = SongController::generateRandomString(16);
+		$salt = dataController::generateRandomString(16);
 		$password = hash("sha256", $user->getUserPassword() . $salt);
 
 		$changeMade = false;
@@ -232,7 +232,7 @@ class SongController
 
 	public static function insertPlaylist(Playlist $playlist): void
 	{
-		$playlistList = SongController::getPlaylistList();
+		$playlistList = dataController::getPlaylistList();
 
 		$changeMade = false;
 		$newPlaylistID = rand();
@@ -253,8 +253,8 @@ class SongController
 
 	public static function insertAlbum(Album $album): void
 	{
-		$albumList = SongController::getAlbumList();
-		$artistList = SongController::getArtistList();
+		$albumList = dataController::getAlbumList();
+		$artistList = dataController::getArtistList();
 
 		$changeMade = false;
 		$newAlbumID = rand();
