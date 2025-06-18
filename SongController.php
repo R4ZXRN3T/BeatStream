@@ -415,8 +415,8 @@ class SongController
 			"DELETE FROM releases_album WHERE artistID = ?;",
 			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
-			"DELETE FROM artist WHERE artistID = ?;",
-			"UPDATE user SET isArtist = FALSE WHERE userID IN (SELECT userID FROM artist WHERE artistID = ?);"
+			"UPDATE user SET isArtist = FALSE WHERE userID = (SELECT userID FROM artist WHERE artistID = ?);",
+			"DELETE FROM artist WHERE artistID = ?;"
 		];
 		foreach ($queries as $sql) {
 			$stmt = $conn->prepare($sql);

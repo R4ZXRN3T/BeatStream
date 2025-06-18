@@ -17,8 +17,8 @@ session_start();
 <body>
 
 <script>
-	if ( window.history.replaceState ) {
-		window.history.replaceState( null, null, window.location.href );
+	if (window.history.replaceState) {
+		window.history.replaceState(null, null, window.location.href);
 	}
 </script>
 
@@ -50,6 +50,25 @@ $userList = SongController::getUserList();
 
 if (array_key_exists('removeButton', $_POST)) {
 	SongController::deleteUser($_POST['removeButton']);
+	$_POST['removeButton'] = null;
+	header("Refresh:0");
+}
+
+if (array_key_exists('addAdmin', $_POST)) {
+	$stmt = DBConn::getConn()->prepare("UPDATE user SET isAdmin = TRUE WHERE userID = ?;");
+	$stmt->bind_param("i", $_POST['addAdmin']);
+	$stmt->execute();
+	$stmt->close();
+	$_POST['addAdmin'] = null;
+	header("Refresh:0");
+}
+
+if (array_key_exists('removeAdmin', $_POST)) {
+	$stmt = DBConn::getConn()->prepare("UPDATE user SET isAdmin = FALSE WHERE userID = ?;");
+	$stmt->bind_param("i", $_POST['removeAdmin']);
+	$stmt->execute();
+	$stmt->close();
+	$_POST['removeAdmin'] = null;
 	header("Refresh:0");
 }
 ?>
@@ -65,7 +84,10 @@ if (array_key_exists('removeButton', $_POST)) {
 		<th style="width:16.7%;">E-Mail</th>
 		<th style="width:16.7%;">User Password</th>
 		<th style="width:16.7%;">Salt</th>
+		<th style="width: 1%;">is admin</th>
+		<th style="width: 1%;">is artist</th>
 		<th style="width:16.7%;">Image Path</th>
+		<th style="width:1%;"></th>
 		<th style="width:1%;"></th>
 	</tr>
 	<?php
@@ -77,11 +99,35 @@ if (array_key_exists('removeButton', $_POST)) {
 			<td><?php echo $userList[$i]->getEmail() ?></td>
 			<td><?php echo $userList[$i]->getUserPassword() ?></td>
 			<td><?php echo $userList[$i]->getSalt() ?></td>
+			<td><?php echo $userList[$i]->isAdmin() ? 'Yes' : 'No' ?></td>
+			<td><?php echo $userList[$i]->isArtist() ? 'Yes' : 'No' ?></td>
 			<td><?php echo $userList[$i]->getImagePath() ?></td>
+			<?php
+			if (!$userList[$i]->isAdmin()) {
+				?>
+				<td>
+					<form method="post" action="">
+						<button name="addAdmin" id="addAdmin" value="<?php echo $userList[$i]->getUserID() ?>"
+								class="btn btn-secondary" type="submit" title="Make admin" style="white-space: nowrap; width: auto">+ admin
+						</button>
+					</form>
+				</td>
+				<?php
+			} else {
+				?>
+				<td>
+					<form method="post" action="">
+						<button name="removeAdmin" id="removeAdmin" value="<?php echo $userList[$i]->getUserID() ?>"
+								class="btn btn-danger" type="submit" title="Remove Artist" style="white-space: nowrap; width: auto">- admin
+						</button>
+					</form>
+				</td><?php
+			}
+			?>
 			<td>
 				<form method="post" action="">
 					<button name="removeButton" id="remove" value="<?php echo $userList[$i]->getUserID() ?>"
-							class="btn btn-danger" type="submit" title="Remove User">🗑️
+							class="btn btn-danger" type="submit" title="Remove User" style="white-space: nowrap">🗑️
 					</button>
 				</form>
 			</td>
