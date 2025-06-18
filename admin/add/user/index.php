@@ -1,5 +1,23 @@
 <?php
+include("../../../dbConnection.php");
 session_start();
+$isAdmin = false;
+if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
+	$stmt = DBConn::getConn()->prepare("SELECT isAdmin FROM user WHERE userID = ?;");
+	$stmt->bind_param("i", $_SESSION['userID']);
+	$stmt->execute();
+	$isAdmin = $stmt->get_result()->fetch_assoc()['isAdmin'] ?? false;
+	$stmt->close();
+	if (!$isAdmin) {
+		$_SESSION['isAdmin'] = $isAdmin;
+		header("Location: ../../blocked.php");
+		exit();
+	}
+	$_SESSION['isAdmin'] = $isAdmin;
+} else {
+	header("Location: ../../../account/login.php");
+	exit();
+}
 ?>
 
 <!Doctype html>
@@ -20,9 +38,35 @@ session_start();
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse myNavbar">
 			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="../../view/songs">Home</a></li>
-				<li class="nav-item"><a class="nav-link" href="..">Add content</a></li>
+				<li class="nav-item"><a class="nav-link" href="../../view/songs">View</a></li>
+				<li class="nav-item"><a class="nav-link active" href="../../add/song">Add content</a></li>
 			</ul>
+			<?php if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true): ?>
+				<div class="dropdown ms-auto">
+					<button class="btn d-flex align-items-center dropdown-toggle p-0 bg-transparent border-0"
+							type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+						<div class="text-end">
+							<div class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
+							<div class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
+						</div>
+						<img src="<?php echo $_SESSION['imagePath'] ? '../../../images/user/' . $_SESSION['imagePath'] : '../../../images/default.webp'; ?>"
+							 alt="Profile" class="rounded-circle me-2"
+							 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+						<li><a class="dropdown-item" href="../../../account/profile.php">View Profile</a></li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li><a class="dropdown-item text-danger" href="../../../account/logout.php">Log Out</a></li>
+					</ul>
+				</div>
+			<?php else: ?>
+				<div class="ms-auto d-flex">
+					<a href="../../../account/login.php" class="btn btn-outline-light me-2">Login</a>
+					<a href="../../../account/signup.php" class="btn btn-primary">Sign Up</a>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 </nav>
@@ -38,7 +82,7 @@ session_start();
 </div>
 
 <?php
-include("../../../SongController.php");
+include("../../../DataController.php");
 
 $isValid = true;
 
@@ -49,7 +93,7 @@ if (!(
 }
 
 if ($isValid) {
-	SongController::insertUser(new User(
+	dataController::insertUser(new User(
 		"",
 		$_POST["usernameInput"],
 		$_POST["emailInput"],

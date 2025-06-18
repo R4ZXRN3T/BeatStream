@@ -23,8 +23,8 @@ if (isset($_SESSION['account_loggedin'])) {
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse myNavbar">
 			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="../view/songs">Home</a></li>
-				<li class="nav-item"><a class="nav-link" href="../add/song">Add content</a></li>
+				<li class="nav-item"><a class="nav-link" href="../">View</a></li>
+				<li class="nav-item"><a class="nav-link" href="../admin/add/song">Add content</a></li>
 			</ul>
 		</div>
 	</div>
@@ -38,61 +38,72 @@ if (isset($_SESSION['account_loggedin'])) {
 </div>
 
 <?php
-include("../SongController.php");
+include("../DataController.php");
 
 $isValid = true;
 $loginOk = true;
 $errorMessage = "";
 
 if (!(
-	!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"]) && isset($_FILES["imageToUpload"]) && $_FILES["imageToUpload"]["error"] == UPLOAD_ERR_OK
+	!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])
 )) {
 	$isValid = false;
 }
 
 if ($isValid) {
-	$targetDir = "../images/user/";
-	$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
-	$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . SongController::generateRandomString() . "." . $fileExtension);
-	$uploadOk = 1;
-	$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-	// Check if image file is an actual image or fake image
-	if (isset($_POST["submit"])) {
-		$check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
-		if ($check !== false) {
-			$uploadOk = 1;
-		} else {
-			echo "File is not an image.";
-			$uploadOk = 0;
+	$uploadOk = false;
+
+	if (!empty($_FILES["imageToUpload"]["name"])) {
+		$targetDir = "../images/user/";
+		$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
+		$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . dataController::generateRandomString() . "." . $fileExtension);
+		$uploadOk = 1;
+		$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));// Check if image file is an actual image or fake image
+		if (isset($_POST["submit"])) {
+			$check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
+			if ($check !== false) {
+				$uploadOk = true;
+			} else {
+				echo "File is not an image.";
+				$uploadOk = false;
+			}
+		}
+		echo $targetFile;
+		if (file_exists($targetFile)) {
+			$errorMessage = "Sorry, file already exists.";
+			$uploadOk = false;
+		}
+		if ($_FILES["imageToUpload"]["size"] > 500000) {
+			$errorMessage = "Sorry, your file is too large.";
+			$uploadOk = false;
+		}
+		if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+			&& $imageFileType != "gif") {
+			$errorMessage = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+			$uploadOk = false;
 		}
 	}
 
-	echo $targetFile;
+	$usernameList = array();
+	$emailList = array();
 
-	if (file_exists($targetFile)) {
-		$errorMessage = "Sorry, file already exists.";
-		$uploadOk = 0;
+	for ($i = 0; $i < count(dataController::getUserList()); $i++) {
+		$usernameList[] = dataController::getUserList()[$i]->getUsername();
+		$emailList[] = dataController::getUserList()[$i]->getEmail();
 	}
 
-	if ($_FILES["imageToUpload"]["size"] > 500000) {
-		$errorMessage = "Sorry, your file is too large.";
-		$uploadOk = 0;
+	if (in_array($_POST['usernameInput'], $usernameList)) {
+		$errorMessage = "Username already exists.";
+		$loginOk = false;
+		$uploadOk = false;
+	} elseif (in_array($_POST['emailInput'], $emailList)) {
+		$errorMessage = "Email already exists.";
+		$loginOk = false;
+		$uploadOk = false;
 	}
 
-	if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-		&& $imageFileType != "gif") {
-		$errorMessage = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-		$uploadOk = 0;
-	}
-
-	if ($uploadOk == 1) {
-		move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile);
-	} else {
-		$errorMessage = "Sorry, there was an error uploading your file.";
-	}
-
-	if ($uploadOk == 1) {
-		SongController::insertUser(new User(
+	if ($loginOk) {
+		dataController::insertUser(new User(
 			"",
 			$_POST["usernameInput"],
 			$_POST["emailInput"],
@@ -100,19 +111,23 @@ if ($isValid) {
 			"",
 			FALSE,
 			FALSE,
-			pathinfo($targetFile, PATHINFO_BASENAME)
+			isset($_SESSION['imageToUpload']) ? pathinfo($targetFile, PATHINFO_BASENAME) : null
 		));
-		$_SESSION['account_loggedin'] = true; // Set session variable to indicate user is logged in
+		$_SESSION['account_loggedin'] = true;// Set session variable to indicate user is logged in
 		$_SESSION['email'] = $_POST['emailInput'];
 		$_SESSION['username'] = $_POST['usernameInput'];
+		$_SESSION['imagePath'] = pathinfo($targetFile, PATHINFO_BASENAME);
+		$_SESSION['isAdmin'] = false;// Default to false for new users
 		$stmt = DBConn::getConn()->prepare("SELECT userID FROM user WHERE email = ?");
 		$stmt->bind_param("s", $_POST['emailInput']);
 		$stmt->execute();
 		$_SESSION['userID'] = $stmt->get_result()->fetch_assoc()['userID'];
 		$stmt->close();
 		header("location: loginSuccess.php");
-	} else {
-		$loginOk = false;
+	}
+
+	if ($uploadOk) {
+		move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile);
 	}
 }
 ?>
@@ -144,7 +159,7 @@ if ($isValid) {
 		<div class="form-group">
 			<label for="imagePath">Profile Picture:</label>
 			<input type="file" id="imageUpload" name="imageToUpload" class="form-control"
-				   placeholder="Upload a profile picture!" required>
+				   placeholder="Upload a profile picture!">
 		</div>
 		<input type="submit" class="btn btn-primary mt-3" value="Join BeatStream" name="submit">
 	</form>
