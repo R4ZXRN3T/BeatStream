@@ -27,6 +27,8 @@ CREATE TABLE User
 	email        VARCHAR(255) NOT NULL UNIQUE,
 	userPassword VARCHAR(255) NOT NULL,
 	salt         VARCHAR(255) NOT NULL,
+	isAdmin      BOOLEAN      NOT NULL DEFAULT FALSE,
+	isArtist     BOOLEAN      NOT NULL DEFAULT FALSE,
 	imagePath    VARCHAR(255)
 );
 
