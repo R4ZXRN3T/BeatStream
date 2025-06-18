@@ -2,8 +2,8 @@
 session_start();
 // If the user is logged in, redirect to the home page
 if (isset($_SESSION['account_loggedin'])) {
-	/*header("location: ../");
-	exit();*/
+	header("location: ../");
+	exit();
 }
 ?>
 
@@ -50,31 +50,32 @@ if (!(
 }
 
 if ($isValid) {
-	$stmt = DBConn::getConn()->prepare("SELECT userPassword FROM user WHERE email = ?");
+	$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID FROM user WHERE email = ?");
 	$stmt->bind_param("s", $_POST['emailInput']);
 	$stmt->execute();
-	$hashedPassword = $stmt->get_result()->fetch_assoc()['userPassword'];
-	$stmt = DBConn::getConn()->prepare("SELECT salt FROM user WHERE email = ?");
-	$stmt->bind_param("s", $_POST['emailInput']);
-	$stmt->execute();
-	$salt = $stmt->get_result()->fetch_assoc()['salt'];
-
-	if (hash("sha256", $_POST['userPasswordInput'] . $salt) == $hashedPassword) {
-		$credentialsCorrect = true;
-		$_SESSION['account_loggedin'] = true;
-		$_SESSION['account_email'] = $_POST['emailInput'];
-		$stmt = DBConn::getConn()->prepare("SELECT username FROM user WHERE email = ?");
-		$stmt->bind_param("s", $_POST['emailInput']);
-		$stmt->execute();
-		$_SESSION['username'] = $stmt->get_result()->fetch_assoc()['username'];
+	$result = $stmt->get_result()->fetch_assoc();
+	if ($result) {
+		$hashedPassword = $result['userPassword'];
+		$salt = $result['salt'];
+		if (hash("sha256", $_POST['userPasswordInput'] . $salt) == $hashedPassword) {
+			$credentialsCorrect = true;
+			$_SESSION['account_loggedin'] = true;
+			$_SESSION['email'] = $_POST['emailInput'];
+			$_SESSION['username'] = $result['username'];
+			$_SESSION['userID'] = $result['userID'];
+			header("location: loginSuccess.php");
+		} else {
+			$credentialsCorrect = false;
+		}
 	} else {
 		$credentialsCorrect = false;
 	}
+	$stmt->close();
 }
 ?>
 
 <div class="container mt-5">
-	<h1>Sign Up</h1>
+	<h1>Log in</h1>
 
 	<?php
 	if (!$credentialsCorrect) {

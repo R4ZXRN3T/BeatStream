@@ -2,8 +2,8 @@
 session_start();
 // If the user is logged in, redirect to the home page
 if (isset($_SESSION['account_loggedin'])) {
-	/*echo "already logged in";
-	header("location: ../");*/
+	echo "already logged in";
+	header("location: ../");
 }
 ?>
 
@@ -99,8 +99,15 @@ if ($isValid) {
 		$_FILES["imageToUpload"]["name"]
 	));
 	$_SESSION['account_loggedin'] = true; // Set session variable to indicate user is logged in
+	$_SESSION['email'] = $_POST['emailInput'];
+	$_SESSION['username'] = $_POST['usernameInput'];
+	$stmt = DBConn::getConn()->prepare("SELECT userID FROM user WHERE email = ?");
+	$stmt->bind_param("s", $_POST['emailInput']);
+	$stmt->execute();
+	$_SESSION['userID'] = $stmt->get_result()->fetch_assoc()['userID'];
+	$stmt->close();
+	header("location: loginSuccess.php");
 	?>
-	<h1>Success!</h1>
 	<?php
 }
 ?>
