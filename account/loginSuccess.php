@@ -16,31 +16,42 @@ if (!isset($_SESSION['account_loggedin'])) {
 	<title>Login Successful!"</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../favicon.ico" rel="icon">
+	<link href="../mainStyle.css" rel="stylesheet">
 </head>
 
 <body>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<div class="container-fluid">
-			<div class="collapse navbar-collapse myNavbar">
-				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="../view/songs">Home</a></li>
-					<li class="nav-item"><a class="nav-link" href="../add/song">Add content</a></li>
-				</ul>
+<?php include("../topBar.php"); ?>
+
+<div class="container-fluid">
+	<div class="row">
+		<!-- Sidebar -->
+		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4">
+			<div class="nav flex-column py-4">
+				<a href="../" class="nav-link mb-2">Home</a>
+				<a href="../search.php" class="nav-link mb-2">Search</a>
+				<a href="../discover.php" class="nav-link mb-2">Discover</a>
+				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
+					<a href="/" class="nav-link mb-2">Admin</a>
+				<?php endif; ?>
 			</div>
-		</div>
-	</nav>
+		</nav>
+		<!-- Main Content -->
+		<main class="col-md ms-sm-auto px-0 py-0">
 
-	<div class="container mt-5 text-center">
-		<h1>Welcome, <?php echo $_SESSION['username']; ?>!</h1>
-		<p>You have successfully logged in.</p>
-	</div>
+			<div class="container mt-5 text-center">
+				<h1>Welcome, <?php echo $_SESSION['username']; ?>!</h1>
+				<p>You have successfully logged in.</p>
+			</div>
 
-<div>
-	<div class="container mt-5 text-center">
-		<a href="../admin/view/songs" class="btn btn-primary">Go to Home</a>
-		<a href="../account/logout.php" class="btn btn-secondary">Logout</a>
+			<div>
+				<div class="container mt-5 text-center">
+					<a href="../admin/view/songs" class="btn btn-primary">Go to Home</a>
+					<a href="../account/logout.php" class="btn btn-secondary">Logout</a>
+				</div>
+			</div>
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		</main>
 	</div>
 </div>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

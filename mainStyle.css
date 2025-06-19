@@ -1,0 +1,88 @@
+.sidebar {
+	background: linear-gradient(180deg, #343a40, #212529);
+	color: white;
+	width: 220px;
+	min-height: 100vh;
+	padding: 20px;
+	border-right: 2px solid #495057;
+}
+
+.sidebar a {
+	color: #adb5bd;
+	text-decoration: none;
+	display: block;
+	padding: 10px 15px;
+	border-radius: 5px;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar a:hover {
+	background-color: #495057;
+	color: white;
+}
+
+.sidebar a.active {
+	background-color: #6c757d;
+	color: white;
+	font-weight: bold;
+}
+
+body {
+	background-color: #f8f9fa;
+}
+
+.myNavbar {
+	margin-bottom: 20px;
+}
+
+.tab {
+	margin-top: 20px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #343a40;
+	color: white;
+}
+
+body {
+	background-color: #f8f9fa;
+}
+
+table {
+	width: 50%;
+	border-collapse: collapse;
+	margin: 0 auto;
+}
+
+th,
+td {
+	padding: 7px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+th {
+	background-color: #343a40;
+	color: white;
+}
+
+tr:nth-child(even) {
+	background-color: #c7c7c7;
+}
+
+body {
+	background-color: #f8f9fa;
+}
+
+.myNavbar {
+	margin-bottom: 20px;
+}
+
+.tab {
+	margin-top: 20px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #343a40;
+	color: white;
+}
