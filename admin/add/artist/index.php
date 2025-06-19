@@ -83,7 +83,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <?php
 include("../../../DataController.php");
-$userList = dataController::getUserList();
+$userList = DataController::getUserList();
 
 $isValid = true;
 
@@ -94,7 +94,7 @@ if (!(
 }
 
 if ($isValid) {
-	dataController::insertArtist(new Artist(
+	DataController::insertArtist(new Artist(
 		12345,
 		$_POST["nameInput"],
 		$_POST["imagePathInput"],

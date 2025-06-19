@@ -84,7 +84,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 <?php
 include("../../../DataController.php");
 include("../../../Objects/Playlist.php");
-$userList = dataController::getUserList();
+$userList = DataController::getUserList();
 
 $isValid = true;
 
@@ -95,7 +95,7 @@ if (!(
 }
 
 if ($isValid) {
-	dataController::insertPlaylist(new Playlist(
+	DataController::insertPlaylist(new Playlist(
 		"",
 		$_POST["imagePathInput"],
 		$_POST["nameInput"],

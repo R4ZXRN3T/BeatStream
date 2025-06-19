@@ -93,7 +93,7 @@ if (!(
 }
 
 if ($isValid) {
-	dataController::insertUser(new User(
+	DataController::insertUser(new User(
 		"",
 		$_POST["usernameInput"],
 		$_POST["emailInput"],

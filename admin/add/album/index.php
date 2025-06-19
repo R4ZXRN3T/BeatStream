@@ -84,7 +84,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 <?php
 include("../../../DataController.php");
 include("../../../Objects/Album.php");
-$artistList = dataController::getArtistList();
+$artistList = DataController::getArtistList();
 
 $isValid = true;
 
@@ -95,7 +95,7 @@ if (!(
 }
 
 if ($isValid) {
-	dataController::insertAlbum(new Album(
+	DataController::insertAlbum(new Album(
 		"",
 		$_POST["nameInput"],
 		$_POST["artistsInput"],

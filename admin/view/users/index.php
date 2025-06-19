@@ -82,10 +82,10 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <?php
 include("../../../DataController.php");
-$userList = dataController::getUserList();
+$userList = DataController::getUserList();
 
 if (array_key_exists('removeButton', $_POST)) {
-	dataController::deleteUser($_POST['removeButton']);
+	DataController::deleteUser($_POST['removeButton']);
 	$_POST['removeButton'] = null;
 	header("Refresh:0");
 }
