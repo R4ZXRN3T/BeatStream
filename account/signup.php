@@ -2,8 +2,8 @@
 session_start();
 // If the user is logged in, redirect to the home page
 if (isset($_SESSION['account_loggedin'])) {
-	/*echo "already logged in";
-	header("location: ../");*/
+	echo "already logged in";
+	header("location: ../");
 }
 ?>
 
