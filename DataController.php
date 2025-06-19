@@ -376,14 +376,9 @@ class DataController
 		$stmt->execute();
 		$result = $stmt->get_result();
 		while ($row = $result->fetch_assoc()) {
-			$songIDs[] = $row['songID'];
+			DataController::deleteSong($row['songID']);
 		}
 		$stmt->close();
-
-		foreach ($songIDs as $songID) {
-			// Delete song image
-			DataController::deleteSong($songID);
-		}
 
 		// Delete releases_song, albums, etc.
 		$queries = [
@@ -427,9 +422,12 @@ class DataController
 		$stmt->bind_param("i", $userID);
 		$stmt->execute();
 		$result = $stmt->get_result();
+		$artistID = $result->fetch_assoc()['artistID'];
 
 		// Delete all relations and the songs themselves
-		DataController::deleteArtist($result->fetch_assoc()['artistID']);
+		if ($artistID !== null) {
+			DataController::deleteArtist($artistID);
+		}
 
 		$stmt = $conn->prepare("DELETE FROM user WHERE userID = ?;");
 		$stmt->bind_param("i", $userID);

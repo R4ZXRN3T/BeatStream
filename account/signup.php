@@ -2,8 +2,8 @@
 session_start();
 // If the user is logged in, redirect to the home page
 if (isset($_SESSION['account_loggedin'])) {
-	echo "already logged in";
-	header("location: ../");
+	/*echo "already logged in";
+	header("location: ../");*/
 }
 ?>
 
@@ -51,13 +51,13 @@ if (!(
 }
 
 if ($isValid) {
-	$uploadOk = false;
+	$uploadOk = true;
+	$targetFile = null;
 
 	if (!empty($_FILES["imageToUpload"]["name"])) {
 		$targetDir = "../images/user/";
 		$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
-		$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . DataController::generateRandomString() . "." . $fileExtension);
-		$uploadOk = 1;
+		$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . time() . "." . $fileExtension);
 		$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));// Check if image file is an actual image or fake image
 		if (isset($_POST["submit"])) {
 			$check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
@@ -78,9 +78,13 @@ if ($isValid) {
 			$uploadOk = false;
 		}
 		if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-			&& $imageFileType != "gif") {
+			&& $imageFileType != "gif" && $imageFileType != "webp") {
 			$errorMessage = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
 			$uploadOk = false;
+		}
+
+		if ($uploadOk) {
+			move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile);
 		}
 	}
 
@@ -111,7 +115,7 @@ if ($isValid) {
 			"",
 			FALSE,
 			FALSE,
-			isset($_SESSION['imageToUpload']) ? pathinfo($targetFile, PATHINFO_BASENAME) : null
+			isset($_FILES['imageToUpload']) ? pathinfo($targetFile, PATHINFO_BASENAME) : null
 		));
 		$_SESSION['account_loggedin'] = true;// Set session variable to indicate user is logged in
 		$_SESSION['email'] = $_POST['emailInput'];
@@ -123,11 +127,7 @@ if ($isValid) {
 		$stmt->execute();
 		$_SESSION['userID'] = $stmt->get_result()->fetch_assoc()['userID'];
 		$stmt->close();
-		header("location: loginSuccess.php");
-	}
-
-	if ($uploadOk) {
-		move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile);
+		//header("location: loginSuccess.php");
 	}
 }
 ?>
@@ -157,7 +157,7 @@ if ($isValid) {
 				   placeholder="Enter password" required>
 		</div>
 		<div class="form-group">
-			<label for="imagePath">Profile Picture:</label>
+			<label for="imagePath">Profile Picture:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
 			<input type="file" id="imageUpload" name="imageToUpload" class="form-control"
 				   placeholder="Upload a profile picture!">
 		</div>
