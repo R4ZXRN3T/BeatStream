@@ -7,7 +7,6 @@ class Song
 	private $artists;
 	private $genre;
 	private $releaseDate;
-	private $rating;
 	private $songLength;
 	private $filePath;
 	private $imagePath;
@@ -15,14 +14,13 @@ class Song
 	/**
 	 * @throws Exception
 	 */
-	function __construct($songID, $title, $artists, $genre, $releaseDate, $rating, $songLength, $filePath, $imagePath)
+	function __construct($songID, $title, $artists, $genre, $releaseDate, $songLength, $filePath, $imagePath)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
 		$this->artists = $artists;
 		$this->genre = $genre;
 		$this->releaseDate = new DateTime($releaseDate);
-		$this->rating = $rating;
 		$this->songLength = new DateTime($songLength);
 		$this->filePath = $filePath;
 		$this->imagePath = $imagePath;
@@ -53,11 +51,6 @@ class Song
 	public function getReleaseDate(): DateTime
 	{
 		return $this->releaseDate;
-	}
-
-	public function getRating()
-	{
-		return $this->rating;
 	}
 
 	public function getSongLength(): DateTime
@@ -100,11 +93,6 @@ class Song
 	public function setReleaseDate($releaseDate)
 	{
 		$this->releaseDate = $releaseDate;
-	}
-
-	public function setRating($rating)
-	{
-		$this->rating = $rating;
 	}
 
 	public function setSongLength($songLength)

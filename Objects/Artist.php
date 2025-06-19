@@ -5,16 +5,14 @@ class Artist
 	private $artistID;
 	private $name;
 	private $imagePath;
-	private $follower;
 	private $activeSince;
 	private $userID;
 
-	public function __construct($artistID, $name, $imagePath, $follower, $activeSince, $userID)
+	public function __construct($artistID, $name, $imagePath, $activeSince, $userID)
 	{
 		$this->artistID = $artistID;
 		$this->name = $name;
 		$this->imagePath = $imagePath;
-		$this->follower = $follower;
 		try {
 			$this->activeSince = new DateTime($activeSince);
 		} catch (Exception $e) {
@@ -38,11 +36,6 @@ class Artist
 	public function getImagePath()
 	{
 		return $this->imagePath;
-	}
-
-	public function getFollower()
-	{
-		return $this->follower;
 	}
 
 	public function getActiveSince(): DateTime
@@ -70,11 +63,6 @@ class Artist
 	public function setImagePath($imagePath)
 	{
 		$this->imagePath = $imagePath;
-	}
-
-	public function setFollower($follower)
-	{
-		$this->follower = $follower;
 	}
 
 	public function setActiveSince($activeSince)
