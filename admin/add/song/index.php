@@ -77,14 +77,62 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$artistList = DataController::getArtistList();
 			$isValid = true;
 
-			// Check if all fields are filled out
-			if (!(
-				!empty($_POST["titleInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_POST["ratingInput"]) && !empty($_POST["songLengthInput"]) && !empty($_POST["filePathInput"]) && !empty($_POST["imagePathInput"])
-			)) {
+			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_POST["ratingInput"]) && !empty($_POST["songLengthInput"]) && !empty($_POST["fileInput"]))) {
 				$isValid = false;
 			}
 
+			// After $isValid = true; and before DataController::insertSong(...)
+			$imageUploadDir = "/BeatStream/images/song/";
+			$songImagePath = "";
+			$newImageName = "";
+
+			$audioUploadDir = "/BeatStream/audio/";
+			$songFilePath = "";
+			$newFileName = "";
+
+			if ($isValid && isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
+				$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
+				$fileName = $_FILES['songImageInput']['name'];
+				$newImageName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+				$destPath = $imageUploadDir . $newImageName;
+
+				if (!is_dir($imageUploadDir)) {
+					mkdir($imageUploadDir, 0777, true);
+				}
+
+				if (move_uploaded_file($fileTmpPath, $destPath)) {
+					$songImagePath = "/BeatStream/images/song/" . $newImageName;
+					$_POST["imageFileInput"] = $songImagePath;
+				} else {
+					$isValid = false;
+					echo "<div class='alert alert-danger'>File upload failed.</div>";
+				}
+			}
+
 			if ($isValid) {
+				if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
+					$fileTmpPath = $_FILES['fileInput']['tmp_name'];
+					$fileName = $_FILES['fileInput']['name'];
+					$newFileName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+					$destPath = $audioUploadDir . $newFileName;
+
+					if (!is_dir($audioUploadDir)) {
+						mkdir($audioUploadDir, 0777, true);
+					}
+
+					if (move_uploaded_file($fileTmpPath, $destPath)) {
+						$songFilePath = "/BeatStream/audio/" . $newFileName;
+						$_POST["filePathInput"] = $songFilePath;
+					} else {
+						$isValid = false;
+						echo "<div class='alert alert-danger'>Audio file upload failed.</div>";
+					}
+				} else {
+					$isValid = false;
+					echo "<div class='alert alert-danger'>No audio file uploaded or upload error.</div>";
+				}
+
+
 				$artistString = implode(", ", $_POST["artistInput"]);
 				DataController::insertSong(new Song(
 					"",
@@ -94,8 +142,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					$_POST["releaseDateInput"],
 					$_POST["ratingInput"],
 					$_POST["songLengthInput"],
-					$_POST["filePathInput"],
-					$_POST["imagePathInput"]
+					$newFileName,
+					$newImageName
 				));
 			}
 			?>
@@ -104,7 +152,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<div class="container mt-5">
 				<h1>Add song</h1>
 
-				<form action="index.php" method="post" id="addSongForm">
+				<form action="index.php" method="post" id="addSongForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="title">Title:</label>
 						<input type="text" id="title" name="titleInput" class="form-control"
@@ -158,17 +206,15 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					</div>
 
 					<div class="form-group">
-						<label for="filePath">File Path:</label>
-						<input type="text" id="filePath" name="filePathInput" class="form-control"
-							   placeholder="Enter file path"
+						<label for="songFile">File:</label>
+						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/*"
+							   placeholder="Upload song file"
 							   required>
 					</div>
 
 					<div class="form-group">
-						<label for="imagePath">Image Path:</label>
-						<input type="text" id="imagePath" name="imagePathInput" class="form-control"
-							   placeholder="Enter image path"
-							   required>
+						<label for="songImage">Image:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
+						<input type="file" id="songImage" name="songImageInput" class="form-control" accept="image/*">
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
