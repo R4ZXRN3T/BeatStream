@@ -7,7 +7,7 @@ include("Objects/Song.php");
 include("Objects/Artist.php");
 include("Objects/User.php");
 
-class dataController
+class DataController
 {
 	/**
 	 * @throws Exception
@@ -137,8 +137,8 @@ class dataController
 
 		);
 
-		$songList = dataController::getSongList();
-		$artistList = dataController::getArtistList();
+		$songList = DataController::getSongList();
+		$artistList = DataController::getArtistList();
 
 		$changeMade = false;
 		$newSongID = rand();
@@ -176,8 +176,8 @@ class dataController
 
 	public static function insertArtist(Artist $artist): void
 	{
-		$artistList = dataController::getArtistList();
-		$userList = dataController::getUserList();
+		$artistList = DataController::getArtistList();
+		$userList = DataController::getUserList();
 
 		$changeMade = false;
 		$newArtistID = rand();
@@ -208,9 +208,9 @@ class dataController
 
 	public static function insertUser(User $user): void
 	{
-		$userList = dataController::getUserList();
+		$userList = DataController::getUserList();
 
-		$salt = dataController::generateRandomString(16);
+		$salt = DataController::generateRandomString(16);
 		$password = hash("sha256", $user->getUserPassword() . $salt);
 
 		$changeMade = false;
@@ -232,7 +232,7 @@ class dataController
 
 	public static function insertPlaylist(Playlist $playlist): void
 	{
-		$playlistList = dataController::getPlaylistList();
+		$playlistList = DataController::getPlaylistList();
 
 		$changeMade = false;
 		$newPlaylistID = rand();
@@ -253,8 +253,8 @@ class dataController
 
 	public static function insertAlbum(Album $album): void
 	{
-		$albumList = dataController::getAlbumList();
-		$artistList = dataController::getArtistList();
+		$albumList = DataController::getAlbumList();
+		$artistList = DataController::getArtistList();
 
 		$changeMade = false;
 		$newAlbumID = rand();
@@ -370,7 +370,6 @@ class dataController
 		} catch (Exception $e) {
 		}
 
-		// Get all songIDs by this artist
 		$songIDs = [];
 		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID = ?");
 		$stmt->bind_param("i", $artistID);
@@ -381,40 +380,16 @@ class dataController
 		}
 		$stmt->close();
 
-		// Delete all relations and the songs themselves
-		if (!empty($songIDs)) {
-			$in = implode(',', array_fill(0, count($songIDs), '?'));
-			// in_album
-			$stmt = $conn->prepare("DELETE FROM in_album WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
-
-			// in_playlist
-			$stmt = $conn->prepare("DELETE FROM in_playlist WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
-
-			// releases_song
-			$stmt = $conn->prepare("DELETE FROM releases_song WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
-
-			// song
-			$stmt = $conn->prepare("DELETE FROM song WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
+		foreach ($songIDs as $songID) {
+			// Delete song image
+			DataController::deleteSong($songID);
 		}
 
 		// Delete releases_song, albums, etc.
 		$queries = [
-			"DELETE FROM releases_song WHERE artistID = ?;",
-			"DELETE FROM releases_album WHERE artistID = ?;",
-			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
+			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
+			"DELETE FROM releases_album WHERE artistID = ?;",
 			"UPDATE user SET isArtist = FALSE WHERE userID = (SELECT userID FROM artist WHERE artistID = ?);",
 			"DELETE FROM artist WHERE artistID = ?;"
 		];
@@ -436,17 +411,6 @@ class dataController
 		} catch (Exception $e) {
 		}
 
-		// Get all songIDs by this user's artist(s)
-		$songIDs = [];
-		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?)");
-		$stmt->bind_param("i", $userID);
-		$stmt->execute();
-		$result = $stmt->get_result();
-		while ($row = $result->fetch_assoc()) {
-			$songIDs[] = $row['songID'];
-		}
-		$stmt->close();
-
 		// Delete playlists created by the user
 		$queries = [
 			"DELETE FROM in_playlist WHERE playlistID IN (SELECT playlistID FROM playlist WHERE creatorID = ?);",
@@ -459,51 +423,22 @@ class dataController
 			$stmt->close();
 		}
 
+		$stmt = $conn->prepare("SELECT artistID FROM artist WHERE userID = ?");
+		$stmt->bind_param("i", $userID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
 		// Delete all relations and the songs themselves
-		if (!empty($songIDs)) {
-			$in = implode(',', array_fill(0, count($songIDs), '?'));
-			// in_album
-			$stmt = $conn->prepare("DELETE FROM in_album WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
+		DataController::deleteArtist($result->fetch_assoc()['artistID']);
 
-			// in_playlist
-			$stmt = $conn->prepare("DELETE FROM in_playlist WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
-
-			// releases_song
-			$stmt = $conn->prepare("DELETE FROM releases_song WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
-
-			// song
-			$stmt = $conn->prepare("DELETE FROM song WHERE songID IN ($in)");
-			$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
-			$stmt->execute();
-			$stmt->close();
-		}
-
-		// Delete releases_song and artist, albums, etc. as before
-		$queries = [
-			"DELETE FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?);",
-			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?));",
-			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID IN (SELECT artistID FROM artist WHERE userID = ?));",
-			"DELETE FROM artist WHERE userID = ?;",
-			"DELETE FROM user WHERE userID = ?;"
-		];
-		foreach ($queries as $sql) {
-			$stmt = $conn->prepare($sql);
-			$stmt->bind_param("i", $userID);
-			$stmt->execute();
-			$stmt->close();
-		}
+		$stmt = $conn->prepare("DELETE FROM user WHERE userID = ?;");
+		$stmt->bind_param("i", $userID);
+		$stmt->execute();
+		$stmt->close();
 	}
 
-	public static function generateRandomString(int $length = 10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?,.:;()<>$#&*+-/=@%'): string
+	public
+	static function generateRandomString(int $length = 10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?,.:;()<>$#&*+-/=@%'): string
 	{
 		$charactersLength = strlen($characters);
 		$randomString = '';

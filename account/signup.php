@@ -56,7 +56,7 @@ if ($isValid) {
 	if (!empty($_FILES["imageToUpload"]["name"])) {
 		$targetDir = "../images/user/";
 		$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
-		$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . dataController::generateRandomString() . "." . $fileExtension);
+		$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . DataController::generateRandomString() . "." . $fileExtension);
 		$uploadOk = 1;
 		$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));// Check if image file is an actual image or fake image
 		if (isset($_POST["submit"])) {
@@ -87,9 +87,9 @@ if ($isValid) {
 	$usernameList = array();
 	$emailList = array();
 
-	for ($i = 0; $i < count(dataController::getUserList()); $i++) {
-		$usernameList[] = dataController::getUserList()[$i]->getUsername();
-		$emailList[] = dataController::getUserList()[$i]->getEmail();
+	for ($i = 0; $i < count(DataController::getUserList()); $i++) {
+		$usernameList[] = DataController::getUserList()[$i]->getUsername();
+		$emailList[] = DataController::getUserList()[$i]->getEmail();
 	}
 
 	if (in_array($_POST['usernameInput'], $usernameList)) {
@@ -103,7 +103,7 @@ if ($isValid) {
 	}
 
 	if ($loginOk) {
-		dataController::insertUser(new User(
+		DataController::insertUser(new User(
 			"",
 			$_POST["usernameInput"],
 			$_POST["emailInput"],

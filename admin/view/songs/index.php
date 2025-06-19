@@ -98,12 +98,12 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <?php
 include("../../../DataController.php");
-$songList = dataController::getSongList();
+$songList = DataController::getSongList();
 ?>
 
 <?php
 if (array_key_exists('removeButton', $_POST)) {
-	dataController::deleteSong($_POST['removeButton']);
+	DataController::deleteSong($_POST['removeButton']);
 	header("Refresh:0");
 }
 ?>

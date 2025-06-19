@@ -83,7 +83,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <?php
 include("../../../DataController.php");
-$artistList = dataController::getArtistList();
+$artistList = DataController::getArtistList();
 $isValid = true;
 
 // Check if all fields are filled out
@@ -95,7 +95,7 @@ if (!(
 
 if ($isValid) {
 	$artistString = implode(", ", $_POST["artistInput"]);
-	dataController::insertSong(new Song(
+	DataController::insertSong(new Song(
 		"",
 		$_POST["titleInput"],
 		$artistString,
