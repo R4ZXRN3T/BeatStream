@@ -140,7 +140,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					$artistString,
 					$_POST["genreInput"],
 					$_POST["releaseDateInput"],
-					$_POST["ratingInput"],
 					$_POST["songLengthInput"],
 					$newFileName,
 					$newImageName
@@ -190,13 +189,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<label for="releaseDate">Release Date:</label>
 						<input type="date" id="releaseDate" name="releaseDateInput" class="form-control"
 							   placeholder="Enter release date" required>
-					</div>
-
-					<div class="form-group">
-						<label for="rating">Rating:</label>
-						<input type="number" id="rating" name="ratingInput" class="form-control" step="0.1" min="1"
-							   max="5"
-							   placeholder="Enter rating (1.0 - 5.0)" required>
 					</div>
 
 					<div class="form-group">

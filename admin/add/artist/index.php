@@ -89,7 +89,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					12345,
 					$_POST["nameInput"],
 					$_POST["imagePathInput"],
-					$_POST["followerInput"],
 					$_POST["activeSinceInput"],
 					$_POST["userIDInput"]
 				));
@@ -113,11 +112,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<input type="text" id="imagePath" name="imagePathInput" class="form-control"
 							   placeholder="Enter image path"
 							   required>
-					</div>
-					<div class="form-group">
-						<label for="follower">Follower:</label>
-						<input type="number" id="follower" name="followerInput" class="form-control"
-							   placeholder="Enter follower count" required>
 					</div>
 					<div class="form-group">
 						<label for="activeSince">active since:</label>

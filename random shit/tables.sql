@@ -5,7 +5,6 @@ CREATE TABLE Song
 	genre       VARCHAR(255),
 	releaseDate DATE,
 	imagePath   VARCHAR(255),
-	rating      FLOAT,
 	songLength  TIME,
 
 	filePath    VARCHAR(255)
@@ -50,7 +49,6 @@ CREATE TABLE Artist
 	artistID    INT PRIMARY KEY,
 	name        VARCHAR(255) NOT NULL UNIQUE,
 	imagePath   VARCHAR(255),
-	follower    INT,
 	activeSince DATE,
 
 	userID      INT,

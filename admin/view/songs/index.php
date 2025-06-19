@@ -101,7 +101,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<th style="width:10%;">Artists</th>
 					<th style="width:10%;">Genre</th>
 					<th style="width:10%;">Release Date</th>
-					<th style="width:10%;">Rating</th>
 					<th style="width:10%;">Song Length</th>
 					<th style="width:10%;">File Path</th>
 					<th style="width:10%;">Image Path</th>
@@ -116,7 +115,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $songList[$i]->getArtists() ?></td>
 						<td><?php echo $songList[$i]->getGenre() ?></td>
 						<td><?php echo $songList[$i]->getReleaseDate()->format('d.m.Y') ?></td>
-						<td><?php echo $songList[$i]->getRating() ?></td>
 						<td><?php echo $songList[$i]->getSongLength()->format('i:s') ?></td>
 						<td><?php echo $songList[$i]->getFilePath() ?></td>
 						<td><?php echo $songList[$i]->getImagePath() ?></td>

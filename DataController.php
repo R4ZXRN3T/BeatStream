@@ -14,7 +14,7 @@ class DataController
 	 */
 	public static function getSongList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imagePath, song.rating, song.songLength, song.filePath
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imagePath, song.songLength, song.filePath
 		FROM song, artist, releases_song
 		WHERE song.songID = releases_song.songID
 		AND artist.artistID = releases_song.artistID;");
@@ -24,7 +24,7 @@ class DataController
 
 		$songListe = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], $row["name"], $row["genre"], $row["releaseDate"], $row["rating"], $row["songLength"], $row["filePath"], $row["imagePath"]);
+			$newSong = new Song($row["songID"], $row["title"], $row["name"], $row["genre"], $row["releaseDate"], $row["songLength"], $row["filePath"], $row["imagePath"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songListe); $i++) {
@@ -130,11 +130,9 @@ class DataController
 			str_replace("'", "\'", $song->getArtists()),
 			str_replace("'", "\'", $song->getGenre()),
 			$song->getReleaseDate(),
-			str_replace("'", "\'", $song->getRating()),
 			$song->getSongLength(),
 			str_replace("'", "\'", $song->getFilePath()),
 			str_replace("'", "\'", $song->getImagePath()),
-
 		);
 
 		$songList = DataController::getSongList();
@@ -152,7 +150,7 @@ class DataController
 		} while ($changeMade == true);
 
 		$sqlSong = "INSERT INTO song (songID, title, genre, releaseDate, imagePath, rating, songLength, filePath) 
-		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getImagePath() . "', '" . $song->getRating() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getFilePath() . "')";
+		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getImagePath() . "', '" . $song->getRating() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getFilePath() . "', '" . $song->getImagePath() . "')";
 
 		$stmt = DBConn::getConn()->prepare($sqlSong);
 		$stmt->execute();
