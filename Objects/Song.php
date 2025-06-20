@@ -110,14 +110,13 @@ class Song
 		$this->imagePath = $imagePath;
 	}
 
-	public function setAll($songID, $title, $artists, $genre, $releaseDate, $rating, $songLength, $filePath, $imagePath)
+	public function setAll($songID, $title, $artists, $genre, $releaseDate, $songLength, $filePath, $imagePath)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
 		$this->artists = $artists;
 		$this->genre = $genre;
 		$this->releaseDate = $releaseDate;
-		$this->rating = $rating;
 		$this->songLength = $songLength;
 		$this->filePath = $filePath;
 		$this->imagePath = $imagePath;
@@ -125,7 +124,7 @@ class Song
 
 	public function getAll(): array
 	{
-		return [$this->songID, $this->title, $this->artists, $this->genre, $this->releaseDate, $this->rating, $this->songLength, $this->filePath, $this->imagePath];
+		return [$this->songID, $this->title, $this->artists, $this->genre, $this->releaseDate, $this->songLength, $this->filePath, $this->imagePath];
 	}
 
 	public function toString()
@@ -136,7 +135,6 @@ class Song
 			$this->artists,
 			$this->genre,
 			$this->releaseDate->format('d.m.Y'),
-			$this->rating,
 			$this->songLength->format('i:s'),
 			$this->filePath,
 			$this->imagePath

@@ -79,7 +79,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["imagePathInput"]) && !empty($_POST["followerInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"])
+				!empty($_POST["nameInput"]) && !empty($_POST["imagePathInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"])
 			)) {
 				$isValid = false;
 			}

@@ -103,3 +103,10 @@ body {
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.rcorners1 {
+	border-radius: 10px;
+	padding: 0;
+	width: 40px;
+	height: 40px;
+}

@@ -1,4 +1,4 @@
-CREATE TABLE Song
+CREATE TABLE song
 (
 	songID      INT PRIMARY KEY,
 	title       VARCHAR(255) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE Song
 	filePath    VARCHAR(255)
 );
 
-CREATE TABLE Album
+CREATE TABLE album
 (
 	albumID   INT PRIMARY KEY,
 	title     VARCHAR(255),
@@ -19,7 +19,7 @@ CREATE TABLE Album
 	duration  TIME
 );
 
-CREATE TABLE User
+CREATE TABLE user
 (
 	userID       INT PRIMARY KEY,
 	username     VARCHAR(255) NOT NULL UNIQUE,
@@ -31,7 +31,7 @@ CREATE TABLE User
 	imagePath    VARCHAR(255)
 );
 
-CREATE TABLE Playlist
+CREATE TABLE playlist
 (
 	playlistID INT PRIMARY KEY,
 	imagePath  VARCHAR(255),
@@ -41,10 +41,10 @@ CREATE TABLE Playlist
 
 	creatorID  INT,
 
-	FOREIGN KEY (creatorID) REFERENCES User (userID)
+	FOREIGN KEY (creatorID) REFERENCES user (userID)
 );
 
-CREATE TABLE Artist
+CREATE TABLE artist
 (
 	artistID    INT PRIMARY KEY,
 	name        VARCHAR(255) NOT NULL UNIQUE,
@@ -53,49 +53,49 @@ CREATE TABLE Artist
 
 	userID      INT,
 
-	FOREIGN KEY (userID) REFERENCES User (userID)
+	FOREIGN KEY (userID) REFERENCES user (userID)
 );
 
-CREATE TABLE Releases_Song
+CREATE TABLE releases_song
 (
 	artistID INT,
 	songID   INT,
 
-	FOREIGN KEY (artistID) REFERENCES Artist (artistID),
-	FOREIGN KEY (songID) REFERENCES Song (songID),
+	FOREIGN KEY (artistID) REFERENCES artist (artistID),
+	FOREIGN KEY (songID) REFERENCES song (songID),
 
 	CONSTRAINT releaseSongKey PRIMARY KEY (artistID, songID)
 );
 
-CREATE TABLE Releases_Album
+CREATE TABLE releases_album
 (
 	artistID INT,
 	albumID  INT,
 
-	FOREIGN KEY (artistID) REFERENCES Artist (artistID),
-	FOREIGN KEY (albumID) REFERENCES Album (albumID),
+	FOREIGN KEY (artistID) REFERENCES artist (artistID),
+	FOREIGN KEY (albumID) REFERENCES album (albumID),
 
 	CONSTRAINT releaseAlbumKey PRIMARY KEY (artistID, albumID)
 );
 
-CREATE TABLE In_Album
+CREATE TABLE in_album
 (
 	songID  INT,
 	albumId INT,
 
-	FOREIGN KEY (songID) REFERENCES Song (songID),
-	FOREIGN KEY (albumID) REFERENCES Album (albumID),
+	FOREIGN KEY (songID) REFERENCES song (songID),
+	FOREIGN KEY (albumID) REFERENCES album (albumID),
 
 	CONSTRAINT inAlbumKey PRIMARY KEY (songID, albumID)
 );
 
-CREATE TABLE In_Playlist
+CREATE TABLE in_playlist
 (
 	songID     INT,
 	playlistID INT,
 
-	FOREIGN KEY (songID) REFERENCES Song (songID),
-	FOREIGN KEY (playlistID) REFERENCES Playlist (playlistID),
+	FOREIGN KEY (songID) REFERENCES song (songID),
+	FOREIGN KEY (playlistID) REFERENCES playlist (playlistID),
 
 	CONSTRAINT inPlaylistKey PRIMARY KEY (songID, playlistID)
 );

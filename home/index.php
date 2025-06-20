@@ -1,5 +1,15 @@
 <?php
+include("../dbConnection.php");
 session_start();
+$isAdmin = false;
+if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
+	$stmt = DBConn::getConn()->prepare("SELECT isAdmin FROM user WHERE userID = ?;");
+	$stmt->bind_param("i", $_SESSION['userID']);
+	$stmt->execute();
+	$isAdmin = $stmt->get_result()->fetch_assoc()['isAdmin'] ?? false;
+	$stmt->close();
+	$_SESSION['isAdmin'] = $isAdmin;
+}
 ?>
 <!Doctype html>
 <html lang="en">
@@ -65,7 +75,7 @@ include("../topBar.php"); ?>
 		<main class="col-md d-flex justify-content-center align-items-center" style="min-height: 80vh;">
 			<div class="w-100" style="max-width: 1100px;">
 				<h1 class="text-center"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
-				<h2 class="mt-4 mb-3 text-center">Recommended for you</h2>
+				<h2 class="mt-4 mb-3 text-center">Recommended for you:</h2>
 				<div class="row justify-content-center g-3">
 					<?php foreach ($recommendedSongs as $song): ?>
 						<div class="col-12 col-md-6 d-flex justify-content-center">
@@ -73,16 +83,19 @@ include("../topBar.php"); ?>
 								<div class="card-body d-flex align-items-center p-2">
 									<?php if (!empty($song->getImagePath())): ?>
 										<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getImagePath()); ?>"
-											 class="me-3 rounded"
+											 class="me-3"
 											 alt="<?php echo htmlspecialchars($song->getImagePath()); ?>"
 											 style="width: 40px; height: 40px; object-fit: cover;">
 									<?php else: ?>
-										<img src="../images/defaultSong.webp" class="me-3 rounded" alt="Default Album Cover"
+										<img src="../images/defaultSong.webp" class="me-3 rounded"
+											 alt="Default Album Cover"
 											 style="width: 40px; height: 40px; object-fit: cover;">
 									<?php endif; ?>
 									<div>
-										<h5 class="card-title song-title mb-1" style="font-size: 1rem;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-										<p class="card-text song-artist mb-0" style="font-size: 0.9rem;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
+										<h5 class="card-title song-title mb-1"
+											style="font-size: 1rem;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
+										<p class="card-text song-artist mb-0"
+										   style="font-size: 0.9rem;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
 									</div>
 								</div>
 							</div>
