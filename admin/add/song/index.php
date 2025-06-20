@@ -76,9 +76,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			include("../../../DataController.php");
 			$artistList = DataController::getArtistList();
 			$isValid = true;
+			$errorMessage = "";
 
-			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_POST["ratingInput"]) && !empty($_POST["songLengthInput"]) && !empty($_POST["fileInput"]))) {
+			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_POST["songLengthInput"]) && !empty($_POST["fileInput"]))) {
 				$isValid = false;
+				$errorMessage = "not filled";
 			}
 
 			// After $isValid = true; and before DataController::insertSong(...)
@@ -105,7 +107,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					$_POST["imageFileInput"] = $songImagePath;
 				} else {
 					$isValid = false;
-					echo "<div class='alert alert-danger'>File upload failed.</div>";
+					$errorMessage = "Image upload failed";
 				}
 			}
 
@@ -125,11 +127,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						$_POST["filePathInput"] = $songFilePath;
 					} else {
 						$isValid = false;
-						echo "<div class='alert alert-danger'>Audio file upload failed.</div>";
+						$errorMessage = "Audio upload failed";
 					}
 				} else {
 					$isValid = false;
-					echo "<div class='alert alert-danger'>No audio file uploaded or upload error.</div>";
+					$errorMessage = "no file provided or upload error";
 				}
 
 
@@ -144,6 +146,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					$newFileName,
 					$newImageName
 				));
+			} else {
+				$errorMessage = "not valid";
 			}
 			?>
 
@@ -152,6 +156,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				<h1>Add song</h1>
 
 				<form action="index.php" method="post" id="addSongForm" enctype="multipart/form-data">
+
+					<?php echo '<div class="alert alert-danger" role="alert">' . $errorMessage . '</div>'; ?>
+
 					<div class="form-group">
 						<label for="title">Title:</label>
 						<input type="text" id="title" name="titleInput" class="form-control"
