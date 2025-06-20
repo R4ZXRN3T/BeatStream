@@ -18,7 +18,7 @@ class DataController
 		FROM song, artist, releases_song
 		WHERE song.songID = releases_song.songID
 		AND artist.artistID = releases_song.artistID
-		ORDER BY song.songID ASC;");
+		ORDER BY song.songID;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();

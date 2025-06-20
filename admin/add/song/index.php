@@ -78,9 +78,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 			$errorMessage = "";
 
-			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_POST["songLengthInput"]) && !empty($_POST["fileInput"]))) {
+			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"][0]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_POST["songLengthInput"]) && !empty($_POST["fileInput"]))) {
 				$isValid = false;
-				$errorMessage = "not filled";
 			}
 
 			// After $isValid = true; and before DataController::insertSong(...)
@@ -146,8 +145,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					$newFileName,
 					$newImageName
 				));
-			} else {
-				$errorMessage = "not valid";
 			}
 			?>
 
@@ -157,7 +154,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 				<form action="index.php" method="post" id="addSongForm" enctype="multipart/form-data">
 
-					<?php echo '<div class="alert alert-danger" role="alert">' . $errorMessage . '</div>'; ?>
+					<?php
+					if (!empty($errorMessage)) {
+						echo '<div class="alert alert-danger" role="alert">' . $errorMessage . '</div>';
+					}
+					?>
 
 					<div class="form-group">
 						<label for="title">Title:</label>
@@ -170,7 +171,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<label for="artist">Artists:</label>
 						<div id="artistFields">
 							<div class="artist-field d-flex mb-2">
-								<select name="artistInput[]" class="form-control me-2" required>
+								<select name="artistInput" class="form-control me-2" required>
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($artistList as $artist) {
@@ -194,6 +195,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 					<div class="form-group">
 						<label for="releaseDate">Release Date:</label>
+
 						<input type="date" id="releaseDate" name="releaseDateInput" class="form-control"
 							   placeholder="Enter release date" required>
 					</div>
