@@ -28,32 +28,90 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 $songList = [];
 include("../DataController.php");
 $songList = DataController::getSongList();
+$albumList = DataController::getAlbumList();
+$playlistList = DataController::getPlaylistList();
 $recommendedSongs = [];
 $IDsToRecommend = [];
 
-for ($i = 0; $i < count($songList); $i++) {
-	$randomIndex = rand(0, count($songList) - 1);
-	$songID = $songList[$randomIndex]->getSongID();
-	if (!in_array($songID, $IDsToRecommend)) {
-		$IDsToRecommend[] = $songID;
-		$recommendedSongs[] = $songList[$randomIndex];
-	} else {
-		$i--;
+if (!empty($songList)) {
+	for ($i = 0; $i < count($songList); $i++) {
+		$randomSongIndex = rand(0, count($songList) - 1);
+		$songID = $songList[$randomSongIndex]->getSongID();
+		if (!in_array($songID, $IDsToRecommend)) {
+			$IDsToRecommend[] = $songID;
+			$recommendedSongs[] = $songList[$randomSongIndex];
+		} else {
+			if ($i > 0) {
+				$i--;
+			} else {
+				break;
+			}
+		}
+	}
+}
+
+
+$recommendedAlbums = [];
+$recommendedPlaylists = [];
+$albumIDsToRecommend = [];
+$playlistIDsToRecommend = [];
+
+if (!empty($albumList)) {
+	for ($i = 0; $i < 3; $i++) {
+		$randomAlbumIndex = rand(0, count($albumList) - 1);
+		$albumID = $albumList[$randomAlbumIndex]->getAlbumID();
+		if (!in_array($albumID, $albumIDsToRecommend)) {
+			$albumIDsToRecommend[] = $albumID;
+			$recommendedAlbums[] = $albumList[$randomAlbumIndex];
+		} else {
+			if ($i > 0) {
+				$i--;
+			} else {
+				break;
+			}
+		}
+	}
+}
+
+if (!empty($playlistList)) {
+	for ($i = 0; $i < 3; $i++) {
+		$randomPlaylistIndex = rand(0, count($playlistList) - 1);
+		$playlistID = $playlistList[$randomPlaylistIndex]->getPlaylistID();
+		if (!in_array($playlistID, $playlistIDsToRecommend)) {
+			$playlistIDsToRecommend[] = $playlistID;
+			$recommendedPlaylists[] = $playlistList[$randomPlaylistIndex];
+		} else {
+			if ($i > 0) {
+				$i--;
+			} else {
+				break;
+			}
+		}
 	}
 }
 
 $timeOfDay = "Day";
-if (isset($_SESSION['timeOfDay'])) {
-	$timeOfDay = $_SESSION['timeOfDay'];
-} else {
-	$currentHour = date('H');
-	if ($currentHour < 12) {
+
+$currentHour = date('H');
+switch ($currentHour) {
+	case ($currentHour >= 5 && $currentHour < 12):
 		$timeOfDay = "Morning";
-	} elseif ($currentHour < 18) {
+		break;
+	case 12:
+		$timeOfDay = "Noon";
+		break;
+	case ($currentHour > 12 && $currentHour < 18):
 		$timeOfDay = "Afternoon";
-	} else {
+		break;
+	case ($currentHour >= 18 && $currentHour < 21):
 		$timeOfDay = "Evening";
-	}
+		break;
+	case ($currentHour >= 21 || $currentHour < 5):
+		$timeOfDay = "Night";
+		break;
+	default:
+		$timeOfDay = "Day";
+		break;
 }
 
 include("../topBar.php"); ?>
@@ -72,35 +130,82 @@ include("../topBar.php"); ?>
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-			<div class="w-100" style="max-width: 1100px;">
-				<h1 class="text-center"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
-				<h2 class="mt-4 mb-3 text-center">Recommended for you:</h2>
-				<div class="row justify-content-center g-3">
-					<?php foreach ($recommendedSongs as $song): ?>
-						<div class="col-12 col-md-6 d-flex justify-content-center">
-							<div class="card shadow-sm" style="width: 100%; max-width: 500px; padding: 0.5rem 0.75rem;">
-								<div class="card-body d-flex align-items-center p-2">
-									<?php if (!empty($song->getImagePath())): ?>
-										<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getImagePath()); ?>"
-											 class="me-3"
-											 alt="<?php echo htmlspecialchars($song->getImagePath()); ?>"
-											 style="width: 40px; height: 40px; object-fit: cover;">
-									<?php else: ?>
-										<img src="../images/defaultSong.webp" class="me-3 rounded"
-											 alt="Default Album Cover"
-											 style="width: 40px; height: 40px; object-fit: cover;">
-									<?php endif; ?>
-									<div>
-										<h5 class="card-title song-title mb-1"
-											style="font-size: 1rem;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-										<p class="card-text song-artist mb-0"
-										   style="font-size: 0.9rem;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
+		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem; background-color: #f8f9fa;">
+			<div class="container" style="max-width: 1700px;">
+				<h1 class="text-center mb-4" style="font-weight: bold; color: #343a40;"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
+
+				<div class="row">
+					<!-- Songs Section -->
+					<div class="col-md-8">
+						<section class="mb-5">
+							<h2 class="text-center mb-4" style="color: #495057;">Recommended Songs:</h2>
+							<div class="row g-4">
+								<?php foreach ($recommendedSongs as $song): ?>
+									<div class="col-12 col-md-6">
+										<div class="card shadow-sm border-0" style="border-radius: 10px;">
+											<div class="card-body d-flex align-items-center p-3">
+												<?php if (!empty($song->getImagePath())): ?>
+													<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getImagePath()); ?>"
+														 class="me-3 rounded"
+														 alt="<?php echo htmlspecialchars($song->getImagePath()); ?>"
+														 style="width: 50px; height: 50px; object-fit: cover;">
+												<?php else: ?>
+													<img src="../images/defaultSong.webp" class="me-3 rounded"
+														 alt="Default Album Cover"
+														 style="width: 50px; height: 50px; object-fit: cover;">
+												<?php endif; ?>
+												<div>
+													<h5 class="card-title mb-1" style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
+													<p class="card-text mb-0" style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
+												</div>
+											</div>
+										</div>
 									</div>
-								</div>
+								<?php endforeach; ?>
 							</div>
-						</div>
-					<?php endforeach; ?>
+						</section>
+					</div>
+
+					<!-- Albums and Playlists Section -->
+					<div class="col-md-4">
+						<section class="mb-5">
+							<h2 class="text-center mb-4" style="color: #495057;">Recommended Albums:</h2>
+							<div class="row g-4">
+								<?php foreach ($recommendedAlbums as $album): ?>
+									<div class="col-12">
+										<div class="card shadow-sm border-0" style="border-radius: 10px;">
+											<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getImagePath()); ?>"
+												 class="card-img-top rounded-top"
+												 alt="<?php echo htmlspecialchars($album->getImagePath()); ?>">
+											<div class="card-body">
+												<h5 class="card-title" style="font-weight: bold;"><?php echo htmlspecialchars($album->getTitle()); ?></h5>
+												<p class="card-text" style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+											</div>
+										</div>
+									</div>
+								<?php endforeach; ?>
+							</div>
+						</section>
+
+						<section>
+							<h2 class="text-center mb-4" style="color: #495057;">Recommended Playlists:</h2>
+							<div class="row g-4">
+								<?php foreach ($recommendedPlaylists as $playlist): ?>
+									<div class="col-12">
+										<div class="card shadow-sm border-0" style="border-radius: 10px;">
+											<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getImagePath()); ?>"
+												 class="card-img-top rounded-top"
+												 alt="<?php echo htmlspecialchars($playlist->getImagePath()); ?>">
+											<div class="card-body">
+												<h5 class="card-title" style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getTitle()); ?></h5>
+												<p class="card-text" style="color: #6c757d;"><?php echo htmlspecialchars($playlist->getDescription()); ?></p>
+											</div>
+										</div>
+									</div>
+								<?php endforeach; ?>
+							</div>
+						</section>
+					</div>
 				</div>
 			</div>
 		</main>

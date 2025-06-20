@@ -163,7 +163,7 @@ if (isset($_SESSION['account_loggedin'])) {
 					</div>
 					<div class="form-group">
 						<label for="userPassword">Password:</label>
-						<input type="text" id="userPassword" name="userPasswordInput" class="form-control"
+						<input type="password" id="userPassword" name="userPasswordInput" class="form-control"
 							   placeholder="Enter password" required>
 					</div>
 					<div class="form-group">
