@@ -16,7 +16,7 @@ class Album
 		$this->artists = $artists;
 		$this->imagePath = $imagePath;
 		$this->length = $length;
-		$this->duration = $duration;
+		$this->duration = new DateTime($duration);
 	}
 
 	// Getter Methods

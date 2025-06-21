@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/BeatStream/favicon.ico" rel="icon">
+	<link href="/BeatStream/mainStyle.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
 	<div class="container-fluid">
 		<!-- Account Info -->
 		<a class="navbar-brand" href="/BeatStream/">
 			<img src="/BeatStream/images/logo_white.webp" alt="BeatStream Logo" class="d-inline-block align-text-top"
-				 style="width: 276px; height: 40px; object-fit: cover;">
+				 style="width: 276px; height: 40px; object-fit: fill;">
 		</a>
 		<?php if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true): ?>
 			<div class="dropdown ms-auto">

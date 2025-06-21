@@ -2,9 +2,10 @@
 	background: linear-gradient(180deg, #343a40, #212529);
 	color: white;
 	width: 220px;
+	margin-top: 67px;
 	min-height: 100vh;
-	padding: 20px;
 	border-right: 2px solid #495057;
+	padding: 20px 20px;
 }
 
 .sidebar a {
@@ -45,6 +46,8 @@ body {
 }
 
 body {
+	margin-top: 67px;
+	margin-left: 220px;
 	background-color: #f8f9fa;
 }
 
@@ -78,10 +81,6 @@ body {
 	margin-bottom: 20px;
 }
 
-.tab {
-	margin-top: 20px;
-}
-
 .nav-tabs .nav-link.active {
 	background-color: #343a40;
 	color: white;
@@ -109,4 +108,10 @@ body {
 	padding: 0;
 	width: 40px;
 	height: 40px;
+}
+
+.ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
 }
