@@ -25,22 +25,22 @@ class DataController
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$songListe = array();
+		$songList = array();
 		while ($row = $result->fetch_assoc()) {
 			$newSong = new Song($row["songID"], $row["title"], $row["name"], $row["genre"], $row["releaseDate"], $row["songLength"], $row["filePath"], $row["imagePath"]);
 			$alreadyExists = false;
 
-			for ($i = 0; $i < count($songListe); $i++) {
-				if ($songListe[$i]->getSongID() == $newSong->getSongID()) {
+			for ($i = 0; $i < count($songList); $i++) {
+				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
 					$alreadyExists = true;
-					$songListe[$i]->setArtists($songListe[$i]->getArtists() . ", " . $newSong->getArtists());
+					$songList[$i]->setArtists($songList[$i]->getArtists() . ", " . $newSong->getArtists());
 				}
 			}
-			if (!$alreadyExists) $songListe[] = $newSong;
+			if (!$alreadyExists) $songList[] = $newSong;
 		}
 		$stmt->close();
 
-		return $songListe;
+		return $songList;
 	}
 
 	public static function getArtistList(): array
@@ -79,14 +79,29 @@ class DataController
 
 	public static function getPlaylistList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT * FROM playlist ORDER BY name;");
+		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imagePath, name, length, duration, creatorID, song.songID
+		FROM playlist, in_playlist, song
+		WHERE song.songID = in_playlist.songID
+  		AND playlist.playlistID = in_playlist.playlistID
+		ORDER BY name;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
 
 		$playlistList = array();
 		while ($row = $result->fetch_assoc()) {
-			$playlistList[] = new Playlist($row["playlistID"], $row["imagePath"], $row["name"], $row["duration"], $row["length"], $row["creatorID"]);
+			$alreadyExists = false;
+			$newPlaylist = new Playlist($row["playlistID"], $row["name"], array($row["songID"]), $row["duration"], $row["length"], $row['imagePath'], $row["creatorID"]);
+
+			for ($i = 0; $i < count($playlistList); $i++) {
+				if ($playlistList[$i]->getPlaylistID() == $newPlaylist->getPlaylistID()) {
+					$alreadyExists = true;
+					$playlistList[$i]->setSongIDs(array_merge($playlistList[$i]->getSongIDs(), $newPlaylist->getSongIDs()));
+				}
+			}
+			if (!$alreadyExists) {
+				$playlistList[] = $newPlaylist;
+			}
 		}
 
 		$stmt->close();
@@ -247,10 +262,15 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getImagePath() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration() . "', '" . $playlist->getCreatorID() . "')";
+		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getImagePath() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration()->format("h:i:s") . "', '" . $playlist->getCreatorID() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlPlaylist);
 		$stmt->execute();
-		$stmt->close();
+		for ($i = 0; $i < count($playlist->getSongIDs()); $i++) {
+			$sqlInPlaylist = "INSERT INTO in_playlist (playlistID, songID) VALUES (" . $newPlaylistID . ", " . $playlist->getSongIDs()[$i] . ")";
+			$stmt = DBConn::getConn()->prepare($sqlInPlaylist);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function insertAlbum(Album $album): void
@@ -372,7 +392,6 @@ class DataController
 		} catch (Exception $e) {
 		}
 
-		$songIDs = [];
 		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID = ?");
 		$stmt->bind_param("i", $artistID);
 		$stmt->execute();
