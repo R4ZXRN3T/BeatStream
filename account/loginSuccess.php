@@ -30,8 +30,9 @@ if (!isset($_SESSION['account_loggedin'])) {
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
+				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/" class="nav-link mb-2">Admin</a>
+					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -45,7 +46,7 @@ if (!isset($_SESSION['account_loggedin'])) {
 
 			<div>
 				<div class="container mt-5 text-center">
-					<a href="../admin/view/songs" class="btn btn-primary">Go to Home</a>
+					<a href="../home" class="btn btn-primary">Go to Home</a>
 					<a href="../account/logout.php" class="btn btn-secondary">Logout</a>
 				</div>
 			</div>

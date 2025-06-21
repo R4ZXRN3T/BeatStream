@@ -2,19 +2,21 @@
 
 class Playlist
 {
-	private $playlistID;
-	private $imagePath;
-	private $name;
-	private $duration;
-	private $length;
-	private $creatorID;
+	private int $playlistID;
+	private string $name;
+	private array $songIDs = [];
+	private DateTime $duration;
+	private int $length;
+	private string$imagePath;
+	private int $creatorID;
 
-	public function __construct($playlistID, $imagePath, $name, $duration, $length, $creatorID)
+	public function __construct(int $playlistID, string $name, array $songIDs, string $duration, int $length, string $imagePath, int $creatorID)
 	{
 		$this->playlistID = $playlistID;
 		$this->imagePath = $imagePath;
 		$this->name = $name;
-		$this->duration = $duration;
+		$this->songIDs = $songIDs;
+		$this->duration = new DateTime($duration);
 		$this->length = $length;
 		$this->creatorID = $creatorID;
 	}
@@ -33,6 +35,11 @@ class Playlist
 	public function getName()
 	{
 		return $this->name;
+	}
+
+	public function getSongIDs()
+	{
+		return $this->songIDs;
 	}
 
 	public function getDuration()
@@ -65,6 +72,11 @@ class Playlist
 	public function setName($name)
 	{
 		$this->name = $name;
+	}
+
+	public function setSongIDs(array $songs)
+	{
+		$this->songIDs = $songs;
 	}
 
 	public function setDuration($duration)

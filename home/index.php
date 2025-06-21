@@ -30,11 +30,18 @@ include("../DataController.php");
 $songList = DataController::getSongList();
 $albumList = DataController::getAlbumList();
 $playlistList = DataController::getPlaylistList();
+$userList = DataController::getUserList();
+
+$usernames = [];
+foreach ($userList as $user) {
+	$usernames[$user->getUserID()] = $user->getUsername();
+}
+
 $recommendedSongs = [];
 $IDsToRecommend = [];
 
 if (!empty($songList)) {
-	for ($i = 0; $i < count($songList); $i++) {
+	for ($i = 0; $i < ((count($songList) > 20) ? 20 : count($songList)); $i++) {
 		$randomSongIndex = rand(0, count($songList) - 1);
 		$songID = $songList[$randomSongIndex]->getSongID();
 		if (!in_array($songID, $IDsToRecommend)) {
@@ -57,7 +64,7 @@ $albumIDsToRecommend = [];
 $playlistIDsToRecommend = [];
 
 if (!empty($albumList)) {
-	for ($i = 0; $i < 3; $i++) {
+	for ($i = 0; $i < ((count($albumList) > 3) ? 3 : count($albumList)); $i++) {
 		$randomAlbumIndex = rand(0, count($albumList) - 1);
 		$albumID = $albumList[$randomAlbumIndex]->getAlbumID();
 		if (!in_array($albumID, $albumIDsToRecommend)) {
@@ -74,7 +81,7 @@ if (!empty($albumList)) {
 }
 
 if (!empty($playlistList)) {
-	for ($i = 0; $i < 3; $i++) {
+	for ($i = 0; $i < ((count($playlistList) > 3) ? 3 : count($playlistList)); $i++) {
 		$randomPlaylistIndex = rand(0, count($playlistList) - 1);
 		$playlistID = $playlistList[$randomPlaylistIndex]->getPlaylistID();
 		if (!in_array($playlistID, $playlistIDsToRecommend)) {
@@ -124,6 +131,7 @@ include("../topBar.php"); ?>
 				<a href="../" class="nav-link mb-2 active">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
+				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
 					<a href="/BeatStream/admin" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
@@ -177,14 +185,23 @@ include("../topBar.php"); ?>
 								<?php foreach ($recommendedAlbums as $album): ?>
 									<div class="col-12">
 										<div class="card shadow-sm border-0" style="border-radius: 10px;">
-											<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getImagePath()); ?>"
-												 class="card-img-top rounded-top"
-												 alt="<?php echo htmlspecialchars($album->getImagePath()); ?>">
-											<div class="card-body">
-												<h5 class="card-title"
-													style="font-weight: bold;"><?php echo htmlspecialchars($album->getTitle()); ?></h5>
-												<p class="card-text"
-												   style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+											<div class="card-body d-flex align-items-center p-3">
+												<?php if (!empty($album->getImagePath())): ?>
+													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($album->getImagePath()); ?>"
+														 class="me-3 rounded"
+														 alt="<?php echo htmlspecialchars($album->getImagePath()); ?>"
+														 style="width: 50px; height: 50px; object-fit: cover;">
+												<?php else: ?>
+													<img src="../images/defaultAlbum.webp" class="me-3 rounded"
+														 alt="Default Album Cover"
+														 style="width: 50px; height: 50px; object-fit: cover;">
+												<?php endif; ?>
+												<div class="card-body">
+													<h5 class="card-title"
+														style="font-weight: bold;"><?php echo htmlspecialchars($album->getTitle()); ?></h5>
+													<p class="card-text"
+													   style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -198,14 +215,27 @@ include("../topBar.php"); ?>
 								<?php foreach ($recommendedPlaylists as $playlist): ?>
 									<div class="col-12">
 										<div class="card shadow-sm border-0" style="border-radius: 10px;">
-											<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getImagePath()); ?>"
-												 class="card-img-top rounded-top"
-												 alt="<?php echo htmlspecialchars($playlist->getImagePath()); ?>">
-											<div class="card-body">
-												<h5 class="card-title"
-													style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getTitle()); ?></h5>
-												<p class="card-text"
-												   style="color: #6c757d;"><?php echo htmlspecialchars($playlist->getDescription()); ?></p>
+											<div class="card-body d-flex align-items-center p-3">
+												<?php if (!empty($playlist->getImagePath())): ?>
+													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getImagePath()); ?>"
+														 class="me-3 rounded"
+														 alt="<?php echo htmlspecialchars($playlist->getImagePath()); ?>"
+														 style="width: 50px; height: 50px; object-fit: cover;">
+												<?php else: ?>
+													<img src="../images/defaultPlaylist.webp" class="me-3 rounded"
+														 alt="Default Playlist Cover"
+														 style="width: 50px; height: 50px; object-fit: cover;">
+												<?php endif; ?>
+												<div class="card-body">
+													<h5 class="card-title"
+														style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getName()); ?></h5>
+													<p class="card-text" style="color: #6c757d;">
+														<?php
+														$creatorID = $playlist->getCreatorID();
+														echo isset($usernames[$creatorID]) ? htmlspecialchars($usernames[$creatorID]) : 'Unknown User';
+														?>
+													</p>
+												</div>
 											</div>
 										</div>
 									</div>
