@@ -6,6 +6,8 @@ include_once("dbConnection.php");
 include("Objects/Song.php");
 include("Objects/Artist.php");
 include("Objects/User.php");
+include("Objects/Playlist.php");
+include("Objects/Album.php");
 
 class DataController
 {
@@ -18,7 +20,7 @@ class DataController
 		FROM song, artist, releases_song
 		WHERE song.songID = releases_song.songID
 		AND artist.artistID = releases_song.artistID
-		ORDER BY song.songID;");
+		ORDER BY song.title;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -43,7 +45,7 @@ class DataController
 
 	public static function getArtistList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT * FROM artist");
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM artist ORDER BY name");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -60,7 +62,7 @@ class DataController
 
 	public static function getUserList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT * FROM user;");
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM user ORDER BY username;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -77,7 +79,7 @@ class DataController
 
 	public static function getPlaylistList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT * FROM playlist;");
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM playlist ORDER BY name;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -97,7 +99,8 @@ class DataController
 		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, title, name, album.imagePath, length, duration
 		FROM album, artist, releases_album
 		WHERE releases_album.artistID = artist.artistID
-		AND album.albumID = releases_album.albumID;");
+		AND album.albumID = releases_album.albumID
+		ORDER BY album.title;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -266,7 +269,7 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getImagePath() . "', '" . $album->getLength() . "', '" . $album->getDuration() . "')";
+		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getImagePath() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("h:i:s") . "')";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 		$stmt->execute();
 		$stmt->close();

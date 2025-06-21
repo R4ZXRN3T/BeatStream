@@ -119,11 +119,11 @@ include("../topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
-		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4">
+		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
 			<div class="nav flex-column py-4">
 				<a href="../" class="nav-link mb-2 active">Home</a>
-				<a href="../search.php" class="nav-link mb-2">Search</a>
-				<a href="../discover.php" class="nav-link mb-2">Discover</a>
+				<a href="../search/" class="nav-link mb-2">Search</a>
+				<a href="../discover/" class="nav-link mb-2">Discover</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
 					<a href="/BeatStream/admin" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
@@ -132,7 +132,8 @@ include("../topBar.php"); ?>
 		<!-- Main Content -->
 		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem; background-color: #f8f9fa;">
 			<div class="container" style="max-width: 1700px;">
-				<h1 class="text-center mb-4" style="font-weight: bold; color: #343a40;"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
+				<h1 class="text-center mb-4"
+					style="font-weight: bold; color: #343a40;"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
 
 				<div class="row">
 					<!-- Songs Section -->
@@ -155,8 +156,10 @@ include("../topBar.php"); ?>
 														 style="width: 50px; height: 50px; object-fit: cover;">
 												<?php endif; ?>
 												<div>
-													<h5 class="card-title mb-1" style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-													<p class="card-text mb-0" style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
+													<h5 class="card-title mb-1"
+														style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
+													<p class="card-text mb-0"
+													   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
 												</div>
 											</div>
 										</div>
@@ -178,8 +181,10 @@ include("../topBar.php"); ?>
 												 class="card-img-top rounded-top"
 												 alt="<?php echo htmlspecialchars($album->getImagePath()); ?>">
 											<div class="card-body">
-												<h5 class="card-title" style="font-weight: bold;"><?php echo htmlspecialchars($album->getTitle()); ?></h5>
-												<p class="card-text" style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+												<h5 class="card-title"
+													style="font-weight: bold;"><?php echo htmlspecialchars($album->getTitle()); ?></h5>
+												<p class="card-text"
+												   style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
 											</div>
 										</div>
 									</div>
@@ -197,8 +202,10 @@ include("../topBar.php"); ?>
 												 class="card-img-top rounded-top"
 												 alt="<?php echo htmlspecialchars($playlist->getImagePath()); ?>">
 											<div class="card-body">
-												<h5 class="card-title" style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getTitle()); ?></h5>
-												<p class="card-text" style="color: #6c757d;"><?php echo htmlspecialchars($playlist->getDescription()); ?></p>
+												<h5 class="card-title"
+													style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getTitle()); ?></h5>
+												<p class="card-text"
+												   style="color: #6c757d;"><?php echo htmlspecialchars($playlist->getDescription()); ?></p>
 											</div>
 										</div>
 									</div>
