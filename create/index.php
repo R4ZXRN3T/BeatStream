@@ -40,13 +40,14 @@ include("../topBar.php");
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
+				<a href="/BeatStream/create/" class="nav-link mb-2 active">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
 					<a href="/BeatStream/admin" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem; background-color: #f8f9fa;">
+		<main class="col-md" style="min-height: 80vh; padding: 2rem;">
 
 			<div class="container mt-5">
 				<h2>Create</h2>
@@ -83,7 +84,7 @@ include("../topBar.php");
 							<div class="card mb-3">
 								<div class="card-body">
 									<h5 class="card-title">Create Playlist</h5>
-									<a href="createPlaylist.php" class="btn btn-success">Create Playlist</a>
+									<a href="playlist.php" class="btn btn-success">Create Playlist</a>
 								</div>
 							</div>
 						</div>

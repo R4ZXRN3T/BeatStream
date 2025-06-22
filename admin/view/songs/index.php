@@ -93,7 +93,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			<table style="width:100%; font-family:segoe UI,serif;">
 				<colgroup>
-					<col span="10" style="background-color:lightgray">
+					<col span="10">
 				</colgroup>
 				<tr>
 					<th style="width:10%;">Song ID</th>
