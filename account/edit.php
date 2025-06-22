@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<!-- Sidebar -->
 		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
 			<div class="nav flex-column py-4">
-				<a href="../" class="nav-link mb-2 active">Home</a>
+				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
 				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem; background-color: #f8f9fa;">
+		<main class="col-md" style="min-height: 80vh; padding: 2rem;">
 			<div class="container mt-5" style="max-width: 600px;">
 				<h1>Edit Profile</h1>
 				<?php if ($success): ?>
@@ -161,10 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					<div class="mb-3">
 						<label for="imageFile" class="form-label">Profile Image</label>
 						<input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
-						<?php if ($currentUser->getImagePath()): ?>
-							<img src="../images/users/<?= htmlspecialchars($currentUser->getImagePath()) ?>"
-								 alt="Profile Image" class="img-thumbnail mt-2" style="max-width: 120px;">
-						<?php endif; ?>
+
 					</div>
 					<button type="submit" class="btn btn-primary">Save Changes</button>
 				</form>

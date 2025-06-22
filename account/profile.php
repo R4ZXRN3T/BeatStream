@@ -46,7 +46,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 				<?php endif; ?>
 			</div>
 		</nav>
-		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem; background-color: #f8f9fa;">
+		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem;">
 			<div class="container mt-5">
 				<div class="row">
 					<!-- Profile Info -->
