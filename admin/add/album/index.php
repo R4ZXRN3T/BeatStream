@@ -76,24 +76,61 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<?php
 			include("../../../DataController.php");
 			$artistList = DataController::getArtistList();
+			$songList = DataController::getSongList();
+
+			$imageUploadDir = "../../../../BeatStream/images/album/";
+			$songimageName = "";
+			$newimageName = "";
 
 			$isValid = true;
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["artistInput[]"]) && !empty($_POST["imageNameInput"])
+				!empty($_POST["nameInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["imageNameInput"])
 			)) {
 				$isValid = false;
 			}
 
+			if ($isValid && isset($_FILES['albumImageInput']) && $_FILES['albumImageInput']['error'] === UPLOAD_ERR_OK) {
+				$fileTmpPath = $_FILES['albumImageInput']['tmp_name'];
+				$fileName = $_FILES['albumImageInput']['name'];
+				$newimageName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+				$destPath = $imageUploadDir . $newimageName;
+
+				if (!is_dir($imageUploadDir)) {
+					mkdir($imageUploadDir, 0777, true);
+				}
+
+				if (move_uploaded_file($fileTmpPath, $destPath)) {
+					$songimageName = $imageUploadDir . $newimageName;
+					$_FILES["imageFileInput"] = $songimageName;
+				} else {
+					$isValid = false;
+					$errorMessage = "Image upload failed";
+				}
+			}
+
 			if ($isValid) {
-				$artists = implode(", ", $_POST["artistInput[]"]);
+				$totalDuration = new DateTime("00:00:00");
+				foreach ($_POST['songInput'] as $selectedSongID) {
+					foreach ($songList as $song) {
+						if ($song->getSongID() == $selectedSongID) {
+							$duration = $song->getSongLength(); // Assuming this returns a DateInterval or DateTime
+							$totalDuration->add(new DateInterval('PT' . $duration->format('s') . 'S'));
+							break;
+						}
+					}
+				}
+
+
+				$artists = implode(", ", $_POST["artistInput"]);
 				DataController::insertAlbum(new Album(
 					"",
 					$_POST["nameInput"],
+					$_POST["songInput"],
 					$artists,
 					$_POST["imageNameInput"],
 					0,
-					"00:00:00"
+					$totalDuration->format("H:i:s")
 				));
 			}
 			?>
@@ -101,7 +138,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<div class="container mt-5">
 				<h1>Album Einfügen</h1>
 
-				<form action="index.php" method="post" id="addAlbumForm">
+				<form action="index.php" method="post" id="addAlbumForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="name">Album title:</label>
 						<input type="text" id="name" name="nameInput" class="form-control"
@@ -111,66 +148,112 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<div class="form-group">
 						<label for="artist">Artists:</label>
 						<div id="artistFields">
-							<div class="artist-field d-flex mb-2">
-								<label>
-									<select name="artistInput[]" class="form-control me-2" required>
-										<option value="">--Please Select--</option>
-										<?php
-										foreach ($artistList as $artist) {
-											echo "<option value='{$artist->getName()}'>{$artist->getName()}</option>";
-										}
-										?>
-									</select>
-								</label>
-								<button type="button" class="btn btn-danger remove-artist" style="display:none;"
-										onclick="removeArtist(this)">-
+							<div class="artist-field d-flex mb-2"></div>
+							<select name="artistInput[]" class="form-control me-2" required>
+								<option value="">--Please Select--</option>
+								<?php
+								foreach ($artistList as $artist) {
+									echo "<option value='{$artist->getName()}'>{$artist->getName()}</option>";
+								}
+								?>
+							</select>
+							<button type="button" class="btn btn-danger remove-artist" style="display:none;"
+									onclick="removeArtist(this)">-
+							</button>
+						</div>
+					</div>
+					<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
+
+
+					<div class="form-group">
+						<label for="song">Songs:</label>
+						<div id="songFields">
+							<div class="song-field d-flex mb-2">
+								<select name="songInput[]" class="form-control me-2" required>
+									<option value="">--Please Select--</option>
+									<?php
+									foreach ($songList as $song) {
+										echo "<option value='{$song->getSongID()}'>{$song->getTitle()} - {$song->getArtists()}</option>";
+									}
+									?>
+								</select>
+								<button type="button" class="btn btn-danger remove-song" style="display:none;"
+										onclick="removeSong(this)">-
 								</button>
 							</div>
 						</div>
-						<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
+						<button type="button" onclick="addSong()" class="btn btn-info mt-2">+</button>
 					</div>
 
 					<div class="form-group">
-						<label for="imageName">Image Name:</label>
-						<input type="text" id="imageName" name="imageNameInput" class="form-control"
-							   placeholder="Enter Image Name"
-							   required>
+						<label for="albumImage">Image:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
+						<input type="file" id="albumImage" name="albumImageInput" class="form-control" accept="image/*">
 					</div>
+
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
 				</form>
 			</div>
-
-			<script>
-				function updateRemoveButtons() {
-					const fields = document.querySelectorAll('#artistFields .artist-field');
-					fields.forEach((field, idx) => {
-						const btn = field.querySelector('.remove-artist');
-						btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
-					});
-				}
-
-				function addArtist() {
-					const artistFields = document.getElementById('artistFields');
-					const firstField = artistFields.querySelector('.artist-field');
-					const newField = firstField.cloneNode(true);
-					newField.querySelector('select').value = '';
-					artistFields.appendChild(newField);
-					updateRemoveButtons();
-				}
-
-				function removeArtist(btn) {
-					btn.closest('.artist-field').remove();
-					updateRemoveButtons();
-				}
-
-				document.addEventListener('DOMContentLoaded', updateRemoveButtons);
-			</script>
-
-			<!-- Bootstrap JS (optional for some interactive components) -->
-			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-		</main>
 	</div>
+
+
+	<script>
+		function updateRemoveButtons() {
+			const fields = document.querySelectorAll('#artistFields .artist-field');
+			fields.forEach((field, idx) => {
+				const btn = field.querySelector('.remove-artist');
+				btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
+			});
+		}
+
+		function addArtist() {
+			const artistFields = document.getElementById('artistFields');
+			const firstField = artistFields.querySelector('.artist-field');
+			const newField = firstField.cloneNode(true);
+			newField.querySelector('select').value = '';
+			artistFields.appendChild(newField);
+			updateRemoveButtons();
+		}
+
+		function removeArtist(btn) {
+			btn.closest('.artist-field').remove();
+			updateRemoveButtons();
+		}
+
+		document.addEventListener('DOMContentLoaded', updateRemoveButtons);
+
+		function updateSongRemoveButtons() {
+			const fields = document.querySelectorAll('#songFields .song-field');
+			fields.forEach((field) => {
+				const btn = field.querySelector('.remove-song');
+				btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
+			});
+		}
+
+		function addSong() {
+			const songFields = document.getElementById('songFields');
+			const firstField = songFields.querySelector('.song-field');
+			const newField = firstField.cloneNode(true);
+			newField.querySelector('select').value = '';
+			songFields.appendChild(newField);
+			updateSongRemoveButtons();
+		}
+
+		function removeSong(btn) {
+			btn.closest('.song-field').remove();
+			updateSongRemoveButtons();
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			updateRemoveButtons();
+			updateSongRemoveButtons();
+		});
+	</script>
+
+	<!-- Bootstrap JS (optional for some interactive components) -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+	</main>
+</div>
 </div>
 </body>
 

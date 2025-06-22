@@ -122,7 +122,7 @@ class DataController
 
 		$albumList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newAlbum = new Album($row["albumID"], $row["title"], $row["name"], $row["imageName"], $row["length"], $row["duration"]);
+			$newAlbum = new Album($row["albumID"], $row["title"], array(), $row["name"], $row["imageName"], $row["length"], $row["duration"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($albumList); $i++) {
@@ -134,6 +134,17 @@ class DataController
 			if (!$alreadyExists) $albumList[] = $newAlbum;
 		}
 		$stmt->close();
+
+		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, in_album.songID FROM in_album, album WHERE in_album.albumId = album.albumID");
+		$stmt->execute();
+		$result = $stmt->get_result();
+		while ($row = $result->fetch_assoc()) {
+			for ($i = 0; $i < count($albumList); $i++) {
+				if ($albumList[$i]->getAlbumID() == $row['albumID']) {
+					$albumList[$i]->addSongID($row['songID']);
+				}
+			}
+		}
 
 		return $albumList;
 	}

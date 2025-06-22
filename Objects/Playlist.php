@@ -93,4 +93,11 @@ class Playlist
 	{
 		$this->creatorID = $creatorID;
 	}
+
+	public function addSongID($songID)
+	{
+		if (!in_array($songID, $this->songIDs)) {
+			$this->songIDs[] = $songID;
+		}
+	}
 }
