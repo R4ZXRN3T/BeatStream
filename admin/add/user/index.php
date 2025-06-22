@@ -77,34 +77,68 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			include("../../../DataController.php");
 
 			$isValid = true;
+			$uploadDir = "../../../images/user/"; // Define upload directory
+			$errorMessage = "";
+
+			// Create directory if it doesn't exist
+			if (!file_exists($uploadDir)) {
+				mkdir($uploadDir, 0777, true);
+			}
 
 			if (!(
-				!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"]) && !empty($_POST["imageNameInput"])
+				!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])
+				&& isset($_FILES["userImage"]) && $_FILES["userImage"]["error"] == 0
 			)) {
 				$isValid = false;
 			}
 
 			if ($isValid) {
-				DataController::insertUser(new User(
-					"",
-					$_POST["usernameInput"],
-					$_POST["emailInput"],
-					$_POST["userPasswordInput"],
-					"",
-					$_POST["isAdminInput"],
-					FALSE,
-					$_POST["imageNameInput"]
-				));
-				?>
-				<h1>Success!</h1>
-				<?php
+				// Handle file upload
+				$fileName = $_FILES["userImage"]["name"];
+				$fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+				$newFileName = uniqid() . '.' . $fileType; // Generate unique filename
+				$targetFilePath = $uploadDir . $newFileName;
+
+
+				// Check file size (limit to 5MB)
+				if ($_FILES["userImage"]["size"] > 5000000) {
+					$isValid = false;
+					$errorMessage = "File is too large. Maximum size is 2MB.";
+				}
+
+				if ($isValid) {
+					// Upload file
+					if (move_uploaded_file($_FILES["userImage"]["tmp_name"], $targetFilePath)) {
+						// Insert user with the new file path
+						$isAdmin = isset($_POST["isAdminInput"]);
+						DataController::insertUser(new User(
+							0,
+							$_POST["usernameInput"],
+							$_POST["emailInput"],
+							$_POST["userPasswordInput"],
+							"",
+							$isAdmin, // Use the correctly processed boolean value
+							FALSE,
+							$newFileName
+						));
+					} else {
+						echo "<h1 class='text-center mt-4 text-danger'>Error uploading file!</h1>";
+					}
+				} else {
+					echo "<h1 class='text-center mt-4 text-danger'>$errorMessage</h1>";
+				}
+			}
+
+			// Display error message if validation failed
+			if (!$isValid && !empty($errorMessage)) {
+				echo "<div class='alert alert-danger mt-3'>$errorMessage</div>";
 			}
 			?>
 
 			<div class="container mt-5">
 				<h1>User Einfügen</h1>
 
-				<form action="index.php" method="post" id="addUserForm">
+				<form action="index.php" method="post" id="addUserForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="username">Username:</label>
 						<input type="text" id="username" name="usernameInput" class="form-control"
@@ -123,14 +157,14 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					</div>
 					<div class="form-group">
 						<label for="isAdminInput">Admin</label>
-						<input type="checkbox" id="isAdminInput" name="isAdminInput">
+						<input type="checkbox" id="isAdminInput" name="isAdminInput" value=TRUE>
 					</div>
 					<div class="form-group">
-						<label for="imageName">Image Name:</label>
-						<input type="text" id="imageName" name="imageNameInput" class="form-control"
-							   placeholder="Enter Image Name"
+						<label for="userImage">Profile Image:</label>
+						<input type="file" id="userImage" name="userImage" class="form-control" accept="image/*"
 							   required>
 					</div>
+
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
 				</form>
 			</div>
