@@ -57,7 +57,8 @@ include("../topBar.php");
 					<?php if (!empty($songList)): ?>
 						<?php foreach ($songList as $song): ?>
 							<div class="col-md-4 mb-4">
-								<div class="card shadow-sm border-0" style="border-radius: 10px; width: 100%; height: auto;">
+								<div class="card shadow-sm border-0"
+									 style="border-radius: 10px; width: 100%; height: auto;">
 									<div class="card-body d-flex align-items-center p-3" style="width: 100%;">
 										<?php if (!empty($song->getImagePath())): ?>
 											<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getImagePath()); ?>"
@@ -74,10 +75,8 @@ include("../topBar.php");
 												style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
 											<p class="card-text mb-0"
 											   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
-										</div>
-										<div class="ms-3 text-end" style="min-width: 50px; align-items: center; align-self: ; width: auto;">
 											<p class="card-text mb-0"
-											   style="font-size: 0.8rem; text-align: right; color: #6c757d;"><?php echo htmlspecialchars($song->getSongLength()->format("i:s")); ?></p>
+											   style="font-size: 0.8rem; text-align: left; color: #6c757d;"><?php echo htmlspecialchars($song->getSongLength()->format("i:s")); ?></p>
 										</div>
 									</div>
 								</div>
