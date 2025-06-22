@@ -16,7 +16,7 @@ class DataController
 	 */
 	public static function getSongList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imagePath, song.songLength, song.filePath
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
 		FROM song, artist, releases_song
 		WHERE song.songID = releases_song.songID
 		AND artist.artistID = releases_song.artistID
@@ -27,7 +27,7 @@ class DataController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], $row["name"], $row["genre"], $row["releaseDate"], $row["songLength"], $row["filePath"], $row["imagePath"]);
+			$newSong = new Song($row["songID"], $row["title"], $row["name"], $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
@@ -52,7 +52,7 @@ class DataController
 
 		$artistList = array();
 		while ($row = $result->fetch_assoc()) {
-			$artistList[] = new Artist($row["artistID"], $row["name"], $row["imagePath"], $row["activeSince"], $row["userID"]);
+			$artistList[] = new Artist($row["artistID"], $row["name"], $row["imageName"], $row["activeSince"], $row["userID"]);
 		}
 
 		$stmt->close();
@@ -69,7 +69,7 @@ class DataController
 
 		$userList = array();
 		while ($row = $result->fetch_assoc()) {
-			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["isAdmin"], $row["isArtist"], $row["imagePath"]);
+			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["isAdmin"], $row["isArtist"], $row["imageName"]);
 		}
 
 		$stmt->close();
@@ -79,7 +79,7 @@ class DataController
 
 	public static function getPlaylistList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imagePath, name, length, duration, creatorID, song.songID
+		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, name, length, duration, creatorID, song.songID
 		FROM playlist, in_playlist, song
 		WHERE song.songID = in_playlist.songID
   		AND playlist.playlistID = in_playlist.playlistID
@@ -91,7 +91,7 @@ class DataController
 		$playlistList = array();
 		while ($row = $result->fetch_assoc()) {
 			$alreadyExists = false;
-			$newPlaylist = new Playlist($row["playlistID"], $row["name"], array($row["songID"]), $row["duration"], $row["length"], $row['imagePath'], $row["creatorID"]);
+			$newPlaylist = new Playlist($row["playlistID"], $row["name"], array($row["songID"]), $row["duration"], $row["length"], $row['imageName'], $row["creatorID"]);
 
 			for ($i = 0; $i < count($playlistList); $i++) {
 				if ($playlistList[$i]->getPlaylistID() == $newPlaylist->getPlaylistID()) {
@@ -111,7 +111,7 @@ class DataController
 
 	public static function getAlbumList(): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, title, name, album.imagePath, length, duration
+		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, title, name, album.imageName, length, duration
 		FROM album, artist, releases_album
 		WHERE releases_album.artistID = artist.artistID
 		AND album.albumID = releases_album.albumID
@@ -122,7 +122,7 @@ class DataController
 
 		$albumList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newAlbum = new Album($row["albumID"], $row["title"], $row["name"], $row["imagePath"], $row["length"], $row["duration"]);
+			$newAlbum = new Album($row["albumID"], $row["title"], $row["name"], $row["imageName"], $row["length"], $row["duration"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($albumList); $i++) {
@@ -150,8 +150,8 @@ class DataController
 			str_replace("'", "\'", $song->getGenre()),
 			$song->getReleaseDate(),
 			$song->getSongLength(),
-			str_replace("'", "\'", $song->getFilePath()),
-			str_replace("'", "\'", $song->getImagePath()),
+			str_replace("'", "\'", $song->getfileName()),
+			str_replace("'", "\'", $song->getimageName()),
 		);
 
 		$songList = DataController::getSongList();
@@ -168,8 +168,8 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlSong = "INSERT INTO song (songID, title, genre, releaseDate, imagePath, rating, songLength, filePath) 
-		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getImagePath() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getFilePath() . "', '" . $song->getImagePath() . "')";
+		$sqlSong = "INSERT INTO song
+		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getimageName() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getfileName() . "')";
 
 		$stmt = DBConn::getConn()->prepare($sqlSong);
 		$stmt->execute();
@@ -215,7 +215,7 @@ class DataController
 
 		if (!$userExists) return;
 
-		$sqlArtist = "INSERT INTO artist VALUES (" . $newArtistID . ", '" . $artist->getName() . "', '" . $artist->getImagePath() . "', '" . $artist->getActiveSince()->format("Y-m-d") . "', '" . $artist->getUserID() . "')";
+		$sqlArtist = "INSERT INTO artist VALUES (" . $newArtistID . ", '" . $artist->getName() . "', '" . $artist->getimageName() . "', '" . $artist->getActiveSince()->format("Y-m-d") . "', '" . $artist->getUserID() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlArtist);
 		$stmt->execute();
 		$stmt = DBConn::getConn()->prepare("UPDATE user SET isArtist = TRUE WHERE userID = " . $artist->getUserID());
@@ -241,7 +241,7 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', FALSE, FALSE, '" . $user->getImagePath() . "')";
+		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', FALSE, FALSE, '" . $user->getimageName() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlUser);
 		$stmt->execute();
 		$stmt->close();
@@ -262,7 +262,7 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getImagePath() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration()->format("h:i:s") . "', '" . $playlist->getCreatorID() . "')";
+		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getimageName() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration()->format("h:i:s") . "', '" . $playlist->getCreatorID() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlPlaylist);
 		$stmt->execute();
 		for ($i = 0; $i < count($playlist->getSongIDs()); $i++) {
@@ -289,7 +289,7 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getImagePath() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("h:i:s") . "')";
+		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getimageName() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("h:i:s") . "')";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 		$stmt->execute();
 		$stmt->close();
@@ -313,10 +313,10 @@ class DataController
 	public static function deleteSong(int $songID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imagePath FROM song WHERE songID = $songID");
+		$deleteImage = $conn->prepare("SELECT imageName FROM song WHERE songID = $songID");
 		$deleteImage->execute();
 		try {
-			unlink("images/songs/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+			unlink("/BeatStream/images/songs/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -338,10 +338,10 @@ class DataController
 	public static function deleteAlbum(int $albumID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imagePath FROM album WHERE albumID = $albumID");
+		$deleteImage = $conn->prepare("SELECT imageName FROM album WHERE albumID = $albumID");
 		$deleteImage->execute();
 		try {
-			unlink("images/albums/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+			unlink("/BeatStream/images/albums/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -362,10 +362,10 @@ class DataController
 	public static function deletePlaylist(int $playlistID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imagePath FROM playlist WHERE playlistID = $playlistID");
+		$deleteImage = $conn->prepare("SELECT imageName FROM playlist WHERE playlistID = $playlistID");
 		$deleteImage->execute();
 		try {
-			unlink("images/playlists/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+			unlink("/BeatStream/images/playlists/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -385,10 +385,10 @@ class DataController
 	public static function deleteArtist(int $artistID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imagePath FROM artist WHERE artistID = $artistID");
+		$deleteImage = $conn->prepare("SELECT imageName FROM artist WHERE artistID = $artistID");
 		$deleteImage->execute();
 		try {
-			unlink("images/artists/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+			unlink("/BeatStream/images/artists/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -420,10 +420,10 @@ class DataController
 	public static function deleteUser(int $userID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imagePath FROM user WHERE userID = $userID");
+		$deleteImage = $conn->prepare("SELECT imageName FROM user WHERE userID = $userID");
 		$deleteImage->execute();
 		try {
-			unlink("images/users/" . $deleteImage->get_result()->fetch_assoc()['imagePath']);
+			unlink("/BeatStream/images/users/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -473,60 +473,60 @@ class DataController
 	}
 }
 
-/*INSERT INTO User VALUES (12345, "user1", "email1", "password1", "imagePath1");
-INSERT INTO User VALUES (123456, "user2", "email2", "password2", "imagePath2");
+/*INSERT INTO User VALUES (12345, "user1", "email1", "password1", "imageName1");
+INSERT INTO User VALUES (123456, "user2", "email2", "password2", "imageName2");
 
-INSERT INTO Artist VALUES (12345, "artist1", "imagePath3", 1, '2025-05-10', 12345);
-INSERT INTO Artist VALUES (123456, "artist2", "imagePath4", 1, '2025-05-10', 123456);
+INSERT INTO Artist VALUES (12345, "artist1", "imageName3", 1, '2025-05-10', 12345);
+INSERT INTO Artist VALUES (123456, "artist2", "imageName4", 1, '2025-05-10', 123456);
 
-INSERT INTO Song VALUES (0000, "song1", "genre1", '2025-05-09', "imagePath5", 4.5, '00:50:50', "filepath");
+INSERT INTO Song VALUES (0000, "song1", "genre1", '2025-05-09', "imageName5", 4.5, '00:50:50', "fileName");
 
 INSERT INTO ReleasesSong VALUES (12345, 0000);
 INSERT INTO ReleasesSong VALUES (123456, 0000);
 
 
-INSERT INTO song VALUES (0001, "Midnight Dreams", "Pop", '2025-05-09', "imagePath1", '03:15:12', "filepath1");
-INSERT INTO song VALUES (0002, "Echoes of Silence", "Rock", '2025-05-09', "imagePath2", '04:05:45', "filepath2");
-INSERT INTO song VALUES (0003, "Chasing Stars", "EDM", '2025-05-09', "imagePath3", '02:45:25', "filepath3");
-INSERT INTO song VALUES (0004, "Whispers in the Dark", "R&B", '2025-05-09', "imagePath4", '03:30:35', "filepath4");
-INSERT INTO song VALUES (0005, "Heartbreaker", "Pop", '2025-05-09', "imagePath5", '03:20:10', "filepath5");
-INSERT INTO song VALUES (0006, "Luminous Sky", "Indie", '2025-05-09', "imagePath6", '03:10:50', "filepath6");
-INSERT INTO song VALUES (0007, "Violet Horizon", "Alternative", '2025-05-09', "imagePath7", '02:55:30', "filepath7");
-INSERT INTO song VALUES (0008, "On the Edge", "Rock", '2025-05-09', "imagePath8", '03:50:20', "filepath8");
-INSERT INTO song VALUES (0009, "Rising Sun", "Pop", '2025-05-09', "imagePath9", '03:05:15', "filepath9");
-INSERT INTO song VALUES (0010, "In the Silence", "Classical", '2025-05-09', "imagePath10", '04:00:10', "filepath10");
-INSERT INTO song VALUES (0011, "Fading Light", "Alternative", '2025-05-09', "imagePath11", '03:35:40', "filepath11");
-INSERT INTO song VALUES (0012, "Lost in Time", "EDM", '2025-05-09', "imagePath12", '02:50:55', "filepath12");
-INSERT INTO song VALUES (0013, "Serenity", "Jazz", '2025-05-09', "imagePath13", '03:40:25', "filepath13");
-INSERT INTO song VALUES (0014, "Cosmic Waves", "Pop", '2025-05-09', "imagePath14", '03:00:05', "filepath14");
-INSERT INTO song VALUES (0015, "Storm Inside", "Rock", '2025-05-09', "imagePath15", '04:10:15', "filepath15");
-INSERT INTO song VALUES (0016, "Silent Rain", "Indie", '2025-05-09', "imagePath16", '02:35:45', "filepath16");
-INSERT INTO song VALUES (0017, "Reckless Love", "R&B", '2025-05-09', "imagePath17", '03:25:10', "filepath17");
-INSERT INTO song VALUES (0018, "Golden Horizon", "Country", '2025-05-09', "imagePath18", '03:15:20', "filepath18");
-INSERT INTO song VALUES (0019, "Reflections", "Electronic", '2025-05-09', "imagePath19", '03:45:05', "filepath19");
-INSERT INTO song VALUES (0020, "Into the Wild", "Rock", '2025-05-09', "imagePath20", '04:30:25', "filepath20");
+INSERT INTO song VALUES (0001, "Midnight Dreams", "Pop", '2025-05-09', "", '03:15:12', "song.mp3");
+INSERT INTO song VALUES (0002, "Echoes of Silence", "Rock", '2025-05-09', "", '04:05:45', "song.mp3");
+INSERT INTO song VALUES (0003, "Chasing Stars", "EDM", '2025-05-09', "", '02:45:25', "song.mp3");
+INSERT INTO song VALUES (0004, "Whispers in the Dark", "R&B", '2025-05-09', "", '03:30:35', "song.mp3");
+INSERT INTO song VALUES (0005, "Heartbreaker", "Pop", '2025-05-09', "", '03:20:10', "song.mp3");
+INSERT INTO song VALUES (0006, "Luminous Sky", "Indie", '2025-05-09', "", '03:10:50', "");
+INSERT INTO song VALUES (0007, "Violet Horizon", "Alternative", '2025-05-09', "", '02:55:30', "song.mp3");
+INSERT INTO song VALUES (0008, "On the Edge", "Rock", '2025-05-09', "", '03:50:20', "song.mp3");
+INSERT INTO song VALUES (0009, "Rising Sun", "Pop", '2025-05-09', "", '03:05:15', "song.mp3");
+INSERT INTO song VALUES (0010, "In the Silence", "Classical", '2025-05-09', "", '04:00:10', "song.mp3");
+INSERT INTO song VALUES (0011, "Fading Light", "Alternative", '2025-05-09', "", '03:35:40', "song.mp3");
+INSERT INTO song VALUES (0012, "Lost in Time", "EDM", '2025-05-09', "", '02:50:55', "song.mp3");
+INSERT INTO song VALUES (0013, "Serenity", "Jazz", '2025-05-09', "", '03:40:25', "song.mp3");
+INSERT INTO song VALUES (0014, "Cosmic Waves", "Pop", '2025-05-09', "", '03:00:05', "song.mp3");
+INSERT INTO song VALUES (0015, "Storm Inside", "Rock", '2025-05-09', "", '04:10:15', "song.mp3");
+INSERT INTO song VALUES (0016, "Silent Rain", "Indie", '2025-05-09', "", '02:35:45', "song.mp3");
+INSERT INTO song VALUES (0017, "Reckless Love", "R&B", '2025-05-09', "", '03:25:10', "song.mp3");
+INSERT INTO song VALUES (0018, "Golden Horizon", "Country", '2025-05-09', "", '03:15:20', "song.mp3");
+INSERT INTO song VALUES (0019, "Reflections", "Electronic", '2025-05-09', "", '03:45:05', "song.mp3");
+INSERT INTO song VALUES (0020, "Into the Wild", "Rock", '2025-05-09', "", '04:30:25', "song.mp3");
 
-INSERT INTO user VALUES (0001, "john_doe", "john.doe@example.com", "password123", "salt", FALSE, TRUE, "imagePath1");
-INSERT INTO user VALUES (0002, "sara_smith", "sara.smith@example.com", "securePass456", "salt", FALSE, TRUE, "imagePath2");
-INSERT INTO user VALUES (0003, "alex_lee", "alex.lee@example.com", "alexPass789", "salt", FALSE, TRUE, "imagePath3");
-INSERT INTO user VALUES (0004, "emily_jones", "emily.jones@example.com", "emilySecret101", "salt", FALSE, TRUE, "imagePath4");
-INSERT INTO user VALUES (0005, "michael_brown", "michael.brown@example.com", "mikePass202", "salt", FALSE, TRUE, "imagePath5");
-INSERT INTO user VALUES (0006, "laura_wilson", "laura.wilson@example.com", "laura1234", "salt", FALSE, TRUE, "imagePath6");
-INSERT INTO user VALUES (0007, "daniel_white", "daniel.white@example.com", "danielPass567", "salt", FALSE, TRUE, "imagePath7");
-INSERT INTO user VALUES (0008, "lisa_clark", "lisa.clark@example.com", "lisaSecure890", "salt", FALSE, TRUE, "imagePath8");
-INSERT INTO user VALUES (0009, "james_harris", "james.harris@example.com", "james2021", "salt", FALSE, TRUE, "imagePath9");
-INSERT INTO user VALUES (0010, "olivia_martin", "olivia.martin@example.com", "oliviaPass345", "salt", FALSE, TRUE, "imagePath10");
+INSERT INTO user VALUES (0001, "john_doe", "john.doe@example.com", "password123", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0002, "sara_smith", "sara.smith@example.com", "securePass456", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0003, "alex_lee", "alex.lee@example.com", "alexPass789", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0004, "emily_jones", "emily.jones@example.com", "emilySecret101", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0005, "michael_brown", "michael.brown@example.com", "mikePass202", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0006, "laura_wilson", "laura.wilson@example.com", "laura1234", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0007, "daniel_white", "daniel.white@example.com", "danielPass567", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0008, "lisa_clark", "lisa.clark@example.com", "lisaSecure890", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0009, "james_harris", "james.harris@example.com", "james2021", "salt", FALSE, TRUE, "");
+INSERT INTO user VALUES (0010, "olivia_martin", "olivia.martin@example.com", "oliviaPass345", "salt", FALSE, TRUE, "");
 
-INSERT INTO artist VALUES (12345, "The Midnight Echo", "imagePath1", '2025-05-10', 0001);
-INSERT INTO artist VALUES (12346, "Nova Sparks", "imagePath2", '2025-05-10', 0002);
-INSERT INTO artist VALUES (12347, "Luna Waves", "imagePath3", '2025-05-10', 0003);
-INSERT INTO artist VALUES (12348, "Echo Runners", "imagePath4", '2025-05-10', 0004);
-INSERT INTO artist VALUES (12349, "Skyline Dreams", "imagePath5", '2025-05-10', 0005);
-INSERT INTO artist VALUES (12350, "Electric Vibe", "imagePath6", '2025-05-10', 0006);
-INSERT INTO artist VALUES (12351, "Wanderlust Sounds", "imagePath7", '2025-05-10', 0007);
-INSERT INTO artist VALUES (12352, "Silent Mirage", "imagePath8", '2025-05-10', 0008);
-INSERT INTO artist VALUES (12353, "Stellar Bloom", "imagePath9", '2025-05-10', 0009);
-INSERT INTO artist VALUES (12354, "Violet Horizon", "imagePath10", '2025-05-10', 0010);
+INSERT INTO artist VALUES (12345, "The Midnight Echo", "", '2025-05-10', 0001);
+INSERT INTO artist VALUES (12346, "Nova Sparks", "", '2025-05-10', 0002);
+INSERT INTO artist VALUES (12347, "Luna Waves", "", '2025-05-10', 0003);
+INSERT INTO artist VALUES (12348, "Echo Runners", "", '2025-05-10', 0004);
+INSERT INTO artist VALUES (12349, "Skyline Dreams", "", '2025-05-10', 0005);
+INSERT INTO artist VALUES (12350, "Electric Vibe", "", '2025-05-10', 0006);
+INSERT INTO artist VALUES (12351, "Wanderlust Sounds", "", '2025-05-10', 0007);
+INSERT INTO artist VALUES (12352, "Silent Mirage", "", '2025-05-10', 0008);
+INSERT INTO artist VALUES (12353, "Stellar Bloom", "", '2025-05-10', 0009);
+INSERT INTO artist VALUES (12354, "Violet Horizon", "", '2025-05-10', 0010);
 
 INSERT INTO releases_song VALUES (12345, 0001);
 INSERT INTO releases_song VALUES (12345, 0002);

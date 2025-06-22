@@ -30,13 +30,13 @@ if ($isValid) {
 	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] == UPLOAD_ERR_OK) {
 		$imageFile = $_FILES['imageFileInput'];
 		$finalFileName = pathinfo($imageFile['name'], PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($imageFile['name'], PATHINFO_EXTENSION);
-		$imagePath = $uploadDir . $finalFileName;
-		if (!move_uploaded_file($imageFile['tmp_name'], $imagePath)) {
+		$imageName = $uploadDir . $finalFileName;
+		if (!move_uploaded_file($imageFile['tmp_name'], $imageName)) {
 			echo "<div class='alert alert-danger'>Failed to upload image.</div>";
 			$isValid = false;
 		}
 	} else {
-		$imagePath = ""; // No image uploaded
+		$imageName = ""; // No image uploaded
 	}
 	$totalDuration = new DateTime("00:00:00");
 	foreach ($_POST['songInput'] as $selectedSongID) {

@@ -59,10 +59,10 @@ include("../topBar.php");
 							<div class="col-md-4 mb-4">
 								<div class="card shadow-sm border-0" style="border-radius: 10px;">
 									<div class="card-body d-flex align-items-center p-3">
-										<?php if (!empty($playlist->getImagePath())): ?>
-											<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getImagePath()); ?>"
+										<?php if (!empty($playlist->getimageName())): ?>
+											<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
 												 class="me-3 rounded"
-												 alt="<?php echo htmlspecialchars($playlist->getImagePath()); ?>"
+												 alt="<?php echo htmlspecialchars($playlist->getimageName()); ?>"
 												 style="width: 60px; height: 60px; object-fit: cover;">
 										<?php else: ?>
 											<img src="../images/defaultSong.webp" class="me-3"

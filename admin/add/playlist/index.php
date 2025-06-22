@@ -79,7 +79,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["lengthInput"]) && !empty($_POST["durationInput"]) && !empty($_POST["imagePathInput"]) && !empty($_POST["creatorInput"])
+				!empty($_POST["nameInput"]) && !empty($_POST["lengthInput"]) && !empty($_POST["durationInput"]) && !empty($_POST["imageNameInput"]) && !empty($_POST["creatorInput"])
 			)) {
 				$isValid = false;
 			}
@@ -87,7 +87,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			if ($isValid) {
 				DataController::insertPlaylist(new Playlist(
 					"",
-					$_POST["imagePathInput"],
+					$_POST["imageNameInput"],
 					$_POST["nameInput"],
 					$_POST["durationInput"],
 					$_POST["lengthInput"],
@@ -108,9 +108,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					</div>
 
 					<div class="form-group">
-						<label for="imagePath">Image path:</label>
-						<input type="text" id="imagePath" name="imagePathInput" class="form-control"
-							   placeholder="Enter image path"
+						<label for="imageName">Image Name:</label>
+						<input type="text" id="imageName" name="imageNameInput" class="form-control"
+							   placeholder="Enter Image Name"
 							   required>
 					</div>
 					<div class="form-group">

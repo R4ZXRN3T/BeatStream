@@ -4,17 +4,17 @@ CREATE TABLE song
 	title       VARCHAR(255) NOT NULL,
 	genre       VARCHAR(255),
 	releaseDate DATE,
-	imagePath   VARCHAR(255),
+	imageName   VARCHAR(255),
 	songLength  TIME,
 
-	filePath    VARCHAR(255)
+	fileName    VARCHAR(255)
 );
 
 CREATE TABLE album
 (
 	albumID   INT PRIMARY KEY,
 	title     VARCHAR(255),
-	imagePath VARCHAR(255),
+	imageName VARCHAR(255),
 	length    INT,
 	duration  TIME
 );
@@ -28,13 +28,13 @@ CREATE TABLE user
 	salt         VARCHAR(255) NOT NULL,
 	isAdmin      BOOLEAN      NOT NULL DEFAULT FALSE,
 	isArtist     BOOLEAN      NOT NULL DEFAULT FALSE,
-	imagePath    VARCHAR(255)
+	imageName    VARCHAR(255)
 );
 
 CREATE TABLE playlist
 (
 	playlistID INT PRIMARY KEY,
-	imagePath  VARCHAR(255),
+	imageName  VARCHAR(255),
 	name       VARCHAR(255),
 	length     INT,
 	duration   TIME,
@@ -48,7 +48,7 @@ CREATE TABLE artist
 (
 	artistID    INT PRIMARY KEY,
 	name        VARCHAR(255) NOT NULL UNIQUE,
-	imagePath   VARCHAR(255),
+	imageName   VARCHAR(255),
 	activeSince DATE,
 
 	userID      INT,

@@ -58,10 +58,10 @@ include("../topBar.php");
 							<div class="col-md-4 mb-4">
 								<div class="card shadow-sm border-0" style="border-radius: 10px;">
 									<div class="card-body d-flex align-items-center p-3">
-										<?php if (!empty($artist->getImagePath())): ?>
-											<img src="<?php echo "/BeatStream/images/artist/" . htmlspecialchars($artist->getImagePath()); ?>"
+										<?php if (!empty($artist->getimageName())): ?>
+											<img src="<?php echo "/BeatStream/images/artist/" . htmlspecialchars($artist->getimageName()); ?>"
 												 class="me-3 rounded"
-												 alt="<?php echo htmlspecialchars($artist->getImagePath()); ?>"
+												 alt="<?php echo htmlspecialchars($artist->getimageName()); ?>"
 												 style="width: 60px; height: 60px; object-fit: cover;">
 										<?php else: ?>
 											<img src="../images/defaultArtist.webp" class="me-3 rounded"

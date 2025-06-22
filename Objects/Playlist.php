@@ -7,13 +7,13 @@ class Playlist
 	private array $songIDs = [];
 	private DateTime $duration;
 	private int $length;
-	private string$imagePath;
+	private string$imageName;
 	private int $creatorID;
 
-	public function __construct(int $playlistID, string $name, array $songIDs, string $duration, int $length, string $imagePath, int $creatorID)
+	public function __construct(int $playlistID, string $name, array $songIDs, string $duration, int $length, string $imageName, int $creatorID)
 	{
 		$this->playlistID = $playlistID;
-		$this->imagePath = $imagePath;
+		$this->imageName = $imageName;
 		$this->name = $name;
 		$this->songIDs = $songIDs;
 		$this->duration = new DateTime($duration);
@@ -27,9 +27,9 @@ class Playlist
 		return $this->playlistID;
 	}
 
-	public function getImagePath()
+	public function getimageName()
 	{
-		return $this->imagePath;
+		return $this->imageName;
 	}
 
 	public function getName()
@@ -64,9 +64,9 @@ class Playlist
 		$this->playlistID = $playlistID;
 	}
 
-	public function setImagePath($imagePath)
+	public function setimageName($imageName)
 	{
-		$this->imagePath = $imagePath;
+		$this->imageName = $imageName;
 	}
 
 	public function setName($name)

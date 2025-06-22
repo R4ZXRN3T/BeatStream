@@ -129,7 +129,7 @@ if (isset($_SESSION['account_loggedin'])) {
 					$_SESSION['account_loggedin'] = true;// Set session variable to indicate user is logged in
 					$_SESSION['email'] = $_POST['emailInput'];
 					$_SESSION['username'] = $_POST['usernameInput'];
-					$_SESSION['imagePath'] = pathinfo($targetFile, PATHINFO_BASENAME);
+					$_SESSION['imageName'] = pathinfo($targetFile, PATHINFO_BASENAME);
 					$_SESSION['isAdmin'] = false;// Default to false for new users
 					$stmt = DBConn::getConn()->prepare("SELECT userID FROM user WHERE email = ?");
 					$stmt->bind_param("s", $_POST['emailInput']);
@@ -168,7 +168,7 @@ if (isset($_SESSION['account_loggedin'])) {
 							   placeholder="Enter password" required>
 					</div>
 					<div class="form-group">
-						<label for="imagePath">Profile Picture:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
+						<label for="imageName">Profile Picture:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
 						<input type="file" id="imageUpload" name="imageToUpload" class="form-control"
 							   placeholder="Upload a profile picture!">
 					</div>

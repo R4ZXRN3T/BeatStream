@@ -22,7 +22,7 @@
 							<div class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
 							<div class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
 						</div>
-						<img src="<?php echo $_SESSION['imagePath'] ? '/BeatStream/images/user/' . $_SESSION['imagePath'] : '/BeatStream/images/defaultUser.webp'; ?>"
+						<img src="<?php echo $_SESSION['imageName'] ? '/BeatStream/images/user/' . $_SESSION['imageName'] : '/BeatStream/images/defaultUser.webp'; ?>"
 							 alt="Profile" class="rounded-circle me-2"
 							 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
 					</button>

@@ -97,7 +97,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<th style="width:14.3%;">Album ID</th>
 					<th style="width:14.3%;">Name</th>
 					<th style="width:14.3%;">Artists</th>
-					<th style="width:14.3%;">Image Path</th>
+					<th style="width:14.3%;">Image Name</th>
 					<th style="width:14.3%;">Album Length</th>
 					<th style="width:14.3%;">Album Duration</th>
 					<th style="width:1%;"></th>
@@ -109,7 +109,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $albumList[$i]->getAlbumID() ?></td>
 						<td><?php echo $albumList[$i]->getName() ?></td>
 						<td><?php echo $albumList[$i]->getArtists() ?></td>
-						<td><?php echo $albumList[$i]->getImagePath() ?></td>
+						<td><?php echo $albumList[$i]->getimageName() ?></td>
 						<td><?php echo $albumList[$i]->getLength() ?></td>
 						<td><?php echo $albumList[$i]->getDuration()->format('i:s') ?></td>
 						<td>

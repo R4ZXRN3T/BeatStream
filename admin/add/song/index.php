@@ -34,7 +34,10 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <body>
 
-<?php include("../../../topBar.php"); ?>
+<?php
+include("../../../topBar.php");
+include_once("../../../mp3file.class.php")
+?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -79,32 +82,32 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 			$errorMessage = "";
 
-			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"][0]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_POST["songLengthInput"]) && !empty($_POST["fileInput"]))) {
+			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"][0]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_FILES["fileInput"]))) {
 				$isValid = false;
 			}
 
 			// After $isValid = true; and before DataController::insertSong(...)
-			$imageUploadDir = "/BeatStream/images/song/";
-			$songImagePath = "";
-			$newImageName = "";
+			$imageUploadDir = "../../../../BeatStream/images/song/";
+			$songimageName = "";
+			$newimageName = "";
 
-			$audioUploadDir = "/BeatStream/audio/";
-			$songFilePath = "";
+			$audioUploadDir = "../../../audio/";
+			$songfileName = "";
 			$newFileName = "";
 
 			if ($isValid && isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
 				$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
 				$fileName = $_FILES['songImageInput']['name'];
-				$newImageName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
-				$destPath = $imageUploadDir . $newImageName;
+				$newimageName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+				$destPath = $imageUploadDir . $newimageName;
 
 				if (!is_dir($imageUploadDir)) {
 					mkdir($imageUploadDir, 0777, true);
 				}
 
 				if (move_uploaded_file($fileTmpPath, $destPath)) {
-					$songImagePath = "/BeatStream/images/song/" . $newImageName;
-					$_POST["imageFileInput"] = $songImagePath;
+					$songimageName = $imageUploadDir . $newimageName;
+					$_FILES["imageFileInput"] = $songimageName;
 				} else {
 					$isValid = false;
 					$errorMessage = "Image upload failed";
@@ -112,6 +115,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			}
 
 			if ($isValid) {
+				$destPath = "";
 				if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
 					$fileTmpPath = $_FILES['fileInput']['tmp_name'];
 					$fileName = $_FILES['fileInput']['name'];
@@ -123,8 +127,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					}
 
 					if (move_uploaded_file($fileTmpPath, $destPath)) {
-						$songFilePath = "/BeatStream/audio/" . $newFileName;
-						$_POST["filePathInput"] = $songFilePath;
+						$songfileName = "/BeatStream/audio/" . $newFileName;
+						$_FILES["fileNameInput"] = $songfileName;
+
 					} else {
 						$isValid = false;
 						$errorMessage = "Audio upload failed";
@@ -134,17 +139,20 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					$errorMessage = "no file provided or upload error";
 				}
 
+				$mp3File = new MP3File($destPath);
+				$songLength = $mp3File->getDuration();
+
 
 				$artistString = implode(", ", $_POST["artistInput"]);
 				DataController::insertSong(new Song(
-					"",
+					0,
 					$_POST["titleInput"],
 					$artistString,
 					$_POST["genreInput"],
 					$_POST["releaseDateInput"],
-					$_POST["songLengthInput"],
+					MP3File::formatTime($songLength),
 					$newFileName,
-					$newImageName
+					$newimageName
 				));
 			}
 			?>
@@ -172,7 +180,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<label for="artist">Artists:</label>
 						<div id="artistFields">
 							<div class="artist-field d-flex mb-2">
-								<select name="artistInput" class="form-control me-2" required>
+								<select name="artistInput[]" class="form-control me-2" required>
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($artistList as $artist) {
@@ -199,12 +207,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 						<input type="date" id="releaseDate" name="releaseDateInput" class="form-control"
 							   placeholder="Enter release date" required>
-					</div>
-
-					<div class="form-group">
-						<label for="songLength">Song Length:</label>
-						<input type="time" id="songLength" name="songLengthInput" class="form-control" step="1"
-							   placeholder="Enter song length" required>
 					</div>
 
 					<div class="form-group">

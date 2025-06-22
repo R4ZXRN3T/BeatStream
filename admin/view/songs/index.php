@@ -102,8 +102,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<th style="width:10%;">Genre</th>
 					<th style="width:10%;">Release Date</th>
 					<th style="width:10%;">Song Length</th>
-					<th style="width:10%;">File Path</th>
-					<th style="width:10%;">Image Path</th>
+					<th style="width:10%;">File Name</th>
+					<th style="width:10%;">Image Name</th>
 					<th style="width:1%;"></th>
 				</tr>
 				<?php
@@ -116,8 +116,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $songList[$i]->getGenre() ?></td>
 						<td><?php echo $songList[$i]->getReleaseDate()->format('d.m.Y') ?></td>
 						<td><?php echo $songList[$i]->getSongLength()->format('i:s') ?></td>
-						<td><?php echo $songList[$i]->getFilePath() ?></td>
-						<td><?php echo $songList[$i]->getImagePath() ?></td>
+						<td><?php echo $songList[$i]->getfileName() ?></td>
+						<td><?php echo $songList[$i]->getimageName() ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove" value="<?php echo $songList[$i]->getSongID() ?>"

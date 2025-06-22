@@ -52,7 +52,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 					<!-- Profile Info -->
 					<div class="col-md-4">
 						<div class="card">
-							<img src="<?= htmlspecialchars("../images/user/" . $user->getImagePath() ?: '../images/defaultUser.webp') ?>"
+							<img src="<?= htmlspecialchars("../images/user/" . $user->getimageName() ?: '../images/defaultUser.webp') ?>"
 								 class="card-img-top" alt="Profile Image">
 							<div class="card-body">
 								<h4 class="card-title"><?= htmlspecialchars($user->getUsername()) ?></h4>
@@ -68,7 +68,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 							<?php foreach ($userPlaylists as $playlist): ?>
 								<div class="col-md-4 mb-4" style="height: 100%;">
 									<div class="card h-auto">
-										<img src="<?= htmlspecialchars($playlist->getImagePath() ? "../images/playlist/" . $playlist->getImagePath() : "../images/defaultPlaylist.webp") ?>"
+										<img src="<?= htmlspecialchars($playlist->getimageName() ? "../images/playlist/" . $playlist->getimageName() : "../images/defaultPlaylist.webp") ?>"
 											 class="card-img-top" alt="Playlist Image"
 											 style="object-fit: cover; height: 180px;">
 										<div class="card-body d-flex flex-column">

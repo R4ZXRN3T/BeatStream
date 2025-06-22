@@ -3,7 +3,7 @@
 	<title>BeatStream Player</title>
 </head>
 <?php
-$audioDir = 'audio/';
+$audioDir = '../audio/';
 $files = array_filter(scandir($audioDir), function ($file) use ($audioDir) {
 	return preg_match('/\.(mp3|wav|ogg|flac)$/i', $file);
 });

@@ -59,7 +59,7 @@ if (isset($_SESSION['account_loggedin'])) {
 			}
 
 			if ($isValid) {
-				$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, imagePath FROM user WHERE email = ?");
+				$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, imageName FROM user WHERE email = ?");
 				$stmt->bind_param("s", $_POST['emailInput']);
 				$stmt->execute();
 				$result = $stmt->get_result()->fetch_assoc();
@@ -73,7 +73,7 @@ if (isset($_SESSION['account_loggedin'])) {
 						$_SESSION['username'] = $result['username'];
 						$_SESSION['userID'] = $result['userID'];
 						$_SESSION['isAdmin'] = $result['isAdmin'] == 1;
-						$_SESSION['imagePath'] = $result['imagePath'];
+						$_SESSION['imageName'] = $result['imageName'];
 						header("location: loginSuccess.php");
 					} else {
 						$credentialsCorrect = false;
