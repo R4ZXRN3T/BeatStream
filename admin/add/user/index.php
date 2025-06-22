@@ -79,7 +79,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 
 			if (!(
-				!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"]) && !empty($_POST["imagePathInput"])
+				!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"]) && !empty($_POST["imageNameInput"])
 			)) {
 				$isValid = false;
 			}
@@ -93,7 +93,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					"",
 					$_POST["isAdminInput"],
 					FALSE,
-					$_POST["imagePathInput"]
+					$_POST["imageNameInput"]
 				));
 				?>
 				<h1>Success!</h1>
@@ -126,9 +126,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<input type="checkbox" id="isAdminInput" name="isAdminInput">
 					</div>
 					<div class="form-group">
-						<label for="imagePath">Image path:</label>
-						<input type="text" id="imagePath" name="imagePathInput" class="form-control"
-							   placeholder="Enter image path"
+						<label for="imageName">Image Name:</label>
+						<input type="text" id="imageName" name="imageNameInput" class="form-control"
+							   placeholder="Enter Image Name"
 							   required>
 					</div>
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">

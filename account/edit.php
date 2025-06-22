@@ -32,17 +32,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$username = trim($_POST['username']);
 	$email = trim($_POST['email']);
 	$password = $_POST['newPassword'];
-	$imagePath = $currentUser->getImagePath();
+	$imageName = $currentUser->getimageName();
 
 	// Handle image upload
 	if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK) {
-		unlink("../images/user/" . $currentUser->getImagePath());
+		unlink("../images/user/" . $currentUser->getimageName());
 		$uploadDir = "../images/user/";
 		$ext = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
 		$newFileName = "user_" . $userID . "_" . time() . "." . $ext;
 		$destPath = $uploadDir . $newFileName;
 		if (move_uploaded_file($_FILES['imageFile']['tmp_name'], $destPath)) {
-			$imagePath = $newFileName;
+			$imageName = $newFileName;
 		} else {
 			$error = "Image upload failed.";
 		}
@@ -72,19 +72,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			// Update password with new salt
 			$salt = DataController::generateRandomString(16);
 			$hashed = hash("sha256", $password . $salt);
-			$stmt = $conn->prepare("UPDATE user SET username=?, email=?, userPassword=?, salt=?, imagePath=? WHERE userID=?");
-			$stmt->bind_param("sssssi", $username, $email, $hashed, $salt, $imagePath, $userID);
+			$stmt = $conn->prepare("UPDATE user SET username=?, email=?, userPassword=?, salt=?, imageName=? WHERE userID=?");
+			$stmt->bind_param("sssssi", $username, $email, $hashed, $salt, $imageName, $userID);
 		} else {
-			$stmt = $conn->prepare("UPDATE user SET username=?, email=?, imagePath=? WHERE userID=?");
-			$stmt->bind_param("sssi", $username, $email, $imagePath, $userID);
+			$stmt = $conn->prepare("UPDATE user SET username=?, email=?, imageName=? WHERE userID=?");
+			$stmt->bind_param("sssi", $username, $email, $imageName, $userID);
 		}
 		if ($stmt->execute()) {
 			$success = "Profile updated successfully.";
 			// Update session username if changed
 			$_SESSION['username'] = $username;
 			$_SESSION['email'] = $email;
-			if (!empty($imagePath)) {
-				$_SESSION['imagePath'] = $imagePath;
+			if (!empty($imageName)) {
+				$_SESSION['imageName'] = $imageName;
 			}
 		} else {
 			$error = "Failed to update profile.";

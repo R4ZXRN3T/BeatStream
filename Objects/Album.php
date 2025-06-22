@@ -5,16 +5,16 @@ class Album
 	private $albumID;
 	private $name;
 	private $artists;
-	private $imagePath;
+	private $imageName;
 	private $length;
 	private $duration;
 
-	public function __construct($albumID, $name, $artists, $imagePath, $length, $duration)
+	public function __construct($albumID, $name, $artists, $imageName, $length, $duration)
 	{
 		$this->albumID = $albumID;
 		$this->name = $name;
 		$this->artists = $artists;
-		$this->imagePath = $imagePath;
+		$this->imageName = $imageName;
 		$this->length = $length;
 		$this->duration = new DateTime($duration);
 	}
@@ -35,9 +35,9 @@ class Album
 		return $this->artists;
 	}
 
-	public function getImagePath()
+	public function getimageName()
 	{
-		return $this->imagePath;
+		return $this->imageName;
 	}
 
 	public function getLength()
@@ -66,9 +66,9 @@ class Album
 		$this->artists = $artists;
 	}
 
-	public function setImagePath($imagePath)
+	public function setimageName($imageName)
 	{
-		$this->imagePath = $imagePath;
+		$this->imageName = $imageName;
 	}
 
 	public function setLength($length)

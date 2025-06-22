@@ -9,9 +9,9 @@ class User
 	private $salt;
 	private $isAdmin = false;
 	private $isArtist = false;
-	private $imagePath;
+	private $imageName;
 
-	public function __construct($userID, $username, $email, $userPassword, $salt, $isAdmin, $isArtist, $imagePath)
+	public function __construct($userID, $username, $email, $userPassword, $salt, $isAdmin, $isArtist, $imageName)
 	{
 		$this->userID = $userID;
 		$this->username = $username;
@@ -20,7 +20,7 @@ class User
 		$this->salt = $salt;
 		$this->isAdmin = $isAdmin;
 		$this->isArtist = $isArtist;
-		$this->imagePath = $imagePath;
+		$this->imageName = $imageName;
 	}
 
 	// Getter methods
@@ -59,9 +59,9 @@ class User
 		return $this->isArtist;
 	}
 
-	public function getImagePath()
+	public function getimageName()
 	{
-		return $this->imagePath;
+		return $this->imageName;
 	}
 
 	// Setter methods
@@ -100,8 +100,8 @@ class User
 		$this->isArtist = $isArtist;
 	}
 
-	public function setImagePath($imagePath)
+	public function setimageName($imageName)
 	{
-		$this->imagePath = $imagePath;
+		$this->imageName = $imageName;
 	}
 }

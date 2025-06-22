@@ -80,7 +80,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["imagePathInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"])
+				!empty($_POST["nameInput"]) && !empty($_POST["imageNameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"])
 			)) {
 				$isValid = false;
 			}
@@ -89,7 +89,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				DataController::insertArtist(new Artist(
 					12345,
 					$_POST["nameInput"],
-					$_POST["imagePathInput"],
+					$_POST["imageNameInput"],
 					$_POST["activeSinceInput"],
 					$_POST["userIDInput"]
 				));
@@ -109,9 +109,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 							   placeholder="Enter artist name" required>
 					</div>
 					<div class="form-group">
-						<label for="imagePath">Image Path:</label>
-						<input type="text" id="imagePath" name="imagePathInput" class="form-control"
-							   placeholder="Enter image path"
+						<label for="imageName">Image Name:</label>
+						<input type="text" id="imageName" name="imageNameInput" class="form-control"
+							   placeholder="Enter Image Name"
 							   required>
 					</div>
 					<div class="form-group">

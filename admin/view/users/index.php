@@ -120,7 +120,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<th style="width:16.7%;">Salt</th>
 					<th style="width: 1%;">is admin</th>
 					<th style="width: 1%;">is artist</th>
-					<th style="width:16.7%;">Image Path</th>
+					<th style="width:16.7%;">Image Name</th>
 					<th style="width:1%;"></th>
 					<th style="width:1%;"></th>
 				</tr>
@@ -135,7 +135,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $userList[$i]->getSalt() ?></td>
 						<td><?php echo $userList[$i]->isAdmin() ? 'Yes' : 'No' ?></td>
 						<td><?php echo $userList[$i]->isArtist() ? 'Yes' : 'No' ?></td>
-						<td><?php echo $userList[$i]->getImagePath() ?></td>
+						<td><?php echo $userList[$i]->getimageName() ?></td>
 						<?php
 						if (!$userList[$i]->isAdmin()) {
 							?>

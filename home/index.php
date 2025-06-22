@@ -147,16 +147,18 @@ include("../topBar.php"); ?>
 					<!-- Songs Section -->
 					<div class="col-md-8">
 						<section class="mb-5">
-							<h2 class="align-left mb-4" style="margin-left: 30px">Recommended Songs:</h2>
+							<h2 class="align-left mb-4 h-1" style="margin-left: 30px">Recommended Songs:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedSongs as $song): ?>
 									<div class="col-12 col-md-6">
-										<div class="card shadow-sm border-0" style="border-radius: 10px;">
-											<div class="card-body d-flex align-items-center p-3">
-												<?php if (!empty($song->getImagePath())): ?>
-													<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getImagePath()); ?>"
+										<div class="card shadow-sm border-0"
+											 style="border-radius: 10px; cursor: pointer;">
+											<div class="card-body d-flex align-items-center p-3"
+												 data-song-id="<?php echo $song->getSongID(); ?>">
+												<?php if (!empty($song->getimageName())): ?>
+													<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 														 class="me-3 rounded"
-														 alt="<?php echo htmlspecialchars($song->getImagePath()); ?>"
+														 alt="<?php echo htmlspecialchars($song->getimageName()); ?>"
 														 style="width: 50px; height: 50px; object-fit: cover;">
 												<?php else: ?>
 													<img src="../images/defaultSong.webp" class="me-3 rounded"
@@ -180,16 +182,16 @@ include("../topBar.php"); ?>
 					<!-- Albums and Playlists Section -->
 					<div class="col-md-4">
 						<section class="mb-5 g-4">
-							<h2 class="align-left mb-4" style="margin-left: 30px">Recommended Albums:</h2>
+							<h2 class="align-left mb-4" style="margin-left: 30px; ">Recommended Albums:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedAlbums as $album): ?>
 									<div class="col-12">
 										<div class="card shadow-sm border-0" style="border-radius: 10px;">
 											<div class="card-body d-flex align-items-center p-3">
-												<?php if (!empty($album->getImagePath())): ?>
-													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($album->getImagePath()); ?>"
+												<?php if (!empty($album->getimageName())): ?>
+													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($album->getimageName()); ?>"
 														 class="me-3 rounded"
-														 alt="<?php echo htmlspecialchars($album->getImagePath()); ?>"
+														 alt="<?php echo htmlspecialchars($album->getimageName()); ?>"
 														 style="width: 50px; height: 50px; object-fit: cover;">
 												<?php else: ?>
 													<img src="../images/defaultAlbum.webp" class="me-3 rounded"
@@ -216,10 +218,10 @@ include("../topBar.php"); ?>
 									<div class="col-12" style="padding-left: 2rem;">
 										<div class="card shadow-sm border-0" style="border-radius: 10px;">
 											<div class="card-body d-flex align-items-center p-2">
-												<?php if (!empty($playlist->getImagePath())): ?>
-													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getImagePath()); ?>"
+												<?php if (!empty($playlist->getimageName())): ?>
+													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
 														 class="me-3 rounded"
-														 alt="<?php echo htmlspecialchars($playlist->getImagePath()); ?>"
+														 alt="<?php echo htmlspecialchars($playlist->getimageName()); ?>"
 														 style="width: 50px; height: 50px; object-fit: cover;">
 												<?php else: ?>
 													<img src="../images/defaultPlaylist.webp" class="me-3 rounded"

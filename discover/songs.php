@@ -59,11 +59,11 @@ include("../topBar.php");
 							<div class="col-md-4 mb-4">
 								<div class="card shadow-sm border-0"
 									 style="border-radius: 10px; width: 100%; height: auto;">
-									<div class="card-body d-flex align-items-center p-3" style="width: 100%;">
-										<?php if (!empty($song->getImagePath())): ?>
-											<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getImagePath()); ?>"
+									<div class="card-body d-flex align-items-center p-3" style="width: 100%;" data-song-id="<?php echo $song->getSongID(); ?>">
+										<?php if (!empty($song->getimageName())): ?>
+											<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 												 class="me-3 rounded"
-												 alt="<?php echo htmlspecialchars($song->getImagePath()); ?>"
+												 alt="<?php echo htmlspecialchars($song->getimageName()); ?>"
 												 style="width: 60px; height: 60px; object-fit: cover;">
 										<?php else: ?>
 											<img src="../images/defaultSong.webp" class="me-3 "
@@ -91,5 +91,6 @@ include("../topBar.php");
 	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<?php include("../player.php"); ?>
 </body>
 </html>

@@ -95,7 +95,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				</colgroup>
 				<tr>
 					<th style="width:14.3%;">Playlist ID</th>
-					<th style="width:14.3%;">Image Path</th>
+					<th style="width:14.3%;">Image Name</th>
 					<th style="width:14.3%;">Name</th>
 					<th style="width:14.3%;">Duration</th>
 					<th style="width:14.3%;">Length</th>
@@ -107,7 +107,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					?>
 					<tr>
 						<td><?php echo $playlistList[$i]->getPlaylistID() ?></td>
-						<td><?php echo $playlistList[$i]->getImagePath() ?></td>
+						<td><?php echo $playlistList[$i]->getimageName() ?></td>
 						<td><?php echo $playlistList[$i]->getName() ?></td>
 						<td><?php echo $playlistList[$i]->getDuration()->format('i:s') ?></td>
 						<td><?php echo $playlistList[$i]->getLength() ?></td>

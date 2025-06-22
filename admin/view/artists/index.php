@@ -96,7 +96,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				<tr>
 					<th style="width:14.3%;">Artist ID</th>
 					<th style="width:14.3%;">Name</th>
-					<th style="width:14.3%;">Image Path</th>
+					<th style="width:14.3%;">Image Name</th>
 					<th style="width:14.3%;">Active Since</th>
 					<th style="width:14.3%;">User ID</th>
 					<th style="width:1%;"></th>
@@ -107,7 +107,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<tr>
 						<td><?php echo $artistList[$i]->getArtistID() ?></td>
 						<td><?php echo $artistList[$i]->getName() ?></td>
-						<td><?php echo $artistList[$i]->getImagePath() ?></td>
+						<td><?php echo $artistList[$i]->getimageName() ?></td>
 						<td><?php echo $artistList[$i]->getActiveSince()->format('d.m.Y') ?></td>
 						<td><?php echo $artistList[$i]->getUserID() ?></td>
 						<td>

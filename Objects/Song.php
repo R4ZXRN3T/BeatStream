@@ -8,13 +8,13 @@ class Song
 	private $genre;
 	private $releaseDate;
 	private $songLength;
-	private $filePath;
-	private $imagePath;
+	private $fileName;
+	private $imageName;
 
 	/**
 	 * @throws Exception
 	 */
-	function __construct($songID, $title, $artists, $genre, $releaseDate, $songLength, $filePath, $imagePath)
+	function __construct($songID, $title, $artists, $genre, $releaseDate, $songLength, $fileName, $imageName)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
@@ -22,8 +22,8 @@ class Song
 		$this->genre = $genre;
 		$this->releaseDate = new DateTime($releaseDate);
 		$this->songLength = new DateTime($songLength);
-		$this->filePath = $filePath;
-		$this->imagePath = $imagePath;
+		$this->fileName = $fileName;
+		$this->imageName = $imageName;
 	}
 
 	// getter methods
@@ -58,14 +58,14 @@ class Song
 		return $this->songLength;
 	}
 
-	public function getFilePath()
+	public function getfileName()
 	{
-		return $this->filePath;
+		return $this->fileName;
 	}
 
-	public function getImagePath()
+	public function getimageName()
 	{
-		return $this->imagePath;
+		return $this->imageName;
 	}
 
 	// setter methods
@@ -100,17 +100,17 @@ class Song
 		$this->songLength = $songLength;
 	}
 
-	public function setFilePath($filePath)
+	public function setfileName($fileName)
 	{
-		$this->filePath = $filePath;
+		$this->fileName = $fileName;
 	}
 
-	public function setImagePath($imagePath)
+	public function setimageName($imageName)
 	{
-		$this->imagePath = $imagePath;
+		$this->imageName = $imageName;
 	}
 
-	public function setAll($songID, $title, $artists, $genre, $releaseDate, $songLength, $filePath, $imagePath)
+	public function setAll($songID, $title, $artists, $genre, $releaseDate, $songLength, $fileName, $imageName)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
@@ -118,13 +118,13 @@ class Song
 		$this->genre = $genre;
 		$this->releaseDate = $releaseDate;
 		$this->songLength = $songLength;
-		$this->filePath = $filePath;
-		$this->imagePath = $imagePath;
+		$this->fileName = $fileName;
+		$this->imageName = $imageName;
 	}
 
 	public function getAll(): array
 	{
-		return [$this->songID, $this->title, $this->artists, $this->genre, $this->releaseDate, $this->songLength, $this->filePath, $this->imagePath];
+		return [$this->songID, $this->title, $this->artists, $this->genre, $this->releaseDate, $this->songLength, $this->fileName, $this->imageName];
 	}
 
 	public function toString()
@@ -136,8 +136,8 @@ class Song
 			$this->genre,
 			$this->releaseDate->format('d.m.Y'),
 			$this->songLength->format('i:s'),
-			$this->filePath,
-			$this->imagePath
+			$this->fileName,
+			$this->imageName
 		];
 		echo implode(',<br>', $properties);
 	}

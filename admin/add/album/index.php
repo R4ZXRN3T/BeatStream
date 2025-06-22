@@ -80,7 +80,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["artistInput[]"]) && !empty($_POST["imagePathInput"])
+				!empty($_POST["nameInput"]) && !empty($_POST["artistInput[]"]) && !empty($_POST["imageNameInput"])
 			)) {
 				$isValid = false;
 			}
@@ -91,7 +91,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					"",
 					$_POST["nameInput"],
 					$artists,
-					$_POST["imagePathInput"],
+					$_POST["imageNameInput"],
 					0,
 					"00:00:00"
 				));
@@ -131,9 +131,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					</div>
 
 					<div class="form-group">
-						<label for="imagePath">Image path:</label>
-						<input type="text" id="imagePath" name="imagePathInput" class="form-control"
-							   placeholder="Enter image path"
+						<label for="imageName">Image Name:</label>
+						<input type="text" id="imageName" name="imageNameInput" class="form-control"
+							   placeholder="Enter Image Name"
 							   required>
 					</div>
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
