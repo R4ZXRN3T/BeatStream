@@ -82,7 +82,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 								</div>
 							<?php endforeach; ?>
 							<?php if (empty($userPlaylists)): ?>
-								<p class="text-muted">No playlists created yet.</p>
+								<p class="text">No playlists created yet.</p>
 							<?php endif; ?>
 						</div>
 					</div>
