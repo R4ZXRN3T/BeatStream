@@ -241,7 +241,8 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', FALSE, FALSE, '" . $user->getimageName() . "')";
+		// Change this line in DataController.php insertUser method
+		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', " . ($user->isAdmin() ? 'TRUE' : 'FALSE') . ", FALSE, '" . $user->getimageName() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlUser);
 		$stmt->execute();
 		$stmt->close();
@@ -308,15 +309,21 @@ class DataController
 				}
 			}
 		}
+
+
 	}
 
 	public static function deleteSong(int $songID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imageName FROM song WHERE songID = $songID");
+		$deleteImage = $conn->prepare("SELECT imageName, fileName FROM song WHERE songID = ?");
+		$deleteImage->bind_param("i", $songID);
 		$deleteImage->execute();
+		$result = $deleteImage->get_result()->fetch_assoc();
 		try {
-			unlink("/BeatStream/images/songs/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/" . $result['imageName']);
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/" . $result['fileName']);
+
 		} catch (Exception $e) {
 		}
 
@@ -341,7 +348,7 @@ class DataController
 		$deleteImage = $conn->prepare("SELECT imageName FROM album WHERE albumID = $albumID");
 		$deleteImage->execute();
 		try {
-			unlink("/BeatStream/images/albums/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/album/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -365,7 +372,7 @@ class DataController
 		$deleteImage = $conn->prepare("SELECT imageName FROM playlist WHERE playlistID = $playlistID");
 		$deleteImage->execute();
 		try {
-			unlink("/BeatStream/images/playlists/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/playlist/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -388,7 +395,7 @@ class DataController
 		$deleteImage = $conn->prepare("SELECT imageName FROM artist WHERE artistID = $artistID");
 		$deleteImage->execute();
 		try {
-			unlink("/BeatStream/images/artists/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/artist/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -420,10 +427,13 @@ class DataController
 	public static function deleteUser(int $userID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imageName FROM user WHERE userID = $userID");
-		$deleteImage->execute();
+		$stmt = $conn->prepare("SELECT imageName FROM user WHERE userID = ?");
+		$stmt->bind_param("i", $userID);
+		$stmt->execute();
+		$result = $stmt->get_result()->fetch_assoc();
+
 		try {
-			unlink("/BeatStream/images/users/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/user/" . $result['imageName']);
 		} catch (Exception $e) {
 		}
 
@@ -443,7 +453,8 @@ class DataController
 		$stmt->bind_param("i", $userID);
 		$stmt->execute();
 		$result = $stmt->get_result();
-		$artistID = $result->fetch_assoc()['artistID'];
+		$row = $result->fetch_assoc();
+		$artistID = $row ? $row['artistID'] : null;
 
 		// Delete all relations and the songs themselves
 		if ($artistID !== null) {

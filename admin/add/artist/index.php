@@ -78,40 +78,71 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$userList = DataController::getUserList();
 
 			$isValid = true;
+			$imageName = '';
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["imageNameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"])
+				!empty($_POST["nameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"]) && isset($_FILES["imageFile"])
 			)) {
 				$isValid = false;
+			}
+
+			// Process file upload if form fields are valid
+			if ($isValid && isset($_FILES['imageFile'])) {
+				$uploadDir = "../../../uploads/artists/";
+
+				// Create directory if it doesn't exist
+				if (!file_exists($uploadDir)) {
+					mkdir($uploadDir, 0777, true);
+				}
+
+				$fileExtension = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
+				$imageName = uniqid('artist_') . '.' . $fileExtension;
+				$targetFile = $uploadDir . $imageName;
+
+				// Check if file is an actual image
+				$validImage = getimagesize($_FILES['imageFile']['tmp_name']) !== false;
+
+				if (!$validImage) {
+					$isValid = false;
+					echo "<div class='alert alert-danger'>Uploaded file is not a valid image.</div>";
+				} else if ($_FILES['imageFile']['size'] > 5000000) { // 5MB limit
+					$isValid = false;
+					echo "<div class='alert alert-danger'>File is too large. Maximum size is 5MB.</div>";
+				} else if (!move_uploaded_file($_FILES['imageFile']['tmp_name'], $targetFile)) {
+					$isValid = false;
+					echo "<div class='alert alert-danger'>Failed to upload the image.</div>";
+				}
 			}
 
 			if ($isValid) {
 				DataController::insertArtist(new Artist(
 					12345,
 					$_POST["nameInput"],
-					$_POST["imageNameInput"],
+					$imageName, // Use the new uploaded image name
 					$_POST["activeSinceInput"],
 					$_POST["userIDInput"]
 				));
 				?>
-				<h1>Success!</h1>
+				<div class="alert alert-success">
+					<h3>Success!</h3>
+					<p>Artist has been added successfully.</p>
+				</div>
 				<?php
 			}
 			?>
 
 			<div class="container mt-5">
-				<h1>Künstler Einfügen</h1>
+				<h1>Add Artist</h1>
 
-				<form action="index.php" method="post" id="addArtistForm">
+				<form action="index.php" method="post" id="addArtistForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="name">Name:</label>
 						<input type="text" id="name" name="nameInput" class="form-control"
 							   placeholder="Enter artist name" required>
 					</div>
 					<div class="form-group">
-						<label for="imageName">Image Name:</label>
-						<input type="text" id="imageName" name="imageNameInput" class="form-control"
-							   placeholder="Enter Image Name"
+						<label for="imageFile">Artist Image:</label>
+						<input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*"
 							   required>
 					</div>
 					<div class="form-group">
@@ -120,17 +151,12 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 							   placeholder="Enter creation date" required>
 					</div>
 					<div class="form-group">
-						<label for="user">User:</label>
-						<label for="userID"></label><select name="userIDInput" id="userID" style="width: 175px;"
-															class="form-control" required>
-							<option value=none>--Please Select--</option>
-							<?php
-							for ($i = 0; $i < count($userList); $i++) {
-								?>
-								<option value=<?php echo $userList[$i]->getUserID() ?>><?php echo $userList[$i]->getUsername() ?></option>
-								<?php
-							}
-							?>
+						<label for="userID">User:</label>
+						<select name="userIDInput" id="userID" class="form-control" required>
+							<option value="">--Please Select--</option>
+							<?php foreach ($userList as $user): ?>
+								<option value="<?php echo $user->getUserID(); ?>"><?php echo $user->getUsername(); ?></option>
+							<?php endforeach; ?>
 						</select>
 					</div>
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">

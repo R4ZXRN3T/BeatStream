@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include("../../../dbConnection.php");
 session_start();
 $isAdmin = false;
@@ -83,7 +84,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$userList = DataController::getUserList();
 
 			if (array_key_exists('removeButton', $_POST)) {
-				DataController::deleteUser($_POST['removeButton']);
+				DataController::deleteUser(intval($_POST['removeButton']));
 				$_POST['removeButton'] = null;
 				header("Refresh:0");
 			}
@@ -164,7 +165,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						?>
 						<td>
 							<form method="post" action="">
-								<button name="removeButton" id="remove" value="<?php echo $userList[$i]->getUserID() ?>"
+								<button name="removeButton" id="remove" value='<?php echo $userList[$i]->getUserID() ?>'
 										class="btn btn-danger" type="submit" title="Remove User"
 										style="white-space: nowrap">🗑️
 								</button>
@@ -180,6 +181,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 		</main>
 	</div>
 </div>
+<?php ob_end_flush(); ?>
 </body>
 
 </html>
