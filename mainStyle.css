@@ -115,3 +115,52 @@ body {
 	margin: 0;
 	list-style: none;
 }
+
+body.dark-mode {
+	background-color: #181818 !important;
+	color: #e0e0e0;
+}
+
+body.dark-mode .sidebar {
+	background: linear-gradient(180deg, #23272b, #181a1b);
+	color: #e0e0e0;
+	border-right: 2px solid #343a40;
+}
+
+body.dark-mode .sidebar a {
+	color: #b0b8c1;
+}
+
+body.dark-mode .sidebar a:hover,
+body.dark-mode .sidebar a.active {
+	background-color: #343a40;
+	color: #fff;
+}
+
+body.dark-mode .card {
+	background-color: #23272b;
+	color: #e0e0e0;
+}
+
+body.dark-mode .card-title,
+body.dark-mode .card-text {
+	color: #e0e0e0;
+}
+
+body.dark-mode th {
+	background-color: #23272b;
+	color: #e0e0e0;
+}
+
+body.dark-mode tr:nth-child(even) {
+	background-color: #23272b;
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+	background-color: #23272b;
+	color: #fff;
+}
+
+body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
+	color: #646464;
+}

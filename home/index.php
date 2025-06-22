@@ -138,16 +138,16 @@ include("../topBar.php"); ?>
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem; background-color: #f8f9fa;">
+		<main class="col-md" style="min-height: 80vh; margin-left: 0; padding: 2rem;">
 			<div class="container" style="max-width: 1700px;">
 				<h1 class="text-center mb-4"
-					style="font-weight: bold; color: #343a40;"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
+					style="font-weight: bold;"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
 
 				<div class="row">
 					<!-- Songs Section -->
 					<div class="col-md-8">
 						<section class="mb-5">
-							<h2 class="text-center mb-4" style="color: #495057;">Recommended Songs:</h2>
+							<h2 class="align-left mb-4" style="margin-left: 30px">Recommended Songs:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedSongs as $song): ?>
 									<div class="col-12 col-md-6">
@@ -179,8 +179,8 @@ include("../topBar.php"); ?>
 
 					<!-- Albums and Playlists Section -->
 					<div class="col-md-4">
-						<section class="mb-5">
-							<h2 class="text-center mb-4" style="color: #495057;">Recommended Albums:</h2>
+						<section class="mb-5 g-4">
+							<h2 class="align-left mb-4" style="margin-left: 30px">Recommended Albums:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedAlbums as $album): ?>
 									<div class="col-12">
@@ -210,12 +210,12 @@ include("../topBar.php"); ?>
 						</section>
 
 						<section>
-							<h2 class="text-center mb-4" style="color: #495057;">Recommended Playlists:</h2>
+							<h2 class="align-left mb-4" style="margin-left: 30px">Recommended Playlists:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedPlaylists as $playlist): ?>
-									<div class="col-12">
+									<div class="col-12" style="padding-left: 2rem;">
 										<div class="card shadow-sm border-0" style="border-radius: 10px;">
-											<div class="card-body d-flex align-items-center p-3">
+											<div class="card-body d-flex align-items-center p-2">
 												<?php if (!empty($playlist->getImagePath())): ?>
 													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getImagePath()); ?>"
 														 class="me-3 rounded"

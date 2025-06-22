@@ -60,7 +60,7 @@ include("../topBar.php");
 								<div class="card shadow-sm border-0" style="border-radius: 10px;">
 									<div class="card-body d-flex align-items-center p-3">
 										<?php if (!empty($playlist->getImagePath())): ?>
-											<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($playlist->getImagePath()); ?>"
+											<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getImagePath()); ?>"
 												 class="me-3 rounded"
 												 alt="<?php echo htmlspecialchars($playlist->getImagePath()); ?>"
 												 style="width: 60px; height: 60px; object-fit: cover;">
@@ -71,7 +71,7 @@ include("../topBar.php");
 										<?php endif; ?>
 										<div>
 											<h5 class="card-title mb-1"
-												style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($playlist->getTitle()); ?></h5>
+												style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($playlist->getName()); ?></h5>
 										</div>
 									</div>
 								</div>
