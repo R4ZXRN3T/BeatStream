@@ -2,17 +2,19 @@
 
 class Album
 {
-	private $albumID;
-	private $name;
-	private $artists;
-	private $imageName;
-	private $length;
-	private $duration;
+	private int $albumID;
+	private string $name;
+	private array $songIDs;
+	private string $artists;
+	private string $imageName;
+	private int $length;
+	private DateTime $duration;
 
-	public function __construct($albumID, $name, $artists, $imageName, $length, $duration)
+	public function __construct(int $albumID, string $name, array $songIDs, string $artists, string $imageName, int $length, string $duration)
 	{
 		$this->albumID = $albumID;
 		$this->name = $name;
+		$this->songIDs = $songIDs;
 		$this->artists = $artists;
 		$this->imageName = $imageName;
 		$this->length = $length;
@@ -20,10 +22,6 @@ class Album
 	}
 
 	// Getter Methods
-	public function getAlbumID()
-	{
-		return $this->albumID;
-	}
 
 	public function getName()
 	{
@@ -50,11 +48,17 @@ class Album
 		return $this->duration;
 	}
 
-	// Setter Methods
-	public function setAlbumID($albumID)
+	public function getAlbumID()
 	{
-		$this->albumID = $albumID;
+		return $this->albumID;
 	}
+
+	public function getSongIDs()
+	{
+		return $this->songIDs;
+	}
+
+	// Setter Methods
 
 	public function setName($name)
 	{
@@ -79,5 +83,21 @@ class Album
 	public function setDuration($duration)
 	{
 		$this->duration = $duration;
+	}
+
+	public function setAlbumID($albumID)
+	{
+		$this->albumID = $albumID;
+	}
+
+	public function setSongIDs(array $songIDs)
+	{
+		$this->songIDs = $songIDs;
+	}
+	public function addSongID($songID)
+	{
+		if (!in_array($songID, $this->songIDs)) {
+			$this->songIDs[] = $songID;
+		}
 	}
 }
