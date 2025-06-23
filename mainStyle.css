@@ -175,3 +175,27 @@ body.dark-mode .nav-tabs .nav-link.active {
 body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
 	color: #646464;
 }
+
+.card-body[data-song-id] {
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+.card-body[data-song-id]:hover {
+	background-color: rgba(0,0,0,0.05);
+}
+.card-body.playing {
+	background-color: rgba(13, 110, 253, 0.1);
+	border-left: 3px solid #0d6efd;
+}
+.play-icon {
+	display: none;
+	position: absolute;
+	right: 15px;
+	color: #0d6efd;
+}
+.card-body:hover .play-icon {
+	display: block;
+}
+.card-body.playing .play-icon {
+	display: block;
+}

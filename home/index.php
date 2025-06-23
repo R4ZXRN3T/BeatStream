@@ -97,6 +97,16 @@ if (!empty($playlistList)) {
 	}
 }
 
+$songQueueData = array_map(function ($song) {
+	return [
+		'songID' => $song->getSongID(),
+		'title' => $song->getTitle(),
+		'artists' => $song->getArtists(),
+		'fileName' => $song->getFileName(),
+		'imageName' => $song->getImageName()
+	];
+}, $recommendedSongs);
+
 $timeOfDay = "Day";
 
 $currentHour = date('H');
@@ -154,7 +164,8 @@ include("../topBar.php"); ?>
 										<div class="card shadow-sm border-0"
 											 style="border-radius: 10px; cursor: pointer;">
 											<div class="card-body d-flex align-items-center p-3"
-												 data-song-id="<?php echo $song->getSongID(); ?>">
+												 data-song-id="<?php echo $song->getSongID(); ?>"
+												 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
 												<?php if (!empty($song->getimageName())): ?>
 													<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 														 class="me-3 rounded"

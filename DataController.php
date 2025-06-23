@@ -14,13 +14,13 @@ class DataController
 	/**
 	 * @throws Exception
 	 */
-	public static function getSongList(): array
+	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
 		FROM song, artist, releases_song
 		WHERE song.songID = releases_song.songID
 		AND artist.artistID = releases_song.artistID
-		ORDER BY song.title;");
+		ORDER BY " . $sortBy . ";");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -43,9 +43,9 @@ class DataController
 		return $songList;
 	}
 
-	public static function getArtistList(): array
+	public static function getArtistList(string $sortBy = "artist.name ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT * FROM artist ORDER BY name");
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM artist ORDER BY " . $sortBy . ";");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -60,9 +60,9 @@ class DataController
 		return $artistList;
 	}
 
-	public static function getUserList(): array
+	public static function getUserList(string $sortBy = "user.username ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT * FROM user ORDER BY username;");
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM user ORDER BY " . $sortBy . ";");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -77,13 +77,13 @@ class DataController
 		return $userList;
 	}
 
-	public static function getPlaylistList(): array
+	public static function getPlaylistList(string $sortBy = "playlist.name ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, name, length, duration, creatorID, song.songID
 		FROM playlist, in_playlist, song
 		WHERE song.songID = in_playlist.songID
   		AND playlist.playlistID = in_playlist.playlistID
-		ORDER BY name;");
+		ORDER BY " . $sortBy . ";");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -109,13 +109,13 @@ class DataController
 		return $playlistList;
 	}
 
-	public static function getAlbumList(): array
+	public static function getAlbumList(string $sortBy = "album.title ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, title, name, album.imageName, length, duration
 		FROM album, artist, releases_album
 		WHERE releases_album.artistID = artist.artistID
 		AND album.albumID = releases_album.albumID
-		ORDER BY album.title;");
+		ORDER BY " . $sortBy . ";");
 
 		$stmt->execute();
 		$result = $stmt->get_result();

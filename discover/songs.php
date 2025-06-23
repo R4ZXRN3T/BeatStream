@@ -15,10 +15,27 @@ session_start();
 
 <body>
 <?php
+$sortBy = $_POST['sortInput'] ?? 'song.title ASC';
+
 include("../DataController.php");
-$songList = DataController::getSongList();
+$songList = DataController::getSongList($sortBy);
+
+$songQueueData = array_map(function ($song) {
+	return [
+		'songID' => $song->getSongID(),
+		'title' => $song->getTitle(),
+		'artists' => $song->getArtists(),
+		'fileName' => $song->getFileName(),
+		'imageName' => $song->getImageName()
+	];
+}, $songList);
 include("../topBar.php");
 ?>
+<script>
+	if (window.history.replaceState) {
+		window.history.replaceState(null, null, window.location.href);
+	}
+</script>
 
 <div class="container-fluid">
 	<div class="row">
@@ -51,6 +68,23 @@ include("../topBar.php");
 				<p class="text-center">Explore our collection of songs</p>
 			</div>
 
+			<div class="container mt-4 justify-content-center" style="width: 600px">
+				<form class="d-flex" action="songs.php" method="post">
+					<label for="sortInput" class="form-label me-2" style="width: 70px; align-content: center">Sort
+						by:</label>
+					<select class="form-select" id="sortInput" name="sortInput" style="align-content: center"
+							onchange='this.form.submit();'>
+						<option value='song.title ASC'>Title ascending</option>
+						<option value='song.title DESC'>Title descending</option>
+						<option value='artist.name ASC'>Artist ascending</option>
+						<option value='artist.name DESC'>Artist descending</option>
+					</select>
+				</form>
+			</div>
+
+
+			<script>document.getElementById("sortInput").value = "<?php echo $sortBy ?>";</script>
+
 			<!-- Song List -->
 			<div class="container mt-4">
 				<div class="row" style="justify-content: center; width: 100%; margin: auto;">
@@ -59,7 +93,10 @@ include("../topBar.php");
 							<div class="col-md-4 mb-4">
 								<div class="card shadow-sm border-0"
 									 style="border-radius: 10px; width: 100%; height: auto;">
-									<div class="card-body d-flex align-items-center p-3" style="width: 100%;" data-song-id="<?php echo $song->getSongID(); ?>">
+									<div class="card-body d-flex align-items-center p-3 position-relative"
+										 style="width: 100%;"
+										 data-song-id="<?php echo $song->getSongID(); ?>"
+										 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
 										<?php if (!empty($song->getimageName())): ?>
 											<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 												 class="me-3 rounded"

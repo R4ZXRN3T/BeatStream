@@ -1,7 +1,30 @@
+<script>
+	// Function to highlight the currently playing song
+	function updateCurrentlyPlaying(songId) {
+		// Remove highlight from all cards
+		document.querySelectorAll('.card-body[data-song-id]').forEach(card => {
+			card.classList.remove('playing');
+		});
+
+		// Add highlight to currently playing song
+		if (songId) {
+			const currentCard = document.querySelector(`.card-body[data-song-id="${songId}"]`);
+			if (currentCard) {
+				currentCard.classList.add('playing');
+			}
+		}
+	}
+
+	// Custom event listener for when a song starts playing
+	document.addEventListener('songPlaying', function (e) {
+		updateCurrentlyPlaying(e.detail.songId);
+	});
+</script>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <!-- Music Player -->
-<div id="musicPlayer" class="fixed-bottom bg-dark text-white p-2 d-none">
+<div id="musicPlayer" class="fixed-bottom bg-dark text-white p-2">
 	<div class="container-fluid">
 		<div class="row align-items-center">
 			<!-- Song Info -->
@@ -29,7 +52,7 @@
 					</div>
 
 					<!-- Progress Bar -->
-					<div class="progress w-100" style="height: 5px;">
+					<div class="progress w-100" style="height: 5px; cursor: pointer;">
 						<div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
 					</div>
 					<div class="d-flex justify-content-between w-100">
@@ -42,14 +65,14 @@
 			<!-- Volume Control -->
 			<div class="col-md-3 text-end">
 				<div class="d-flex align-items-center justify-content-end">
-					<i class="bi bi-volume-up me-2"></i>
+					<i id="volumeIcon" class="bi bi-volume-up me-2"></i>
 					<input type="range" class="form-range" id="volumeControl" min="0" max="100" value="100"
 						   style="width: 100px;">
 				</div>
 			</div>
 		</div>
 	</div>
-	<audio id="audioPlayer" src=""></audio>
+	<audio id="audioPlayer"></audio>
 	<div id="queuePanel" class="position-absolute end-0 bottom-100 bg-dark p-3 d-none"
 		 style="width: 300px; max-height: 400px; overflow-y: auto;">
 		<h6 class="mb-3">Queue
@@ -58,313 +81,432 @@
 		<ul id="queueList" class="list-group list-group-flush bg-transparent"></ul>
 	</div>
 </div>
+
 <script>
-	// Replace the existing song card click event listeners with this new version
 	document.addEventListener('DOMContentLoaded', function () {
-		// Get existing elements
-		const musicPlayer = document.getElementById('musicPlayer');
-		const audioPlayer = document.getElementById('audioPlayer');
-		const playPauseBtn = document.getElementById('playPauseBtn');
-		const progressBar = document.getElementById('progressBar');
-		const volumeControl = document.getElementById('volumeControl');
-		const playerCover = document.getElementById('playerCover');
-		const playerTitle = document.getElementById('playerTitle');
-		const playerArtist = document.getElementById('playerArtist');
-		const currentTime = document.getElementById('currentTime');
-		const totalTime = document.getElementById('totalTime');
+		class MusicPlayer {
+			constructor() {
+				// Base paths
+				this.basePath = '/BeatStream';
+				this.audioBasePath = `${this.basePath}/audio/`;
+				this.imageBasePath = `${this.basePath}/images/song/`;
 
-		// Get new queue elements
-		const prevBtn = document.getElementById('prevBtn');
-		const nextBtn = document.getElementById('nextBtn');
-		const queueBtn = document.getElementById('queueBtn');
-		const queuePanel = document.getElementById('queuePanel');
-		const queueList = document.getElementById('queueList');
-		const clearQueueBtn = document.getElementById('clearQueueBtn');
+				// Player elements
+				this.playerUI = document.getElementById('musicPlayer');
+				this.audio = document.getElementById('audioPlayer');
+				this.playPauseBtn = document.getElementById('playPauseBtn');
+				this.progressBar = document.getElementById('progressBar');
+				this.progressContainer = document.querySelector('.progress');
+				this.volumeControl = document.getElementById('volumeControl');
+				this.volumeIcon = document.getElementById('volumeIcon');
+				this.playerCover = document.getElementById('playerCover');
+				this.playerTitle = document.getElementById('playerTitle');
+				this.playerArtist = document.getElementById('playerArtist');
+				this.currentTimeEl = document.getElementById('currentTime');
+				this.totalTimeEl = document.getElementById('totalTime');
 
-		// Queue state
-		let queue = [];
-		let currentIndex = -1;
-		let history = [];
+				// Queue elements
+				this.prevBtn = document.getElementById('prevBtn');
+				this.nextBtn = document.getElementById('nextBtn');
+				this.queueBtn = document.getElementById('queueBtn');
+				this.queuePanel = document.getElementById('queuePanel');
+				this.queueList = document.getElementById('queueList');
+				this.clearQueueBtn = document.getElementById('clearQueueBtn');
 
-		// Add click event listeners to all song cards
-		const songCards = document.querySelectorAll('.card-body[data-song-id]');
-		songCards.forEach(card => {
-			card.addEventListener('click', function () {
-				const clickedSongId = this.dataset.songId;
+				// Queue state
+				this.queue = [];
+				this.currentIndex = -1;
+				this.history = [];
 
-				// Collect all song IDs from recommended songs section
-				const allSongIds = [];
-				songCards.forEach(songCard => {
-					allSongIds.push(songCard.dataset.songId);
+				// Initialize the player
+				this.init();
+			}
+
+			init() {
+				// Set initial volume
+				this.audio.volume = this.volumeControl.value / 100;
+
+				// Hide player initially
+				this.playerUI.classList.add('d-none');
+
+				// Initialize all event listeners
+				this.setupEventListeners();
+				this.setupSongCardListeners();
+
+				// Listen for custom events
+				document.addEventListener('playSingleSong', (e) => {
+					this.loadSingleSong(e.detail.songId);
+				});
+			}
+
+			setupEventListeners() {
+				// Player controls
+				this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+				this.nextBtn.addEventListener('click', () => this.playNext());
+				this.prevBtn.addEventListener('click', () => this.playPrevious());
+
+				// Queue controls
+				this.queueBtn.addEventListener('click', (e) => {
+					e.stopPropagation(); // Stop event from bubbling up to document
+					this.queuePanel.classList.toggle('d-none');
+					this.updateQueueDisplay();
 				});
 
-				// Clear current queue
-				queue = [];
-				currentIndex = -1;
+				this.clearQueueBtn.addEventListener('click', () => this.clearQueue());
 
-				// Track which song to play first
-				let songToPlayIndex = 0;
+				// Audio events
+				this.audio.addEventListener('ended', () => this.playNext());
+				this.audio.addEventListener('timeupdate', () => this.updateProgress());
+				this.audio.addEventListener('loadedmetadata', () => this.updateTotalTime());
+				this.audio.addEventListener('play', () => {
+					this.playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+				});
+				this.audio.addEventListener('pause', () => {
+					this.playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+				});
 
-				// Add all songs to queue
-				let songsLoaded = 0;
-				allSongIds.forEach((songId, index) => {
-					// Mark which song was clicked
-					if (songId === clickedSongId) {
-						songToPlayIndex = index;
+				// Progress bar
+				this.progressContainer.addEventListener('click', (e) => this.seekTo(e));
+
+				// Volume control
+				this.volumeControl.addEventListener('input', () => {
+					this.audio.volume = this.volumeControl.value / 100;
+					this.updateVolumeIcon();
+				});
+
+				this.volumeIcon.addEventListener('click', () => this.toggleMute());
+
+				// Close queue panel when clicking outside
+				document.addEventListener('click', (e) => {
+					if (!this.queuePanel.contains(e.target) && e.target !== this.queueBtn) {
+						this.queuePanel.classList.add('d-none');
 					}
+				});
+			}
 
-					fetch(`/BeatStream/api/getSong.php?id=${songId}`)
-						.then(response => response.json())
-						.then(data => {
-							queue.push(data);
-							songsLoaded++;
+			setupSongCardListeners() {
+				const songCards = document.querySelectorAll('.card-body[data-song-id]');
+				songCards.forEach(card => {
+					card.addEventListener('click', () => {
+						const songId = card.dataset.songId;
 
-							// When all songs are loaded
-							if (songsLoaded === allSongIds.length) {
-								// Set current index to the clicked song
-								currentIndex = songToPlayIndex;
-
-								// Play the clicked song
-								playSong(queue[currentIndex]);
-
-								// Show the music player
-								musicPlayer.classList.remove('d-none');
-
-								// Update queue display
-								updateQueueDisplay();
+						try {
+							if (card.dataset.songQueue) {
+								const queueData = JSON.parse(card.dataset.songQueue);
+								this.loadQueueFromData(queueData, songId);
+							} else {
+								this.loadSingleSong(songId);
 							}
+						} catch (error) {
+							console.error('Error processing song data:', error);
+							this.loadSingleSong(songId);
+						}
+					});
+				});
+			}
+
+			loadQueueFromData(queueData, clickedSongId) {
+				// Reset queue
+				this.queue = [];
+				this.currentIndex = -1;
+
+				// Process queue data
+				queueData.forEach(song => {
+					this.queue.push({
+						songID: song.songID,
+						title: song.title,
+						artists: song.artists,
+						fileName: song.fileName,
+						imageName: song.imageName || ''
+					});
+
+					// Convert both to strings for comparison
+					if (String(song.songID) === String(clickedSongId)) {
+						this.currentIndex = this.queue.length - 1;
+					}
+				});
+
+				// Play the selected song
+				if (this.currentIndex >= 0) {
+					this.playSong(this.queue[this.currentIndex]);
+					this.playerUI.classList.remove('d-none');
+					this.updateQueueDisplay();
+				}
+			}
+
+			loadSingleSong(songId) {
+				fetch(`${this.basePath}/api/getSong.php?id=${songId}`)
+					.then(response => {
+						if (!response.ok) {
+							throw new Error(`Network response was not ok: ${response.status}`);
+						}
+						return response.json();
+					})
+					.then(data => {
+						this.queue = [data];
+						this.currentIndex = 0;
+						this.playSong(data);
+						this.playerUI.classList.remove('d-none');
+						this.updateQueueDisplay();
+					})
+					.catch(error => {
+						console.error('Error fetching song data:', error);
+						alert('Failed to load song. Please try again.');
+					});
+			}
+
+			playSong(song) {
+				if (!song) return;
+
+				// Update audio source
+				const audioPath = `${this.audioBasePath}${song.fileName}`;
+				this.audio.src = audioPath;
+
+				// Update player information
+				this.playerTitle.textContent = song.title;
+				this.playerArtist.textContent = song.artists;
+
+				// Update cover image
+				if (song.imageName) {
+					this.playerCover.src = `${this.imageBasePath}${song.imageName}`;
+				} else {
+					this.playerCover.src = '../images/defaultSong.webp';
+				}
+
+				// Play the song
+				const playPromise = this.audio.play();
+
+				if (playPromise !== undefined) {
+					playPromise
+						.then(() => {
+							// Playback started successfully
 						})
 						.catch(error => {
-							console.error('Error fetching song data:', error);
-							songsLoaded++;
+							console.error('Error playing audio:', error);
+							this.playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+
+							// Handle autoplay policy
+							if (error.name === 'NotAllowedError') {
+								// User needs to interact first, so we'll wait for user to click play
+							}
 						});
-				});
-			});
-		});
-
-		// Function to play a song
-		function playSong(song) {
-			// Update the audio source
-			audioPlayer.src = `/BeatStream/audio/${song.fileName}`;
-
-			// Update player information
-			playerTitle.textContent = song.title;
-			playerArtist.textContent = song.artists;
-
-			// Update cover image
-			if (song.imageName) {
-				playerCover.src = `/BeatStream/images/song/${song.imageName}`;
-			} else {
-				playerCover.src = '../images/defaultSong.webp';
+				}
+				document.dispatchEvent(new CustomEvent('songPlaying', {
+					detail: {songId: song.songID}
+				}));
 			}
 
-			// Play the song
-			audioPlayer.play()
-				.then(() => {
-					// Update play button icon
-					playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
-				})
-				.catch(error => {
-					console.error('Error playing audio:', error);
-				});
-		}
-
-
-		// Function to load and play a song by ID
-		function loadSong(songId) {
-			fetch(`/BeatStream/api/getSong.php?id=${songId}`)
-				.then(response => response.json())
-				.then(data => {
-					addToQueue(songId, true);
-				})
-				.catch(error => {
-					console.error('Error fetching song data:', error);
-				});
-		}
-
-		// Update queue display
-		function updateQueueDisplay() {
-			queueList.innerHTML = '';
-
-			queue.forEach((song, index) => {
-				const li = document.createElement('li');
-				li.className = 'list-group-item bg-dark text-white border-secondary d-flex align-items-center';
-				if (index === currentIndex) {
-					li.classList.add('active');
+			togglePlayPause() {
+				if (this.currentIndex < 0 && this.queue.length > 0) {
+					this.currentIndex = 0;
+					this.playSong(this.queue[0]);
+					return;
 				}
 
-				const img = document.createElement('img');
-				img.src = song.imageName ? `/BeatStream/images/song/${song.imageName}` : '../images/defaultSong.webp';
-				img.className = 'me-2';
-				img.style = 'width: 30px; height: 30px; object-fit: cover;';
-
-				const songInfo = document.createElement('div');
-				songInfo.className = 'flex-grow-1';
-				songInfo.innerHTML = `
-        <div class="text-truncate">${song.title}</div>
-        <small class="text-muted">${song.artists}</small>
-      `;
-
-				const removeBtn = document.createElement('button');
-				removeBtn.className = 'btn btn-sm text-danger';
-				removeBtn.innerHTML = '<i class="bi bi-x"></i>';
-				removeBtn.onclick = (e) => {
-					e.stopPropagation();
-					removeFromQueue(index);
-				};
-
-				li.appendChild(img);
-				li.appendChild(songInfo);
-				li.appendChild(removeBtn);
-
-				li.onclick = () => playFromQueue(index);
-
-				queueList.appendChild(li);
-			});
-		}
-
-		// Play a specific song from the queue
-		function playFromQueue(index) {
-			if (index >= 0 && index < queue.length) {
-				// Add current song to history if one is playing
-				if (currentIndex >= 0) {
-					history.push(queue[currentIndex]);
-				}
-
-				currentIndex = index;
-				playSong(queue[currentIndex]);
-				updateQueueDisplay();
-			}
-		}
-
-		// Remove a song from the queue
-		function removeFromQueue(index) {
-			if (index === currentIndex) {
-				// If removing the currently playing song, play the next one
-				playNext();
-				queue.splice(index, 1);
-				if (currentIndex >= index) {
-					currentIndex--;
-				}
-			} else {
-				queue.splice(index, 1);
-				if (currentIndex > index) {
-					currentIndex--;
-				}
-			}
-			updateQueueDisplay();
-		}
-
-		// Play the next song in the queue
-		function playNext() {
-			if (queue.length > 0) {
-				if (currentIndex >= 0) {
-					history.push(queue[currentIndex]);
-				}
-
-				if (currentIndex < queue.length - 1) {
-					currentIndex++;
-					playSong(queue[currentIndex]);
+				if (this.audio.paused) {
+					this.audio.play();
 				} else {
-					// If at the end of the queue, reset to -1
-					currentIndex = -1;
-					audioPlayer.pause();
-					playerTitle.textContent = 'No song selected';
-					playerArtist.textContent = '';
-					playerCover.src = '../images/defaultSong.webp';
+					this.audio.pause();
+				}
+			}
+
+			playNext() {
+				if (this.queue.length === 0) return;
+
+				// Add current song to history if one is playing
+				if (this.currentIndex >= 0) {
+					this.history.push(this.queue[this.currentIndex]);
 				}
 
-				updateQueueDisplay();
+				if (this.currentIndex < this.queue.length - 1) {
+					this.currentIndex++;
+					this.playSong(this.queue[this.currentIndex]);
+				} else {
+					// End of queue
+					this.audio.pause();
+					this.currentIndex = -1;
+					this.playerTitle.textContent = 'End of queue';
+					this.playerArtist.textContent = 'Play again or add more songs';
+				}
+
+				this.updateQueueDisplay();
+			}
+
+			playPrevious() {
+				if (this.audio.currentTime > 3) {
+					// If current song has played more than 3 seconds, restart it
+					this.audio.currentTime = 0;
+					return;
+				}
+
+				if (this.history.length > 0) {
+					// Get previous song from history
+					const prevSong = this.history.pop();
+
+					// Add the previous song to the queue and update index
+					if (this.currentIndex >= 0) {
+						// Insert the previous song at the current position
+						this.queue.splice(this.currentIndex, 0, prevSong);
+						// No need to change currentIndex since the song was inserted at that position
+						this.playSong(prevSong);
+					} else {
+						// If no song is currently playing
+						this.queue.unshift(prevSong);
+						this.currentIndex = 0;
+						this.playSong(prevSong);
+					}
+
+					this.updateQueueDisplay();
+				}
+			}
+
+			playFromQueue(index) {
+				if (index >= 0 && index < this.queue.length) {
+					// Add current song to history if one is playing
+					if (this.currentIndex >= 0) {
+						this.history.push(this.queue[this.currentIndex]);
+					}
+
+					this.currentIndex = index;
+					this.playSong(this.queue[index]);
+					this.updateQueueDisplay();
+				}
+			}
+
+			removeFromQueue(index) {
+				if (index === this.currentIndex) {
+					// If removing currently playing song
+					if (this.queue.length > 1) {
+						// Play next song if available
+						this.queue.splice(index, 1);
+						if (index >= this.queue.length) {
+							this.currentIndex = this.queue.length - 1;
+						}
+						this.playSong(this.queue[this.currentIndex]);
+					} else {
+						// No more songs
+						this.queue = [];
+						this.currentIndex = -1;
+						this.audio.pause();
+						this.playerTitle.textContent = 'No song selected';
+						this.playerArtist.textContent = 'Unknown artist';
+						this.playerCover.src = '../images/defaultSong.webp';
+					}
+				} else {
+					// Remove song and adjust current index if needed
+					this.queue.splice(index, 1);
+					if (index < this.currentIndex) {
+						this.currentIndex--;
+					}
+				}
+
+				this.updateQueueDisplay();
+			}
+
+			clearQueue() {
+				if (confirm('Are you sure you want to clear the queue?')) {
+					const currentSong = this.currentIndex >= 0 ? this.queue[this.currentIndex] : null;
+					this.queue = currentSong ? [currentSong] : [];
+					this.currentIndex = currentSong ? 0 : -1;
+					this.history = [];
+					this.updateQueueDisplay();
+				}
+			}
+
+			updateQueueDisplay() {
+				this.queueList.innerHTML = '';
+
+				if (this.queue.length === 0) {
+					const emptyMessage = document.createElement('li');
+					emptyMessage.className = 'list-group-item bg-dark text-white border-secondary';
+					emptyMessage.textContent = 'Queue is empty';
+					this.queueList.appendChild(emptyMessage);
+					return;
+				}
+
+				this.queue.forEach((song, index) => {
+					const li = document.createElement('li');
+					li.className = 'list-group-item bg-dark text-white border-secondary d-flex align-items-center';
+					if (index === this.currentIndex) {
+						li.classList.add('active', 'bg-primary', 'bg-opacity-50');
+					}
+
+					// Create song image
+					const img = document.createElement('img');
+					img.src = song.imageName ? `${this.imageBasePath}${song.imageName}` : '../images/defaultSong.webp';
+					img.alt = song.title;
+					img.className = 'me-2';
+					img.style = 'width: 30px; height: 30px; object-fit: cover;';
+
+					// Create song info
+					const songInfo = document.createElement('div');
+					songInfo.className = 'flex-grow-1';
+					songInfo.innerHTML = `<div class="text-truncate">${song.title}</div><small class="text-muted">${song.artists}</small>`;
+
+					// Create remove button
+					const removeBtn = document.createElement('button');
+					removeBtn.className = 'btn btn-sm text-danger';
+					removeBtn.innerHTML = '<i class="bi bi-x"></i>';
+					removeBtn.onclick = (e) => {
+						e.stopPropagation();
+						this.removeFromQueue(index);
+					};
+
+					// Add elements to list item
+					li.appendChild(img);
+					li.appendChild(songInfo);
+					li.appendChild(removeBtn);
+
+					// Add click event to play this song
+					li.onclick = () => this.playFromQueue(index);
+
+					// Add to queue list
+					this.queueList.appendChild(li);
+				});
+			}
+
+			updateProgress() {
+				if (isNaN(this.audio.duration)) return;
+
+				const progress = (this.audio.currentTime / this.audio.duration) * 100;
+				this.progressBar.style.width = `${progress}%`;
+
+				// Update current time display
+				const minutes = Math.floor(this.audio.currentTime / 60);
+				const seconds = Math.floor(this.audio.currentTime % 60).toString().padStart(2, '0');
+				this.currentTimeEl.textContent = `${minutes}:${seconds}`;
+			}
+
+			updateTotalTime() {
+				if (isNaN(this.audio.duration)) return;
+
+				const minutes = Math.floor(this.audio.duration / 60);
+				const seconds = Math.floor(this.audio.duration % 60).toString().padStart(2, '0');
+				this.totalTimeEl.textContent = `${minutes}:${seconds}`;
+			}
+
+			seekTo(event) {
+				const percent = event.offsetX / this.progressContainer.offsetWidth;
+				this.audio.currentTime = percent * this.audio.duration;
+			}
+
+			toggleMute() {
+				this.audio.muted = !this.audio.muted;
+				this.updateVolumeIcon();
+			}
+
+			updateVolumeIcon() {
+				if (this.audio.muted || this.audio.volume === 0) {
+					this.volumeIcon.className = 'bi bi-volume-mute me-2';
+				} else if (this.audio.volume < 0.5) {
+					this.volumeIcon.className = 'bi bi-volume-down me-2';
+				} else {
+					this.volumeIcon.className = 'bi bi-volume-up me-2';
+				}
 			}
 		}
 
-		// Play the previous song
-		function playPrevious() {
-			if (history.length > 0) {
-				// Add current song back to queue if one is playing
-				if (currentIndex >= 0) {
-					queue.unshift(queue[currentIndex]);
-					currentIndex = 0;
-				}
-
-				// Get the most recent song from history
-				const previousSong = history.pop();
-				queue.unshift(previousSong);
-				currentIndex = 0;
-				playSong(previousSong);
-				updateQueueDisplay();
-			}
-		}
-
-		// Event listeners for queue controls
-		nextBtn.addEventListener('click', playNext);
-		prevBtn.addEventListener('click', playPrevious);
-
-		// Toggle queue panel
-		queueBtn.addEventListener('click', function () {
-			queuePanel.classList.toggle('d-none');
-			updateQueueDisplay();
-		});
-
-		// Clear queue
-		clearQueueBtn.addEventListener('click', function () {
-			if (confirm('Are you sure you want to clear the queue?')) {
-				queue = [];
-				if (currentIndex >= 0) {
-					// Keep the current song
-					queue.push(audioPlayer.src ? {
-						title: playerTitle.textContent,
-						artists: playerArtist.textContent,
-						fileName: audioPlayer.src.split('/').pop(),
-						imageName: playerCover.src.includes('defaultSong') ? '' : playerCover.src.split('/').pop()
-					} : null);
-				}
-				currentIndex = queue.length > 0 ? 0 : -1;
-				updateQueueDisplay();
-			}
-		});
-
-		// When song ends, play the next one
-		audioPlayer.addEventListener('ended', playNext);
-
-		// Play/Pause button functionality
-		playPauseBtn.addEventListener('click', function () {
-			if (audioPlayer.paused) {
-				audioPlayer.play();
-				this.innerHTML = '<i class="bi bi-pause-fill"></i>';
-			} else {
-				audioPlayer.pause();
-				this.innerHTML = '<i class="bi bi-play-fill"></i>';
-			}
-		});
-
-		// Update progress bar as song plays
-		audioPlayer.addEventListener('timeupdate', function () {
-			const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-			progressBar.style.width = `${progress}%`;
-
-			// Update current time display
-			const minutes = Math.floor(audioPlayer.currentTime / 60);
-			const seconds = Math.floor(audioPlayer.currentTime % 60).toString().padStart(2, '0');
-			currentTime.textContent = `${minutes}:${seconds}`;
-		});
-
-		// Set total time when metadata is loaded
-		audioPlayer.addEventListener('loadedmetadata', function () {
-			const minutes = Math.floor(audioPlayer.duration / 60);
-			const seconds = Math.floor(audioPlayer.duration % 60).toString().padStart(2, '0');
-			totalTime.textContent = `${minutes}:${seconds}`;
-		});
-
-		// Volume control
-		volumeControl.addEventListener('input', function () {
-			audioPlayer.volume = this.value / 100;
-		});
-
-		// Click on progress bar to seek
-		document.querySelector('.progress').addEventListener('click', function (e) {
-			const percent = e.offsetX / this.offsetWidth;
-			audioPlayer.currentTime = percent * audioPlayer.duration;
-		});
+		// Initialize the music player
+		const player = new MusicPlayer();
 	});
 </script>
