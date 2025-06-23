@@ -15,10 +15,18 @@ session_start();
 
 <body>
 <?php
+$sortBy = $_POST['sortInput'] ?? 'playlist.name ASC';
+
 include("../DataController.php");
 $playlistList = DataController::getPlaylistList();
 include("../topBar.php");
 ?>
+
+<script>
+	if (window.history.replaceState) {
+		window.history.replaceState(null, null, window.location.href);
+	}
+</script>
 
 <div class="container-fluid">
 	<div class="row">
@@ -50,6 +58,21 @@ include("../topBar.php");
 				<h1 class="text-center" style=" font-weight: bold">Discover Playlists</h1>
 				<p class="text-center">Explore all playlists on our platform</p>
 			</div>
+
+			<div class="container mt-4 justify-content-center" style="width: 600px">
+				<form class="d-flex" action="playlists.php" method="post">
+					<label for="sortInput" class="form-label me-2" style="width: 70px; align-content: center">Sort
+						by:</label>
+					<select class="form-select" id="sortInput" name="sortInput" style="align-content: center"
+							onchange='this.form.submit();'>
+						<option value='playlist.name ASC'>Name ascending</option>
+						<option value='playlist.name DESC'>Name descending</option>
+					</select>
+				</form>
+			</div>
+
+
+			<script>document.getElementById("sortInput").value = "<?php echo $sortBy ?>";</script>
 
 			<!-- Song List -->
 			<div class="container mt-4">

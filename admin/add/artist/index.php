@@ -88,7 +88,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			// Process file upload if form fields are valid
 			if ($isValid && isset($_FILES['imageFile'])) {
-				$uploadDir = "../../../uploads/artists/";
+				$uploadDir = "../../../images/artist/";
 
 				// Create directory if it doesn't exist
 				if (!file_exists($uploadDir)) {
