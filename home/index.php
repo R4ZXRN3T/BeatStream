@@ -148,16 +148,16 @@ include("../topBar.php"); ?>
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md" style="min-height: 80vh; margin-left: 0; padding: 2rem;">
+		<main class="main col-md">
 			<div class="container" style="max-width: 1700px;">
-				<h1 class="text-center mb-4"
+				<h1 class="text-start mb-4"
 					style="font-weight: bold;"><?php echo "Good " . $timeOfDay . "!"; ?></h1>
 
 				<div class="row">
 					<!-- Songs Section -->
 					<div class="col-md-8">
 						<section class="mb-5">
-							<h2 class="align-left mb-4 h-1" style="margin-left: 30px">Recommended Songs:</h2>
+							<h2 class="text-start mb-4 recommended-header">Recommended Songs:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedSongs as $song): ?>
 									<div class="col-12 col-md-6">
@@ -192,65 +192,71 @@ include("../topBar.php"); ?>
 
 					<!-- Albums and Playlists Section -->
 					<div class="col-md-4">
-						<section class="mb-5 g-4">
-							<h2 class="align-left mb-4" style="margin-left: 30px; ">Recommended Albums:</h2>
+						<section class="mb-5 g-4 a-p-column" style="margin-left: 50px">
+							<h2 class="text-start mb-4 recommended-header">Recommended Albums:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedAlbums as $album): ?>
 									<div class="col-12">
-										<div class="card shadow-sm border-0" style="border-radius: 10px;">
-											<div class="card-body d-flex align-items-center p-3">
-												<?php if (!empty($album->getimageName())): ?>
-													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($album->getimageName()); ?>"
-														 class="me-3 rounded"
-														 alt="<?php echo htmlspecialchars($album->getimageName()); ?>"
-														 style="width: 50px; height: 50px; object-fit: cover;">
-												<?php else: ?>
-													<img src="../images/defaultAlbum.webp" class="me-3 rounded"
-														 alt="Default Album Cover"
-														 style="width: 50px; height: 50px; object-fit: cover;">
-												<?php endif; ?>
-												<div class="card-body">
-													<h5 class="card-title"
-														style="font-weight: bold;"><?php echo htmlspecialchars($album->getTitle()); ?></h5>
-													<p class="card-text"
-													   style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+										<a class="customLink"
+										   href="../view/album.php?id=<?php echo $album->getAlbumID() ?>">
+											<div class="card shadow-sm border-0" style="border-radius: 10px;">
+												<div class="card-body d-flex align-items-center p-3">
+													<?php if (!empty($album->getimageName())): ?>
+														<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getimageName()); ?>"
+															 class="me-3 rounded"
+															 alt="<?php echo htmlspecialchars($album->getimageName()); ?>"
+															 style="width: 50px; height: 50px; object-fit: cover;">
+													<?php else: ?>
+														<img src="../images/defaultAlbum.webp" class="me-3 rounded"
+															 alt="Default Album Cover"
+															 style="width: 50px; height: 50px; object-fit: cover;">
+													<?php endif; ?>
+													<div class="card-body">
+														<h5 class="card-title"
+															style="font-weight: bold;"><?php echo htmlspecialchars($album->getName()); ?></h5>
+														<p class="card-text"
+														   style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+													</div>
 												</div>
 											</div>
-										</div>
+										</a>
 									</div>
 								<?php endforeach; ?>
 							</div>
 						</section>
 
-						<section>
-							<h2 class="align-left mb-4" style="margin-left: 30px">Recommended Playlists:</h2>
+						<section class="mb-5 g-4 a-p-column">
+							<h2 class="text-start mb-4 recommended-header">Recommended Playlists:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedPlaylists as $playlist): ?>
-									<div class="col-12" style="padding-left: 2rem;">
-										<div class="card shadow-sm border-0" style="border-radius: 10px;">
-											<div class="card-body d-flex align-items-center p-2">
-												<?php if (!empty($playlist->getimageName())): ?>
-													<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
-														 class="me-3 rounded"
-														 alt="<?php echo htmlspecialchars($playlist->getimageName()); ?>"
-														 style="width: 50px; height: 50px; object-fit: cover;">
-												<?php else: ?>
-													<img src="../images/defaultPlaylist.webp" class="me-3 rounded"
-														 alt="Default Playlist Cover"
-														 style="width: 50px; height: 50px; object-fit: cover;">
-												<?php endif; ?>
-												<div class="card-body">
-													<h5 class="card-title"
-														style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getName()); ?></h5>
-													<p class="card-text" style="color: #6c757d;">
-														<?php
-														$creatorID = $playlist->getCreatorID();
-														echo isset($usernames[$creatorID]) ? htmlspecialchars($usernames[$creatorID]) : 'Unknown User';
-														?>
-													</p>
+									<div class="col-12">
+										<a class="customLink"
+										   href="../view/playlist.php?id=<?php echo $playlist->getPlaylistID() ?>">
+											<div class="card shadow-sm border-0" style="border-radius: 10px;">
+												<div class="card-body d-flex align-items-center p-2">
+													<?php if (!empty($playlist->getimageName())): ?>
+														<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
+															 class="me-3 rounded"
+															 alt="<?php echo htmlspecialchars($playlist->getimageName()); ?>"
+															 style="width: 80px; height: 80px; object-fit: cover;">
+													<?php else: ?>
+														<img src="../images/defaultPlaylist.webp" class="me-3 rounded"
+															 alt="Default Playlist Cover"
+															 style="width: 50px; height: 50px; object-fit: cover;">
+													<?php endif; ?>
+													<div class="card-body">
+														<h5 class="card-title"
+															style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getName()); ?></h5>
+														<p class="card-text" style="color: #6c757d;">
+															<?php
+															$creatorID = $playlist->getCreatorID();
+															echo isset($usernames[$creatorID]) ? htmlspecialchars($usernames[$creatorID]) : 'Unknown User';
+															?>
+														</p>
+													</div>
 												</div>
 											</div>
-										</div>
+										</a>
 									</div>
 								<?php endforeach; ?>
 							</div>

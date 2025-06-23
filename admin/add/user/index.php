@@ -51,7 +51,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md ms-sm-auto px-0 py-0">
+		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<!-- Admin Navigation Bar -->
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
@@ -87,46 +87,45 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			if (!(
 				!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])
-				&& isset($_FILES["userImage"]) && $_FILES["userImage"]["error"] == 0
 			)) {
 				$isValid = false;
 			}
 
 			if ($isValid) {
 				// Handle file upload
-				$fileName = $_FILES["userImage"]["name"];
-				$fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-				$newFileName = uniqid() . '.' . $fileType; // Generate unique filename
-				$targetFilePath = $uploadDir . $newFileName;
-
-
-				// Check file size (limit to 5MB)
-				if ($_FILES["userImage"]["size"] > 5000000) {
-					$isValid = false;
-					$errorMessage = "File is too large. Maximum size is 2MB.";
+				$newFileName = "";
+				if (isset($_FILES["userImage"]) && $_FILES["userImage"]["error"] == UPLOAD_ERR_OK) {
+					$fileName = $_FILES["userImage"]["name"];
+					$fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+					$newFileName = uniqid() . '.' . $fileType;// Generate unique filename
+					$targetFilePath = $uploadDir . $newFileName;// Check file size (limit to 5MB)
+					if ($_FILES["userImage"]["size"] > 5000000) {
+						$isValid = false;
+						$errorMessage = "File is too large. Maximum size is 2MB.";
+					} else {
+						move_uploaded_file($_FILES["userImage"]["tmp_name"], $targetFilePath);
+					}
 				}
 
 				if ($isValid) {
 					// Upload file
-					if (move_uploaded_file($_FILES["userImage"]["tmp_name"], $targetFilePath)) {
-						// Insert user with the new file path
-						$isAdmin = isset($_POST["isAdminInput"]);
-						DataController::insertUser(new User(
-							0,
-							$_POST["usernameInput"],
-							$_POST["emailInput"],
-							$_POST["userPasswordInput"],
-							"",
-							$isAdmin, // Use the correctly processed boolean value
-							FALSE,
-							$newFileName
-						));
-					} else {
-						echo "<h1 class='text-center mt-4 text-danger'>Error uploading file!</h1>";
-					}
+					// Insert user with the new file path
+					$isAdmin = isset($_POST["isAdminInput"]);
+					DataController::insertUser(new User(
+						0,
+						$_POST["usernameInput"],
+						$_POST["emailInput"],
+						$_POST["userPasswordInput"],
+						"",
+						$isAdmin, // Use the correctly processed boolean value
+						FALSE,
+						$newFileName
+					));
 				} else {
-					echo "<h1 class='text-center mt-4 text-danger'>$errorMessage</h1>";
+					echo "<h1 class='text-center mt-4 text-danger'>Error uploading file!</h1>";
 				}
+			} else {
+				echo "<h1 class='text-center mt-4 text-danger'>$errorMessage</h1>";
 			}
 
 			// Display error message if validation failed
@@ -161,8 +160,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					</div>
 					<div class="form-group">
 						<label for="userImage">Profile Image:</label>
-						<input type="file" id="userImage" name="userImage" class="form-control" accept="image/*"
-							   required>
+						<input type="file" id="userImage" name="userImage" class="form-control" accept="image/*">
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">

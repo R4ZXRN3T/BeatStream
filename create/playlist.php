@@ -77,7 +77,7 @@ include("../topBar.php"); ?>
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem;">
+		<main class="main col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem;">
 
 			<div class="container" style="max-width: 1700px;">
 				<h1 class="mb-4">Create a Playlist</h1>

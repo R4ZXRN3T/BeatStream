@@ -32,7 +32,7 @@ session_start();
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md ms-sm-auto px-0 py-0">
+		<main class="main col-md ms-sm-auto px-0 py-0">
 
 
 			<div class="container mt-4">

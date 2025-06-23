@@ -51,7 +51,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md ms-sm-auto px-0 py-0">
+		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<!-- Admin Navigation Bar -->
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
@@ -81,13 +81,13 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$imageName = '';
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"]) && isset($_FILES["imageFile"])
+				!empty($_POST["nameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"])
 			)) {
 				$isValid = false;
 			}
 
 			// Process file upload if form fields are valid
-			if ($isValid && isset($_FILES['imageFile'])) {
+			if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
 				$uploadDir = "../../../images/artist/";
 
 				// Create directory if it doesn't exist
@@ -96,7 +96,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				}
 
 				$fileExtension = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
-				$imageName = uniqid('artist_') . '.' . $fileExtension;
+				$imageName = uniqid() . '.' . $fileExtension;
 				$targetFile = $uploadDir . $imageName;
 
 				// Check if file is an actual image
@@ -142,8 +142,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					</div>
 					<div class="form-group">
 						<label for="imageFile">Artist Image:</label>
-						<input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*"
-							   required>
+						<input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*">
 					</div>
 					<div class="form-group">
 						<label for="activeSince">active since:</label>

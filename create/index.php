@@ -47,7 +47,7 @@ include("../topBar.php");
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md" style="min-height: 80vh; padding: 2rem;">
+		<main class="main col-md" style="min-height: 80vh; padding: 2rem;">
 
 			<div class="container mt-5">
 				<h2>Create</h2>

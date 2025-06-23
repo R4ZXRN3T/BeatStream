@@ -37,7 +37,7 @@ if (!isset($_SESSION['account_loggedin'])) {
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md ms-sm-auto px-0 py-0">
+		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<div class="container mt-5 text-center">
 				<h1>Welcome, <?php echo $_SESSION['username']; ?>!</h1>

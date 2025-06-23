@@ -51,7 +51,7 @@ include("../topBar.php");
 			</ul>
 		</div>
 
-		<main class="col-md ms-sm-auto px-0 py-0 justify-content-center">
+		<main class="main col-md ms-sm-auto px-0 py-0 justify-content-center">
 			<!-- Discover Songs Header -->
 			<div class="container mt-4">
 				<h1 class="text-center" style=" font-weight: bold">Discover Artists</h1>
@@ -77,26 +77,31 @@ include("../topBar.php");
 			<div class="container mt-4">
 				<div class="row" style="justify-content: center; width: 100%; margin: auto;">
 					<?php if (!empty($artistList)): ?>
-						<?php foreach ($artistList as $artist): ?>
+						<?php foreach ($artistList
+
+									   as $artist): ?>
 							<div class="col-md-4 mb-4">
-								<div class="card shadow-sm border-0" style="border-radius: 10px;">
-									<div class="card-body d-flex align-items-center p-3">
-										<?php if (!empty($artist->getimageName())): ?>
-											<img src="<?php echo "/BeatStream/images/artist/" . htmlspecialchars($artist->getimageName()); ?>"
-												 class="me-3 rounded"
-												 alt="<?php echo htmlspecialchars($artist->getimageName()); ?>"
-												 style="width: 60px; height: 60px; object-fit: cover;">
-										<?php else: ?>
-											<img src="../images/defaultArtist.webp" class="me-3 rounded"
-												 alt="Default Artist image"
-												 style="width: 60px; height: 60px; object-fit: cover;">
-										<?php endif; ?>
-										<div>
-											<h5 class="card-title mb-1"
-												style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($artist->getName()); ?></h5>
+								<a href="../view/artist.php?id=<?php echo $artist->getArtistID(); ?>"
+								   class="text-decoration-none">
+									<div class="card shadow-sm border-0" style="border-radius: 10px;">
+										<div class="card-body d-flex align-items-center p-3">
+											<?php if (!empty($artist->getimageName())): ?>
+												<img src="<?php echo "/BeatStream/images/artist/" . htmlspecialchars($artist->getimageName()); ?>"
+													 class="me-3 rounded"
+													 alt="<?php echo htmlspecialchars($artist->getimageName()); ?>"
+													 style="width: 60px; height: 60px; object-fit: cover;">
+											<?php else: ?>
+												<img src="../images/defaultArtist.webp" class="me-3 rounded"
+													 alt="Default Artist image"
+													 style="width: 60px; height: 60px; object-fit: cover;">
+											<?php endif; ?>
+											<div>
+												<h5 class="card-title mb-1"
+													style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($artist->getName()); ?></h5>
+											</div>
 										</div>
 									</div>
-								</div>
+								</a>
 							</div>
 						<?php endforeach; ?>
 					<?php else: ?>

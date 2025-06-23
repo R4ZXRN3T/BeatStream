@@ -80,8 +80,9 @@ CREATE TABLE releases_album
 
 CREATE TABLE in_album
 (
-	songID  INT,
-	albumId INT,
+	songID    INT,
+	albumId   INT,
+	songIndex INT,
 
 	FOREIGN KEY (songID) REFERENCES song (songID),
 	FOREIGN KEY (albumID) REFERENCES album (albumID),
@@ -93,6 +94,7 @@ CREATE TABLE in_playlist
 (
 	songID     INT,
 	playlistID INT,
+	songIndex  INT,
 
 	FOREIGN KEY (songID) REFERENCES song (songID),
 	FOREIGN KEY (playlistID) REFERENCES playlist (playlistID),
