@@ -37,7 +37,7 @@ if (isset($_SESSION['account_loggedin'])) {
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md ms-sm-auto px-0 py-0">
+		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">

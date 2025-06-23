@@ -1,19 +1,31 @@
+/*
+ * Base Styles
+ */
+body {
+	background-color: #f8f9fa;
+	margin-left: 220px;
+	margin-top: 67px;
+}
+
+/*
+ * Sidebar
+ */
 .sidebar {
 	background: linear-gradient(180deg, #343a40, #212529);
+	border-right: 2px solid #495057;
 	color: white;
-	width: 220px;
 	margin-top: 67px;
 	min-height: 100vh;
-	border-right: 2px solid #495057;
-	padding: 20px 20px;
+	padding: 20px;
+	width: 220px;
 }
 
 .sidebar a {
+	border-radius: 5px;
 	color: #adb5bd;
-	text-decoration: none;
 	display: block;
 	padding: 10px 15px;
-	border-radius: 5px;
+	text-decoration: none;
 	transition: background-color 0.3s, color 0.3s;
 }
 
@@ -28,10 +40,9 @@
 	font-weight: bold;
 }
 
-body {
-	background-color: #f8f9fa;
-}
-
+/*
+ * Navigation
+ */
 .myNavbar {
 	margin-bottom: 20px;
 }
@@ -45,23 +56,19 @@ body {
 	color: white;
 }
 
-body {
-	margin-top: 67px;
-	margin-left: 220px;
-	background-color: #f8f9fa;
-}
-
-table {
-	width: 50%;
+/*
+ * Tables
+ */
+.table {
 	border-collapse: collapse;
 	margin: 0 auto;
+	width: 50%;
 }
 
-th,
-td {
+th, td {
+	border-bottom: 1px solid #ddd;
 	padding: 7px;
 	text-align: left;
-	border-bottom: 1px solid #ddd;
 }
 
 th {
@@ -73,17 +80,56 @@ tr:nth-child(even) {
 	background-color: #c7c7c7;
 }
 
-body {
-	background-color: #f8f9fa;
+/*
+ * Cards and Media
+ */
+.card-body[data-song-id] {
+	cursor: pointer;
+	transition: background-color 0.2s, border-radius 0.2s;
+	border-radius: 0;
 }
 
-.myNavbar {
-	margin-bottom: 20px;
+.card-body[data-song-id]:hover {
+	background-color: rgba(93, 93, 93, 0.5);
+	border-radius: 10px;
 }
 
-.nav-tabs .nav-link.active {
-	background-color: #343a40;
-	color: white;
+.card-body.playing {
+	background-color: rgba(13, 110, 253, 0.1);
+	border-left: 3px solid #0d6efd;
+	border-radius: 10px;
+}
+
+.playing {
+	background-color: rgba(13, 110, 253, 0.1);
+	border-left: 4px solid #0d6efd;
+	border-radius: 10px;
+}
+
+.card-img-top {
+	height: 180px;
+	object-fit: cover;
+}
+
+.a-p-column {
+	margin-left: 50px;
+}
+
+/*
+ * Artist Styles
+ */
+.artist-header {
+	background-color: #ffffff;
+	margin-bottom: 2rem;
+	padding: 2rem 0;
+}
+
+.artist-image {
+	border-radius: 50%;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	height: 200px;
+	object-fit: cover;
+	width: 200px;
 }
 
 .song-title {
@@ -92,41 +138,57 @@ body {
 }
 
 .song-artist {
+	color: #6c757d;
 	font-size: 1rem;
-	color: #6c757d; /* Bootstrap's text-secondary (dark gray) */
 	font-weight: 500;
 }
 
-.card:hover {
-	transform: scale(1.05);
-	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
+/*
+ * Form Elements
+ */
+.form-control {
+	border: 1px solid #ced4da;
+	border-radius: 5px;
+	font-size: 1rem;
+	padding: 10px;
 }
 
+/*
+ * Utility Classes
+ */
 .rcorners1 {
 	border-radius: 10px;
+	height: 40px;
 	padding: 0;
 	width: 40px;
-	height: 40px;
 }
 
 .ul {
-	padding: 0;
-	margin: 0;
 	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
-.form-control {
-	border-radius: 5px;
-	border: 1px solid #ced4da;
-	padding: 10px;
-	font-size: 1rem;
+.text-start {
+	text-align: left;
 }
 
-.form-control.dark-mode {
-	background-color: #343a40;
+h2.recommended-header {
+	font-size: 23px !important;
 }
 
+.main {
+	padding: 20px;
+	margin-bottom: 300px;
+}
+
+.customLink {
+	text-decoration: none;
+}
+
+/*
+ * Dark Mode
+ */
 body.dark-mode {
 	background-color: #181818 !important;
 	color: #e0e0e0;
@@ -134,8 +196,8 @@ body.dark-mode {
 
 body.dark-mode .sidebar {
 	background: linear-gradient(180deg, #23272b, #181a1b);
-	color: #e0e0e0;
 	border-right: 2px solid #343a40;
+	color: #e0e0e0;
 }
 
 body.dark-mode .sidebar a {
@@ -158,6 +220,10 @@ body.dark-mode .card-text {
 	color: #e0e0e0;
 }
 
+body.dark-mode .artist-header {
+	background-color: #23272b;
+}
+
 body.dark-mode th {
 	background-color: #23272b;
 	color: #e0e0e0;
@@ -176,26 +242,6 @@ body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
 	color: #646464;
 }
 
-.card-body[data-song-id] {
-	cursor: pointer;
-	transition: background-color 0.2s;
-}
-.card-body[data-song-id]:hover {
-	background-color: rgba(0,0,0,0.05);
-}
-.card-body.playing {
-	background-color: rgba(13, 110, 253, 0.1);
-	border-left: 3px solid #0d6efd;
-}
-.play-icon {
-	display: none;
-	position: absolute;
-	right: 15px;
-	color: #0d6efd;
-}
-.card-body:hover .play-icon {
-	display: block;
-}
-.card-body.playing .play-icon {
-	display: block;
+.form-control.dark-mode {
+	background-color: #343a40;
 }

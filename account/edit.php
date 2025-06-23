@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md" style="min-height: 80vh; padding: 2rem;">
+		<main class="main col-md" style="min-height: 80vh; padding: 2rem;">
 			<div class="container mt-5" style="max-width: 600px;">
 				<h1>Edit Profile</h1>
 				<?php if ($success): ?>

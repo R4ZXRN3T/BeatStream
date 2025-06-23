@@ -56,7 +56,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md ms-sm-auto px-0 py-0">
+		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<!-- Admin Navigation Bar -->
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">

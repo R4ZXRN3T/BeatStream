@@ -52,7 +52,7 @@ include("../topBar.php");
 			</ul>
 		</div>
 
-		<main class="col-md ms-sm-auto px-0 py-0 justify-content-center">
+		<main class="main col-md ms-sm-auto px-0 py-0 justify-content-center">
 			<!-- Discover Songs Header -->
 			<div class="container mt-4">
 				<h1 class="text-center" style=" font-weight: bold">Discover Playlists</h1>

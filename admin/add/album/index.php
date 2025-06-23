@@ -51,7 +51,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 		</nav>
 		<!-- Main Content -->
-		<main class="col-md ms-sm-auto px-0 py-0">
+		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<!-- Admin Navigation Bar -->
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
@@ -85,7 +85,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$isValid = true;
 
 			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["imageNameInput"])
+				!empty($_POST["nameInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["songInput"])
 			)) {
 				$isValid = false;
 			}
@@ -93,7 +93,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			if ($isValid && isset($_FILES['albumImageInput']) && $_FILES['albumImageInput']['error'] === UPLOAD_ERR_OK) {
 				$fileTmpPath = $_FILES['albumImageInput']['tmp_name'];
 				$fileName = $_FILES['albumImageInput']['name'];
-				$newimageName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+				$newimageName = uniqid() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
 				$destPath = $imageUploadDir . $newimageName;
 
 				if (!is_dir($imageUploadDir)) {
@@ -110,28 +110,43 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			}
 
 			if ($isValid) {
-				$totalDuration = new DateTime("00:00:00");
+				$totalSeconds = 0;
+
 				foreach ($_POST['songInput'] as $selectedSongID) {
 					foreach ($songList as $song) {
 						if ($song->getSongID() == $selectedSongID) {
-							$duration = $song->getSongLength(); // Assuming this returns a DateInterval or DateTime
-							$totalDuration->add(new DateInterval('PT' . $duration->format('s') . 'S'));
+							$timeparts = explode(':', $song->getSongLength()->format('i:s'));
+							$seconds = $timeparts[0] * 60 + $timeparts[1];
+							$totalSeconds += $seconds;
 							break;
 						}
 					}
 				}
 
+				// Format total duration
+				$hours = floor($totalSeconds / 3600);
+				$minutes = floor(($totalSeconds % 3600) / 60);
+				$seconds = $totalSeconds % 60;
+				$formattedDuration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
 
-				$artists = implode(", ", $_POST["artistInput"]);
-				DataController::insertAlbum(new Album(
-					"",
-					$_POST["nameInput"],
-					$_POST["songInput"],
-					$artists,
-					$_POST["imageNameInput"],
-					0,
-					$totalDuration->format("H:i:s")
-				));
+				// Set album length to number of songs
+				$albumLength = count($_POST["songInput"]);
+
+				try {
+					$artists = implode(", ", $_POST["artistInput"]);
+					DataController::insertAlbum(new Album(
+						0, // Random ID will be generated in DataController
+						$_POST["nameInput"],
+						$_POST["songInput"],
+						$artists,
+						$newimageName,
+						$albumLength,
+						$formattedDuration
+					));
+					$successMessage = "Album successfully added!";
+				} catch (Exception $e) {
+					$errorMessage = "Error: " . $e->getMessage();
+				}
 			}
 			?>
 
@@ -148,21 +163,22 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<div class="form-group">
 						<label for="artist">Artists:</label>
 						<div id="artistFields">
-							<div class="artist-field d-flex mb-2"></div>
-							<select name="artistInput[]" class="form-control me-2" required>
-								<option value="">--Please Select--</option>
-								<?php
-								foreach ($artistList as $artist) {
-									echo "<option value='{$artist->getName()}'>{$artist->getName()}</option>";
-								}
-								?>
-							</select>
-							<button type="button" class="btn btn-danger remove-artist" style="display:none;"
-									onclick="removeArtist(this)">-
-							</button>
+							<div class="artist-field d-flex mb-2">
+								<select name="artistInput[]" class="form-control me-2" required>
+									<option value="">--Please Select--</option>
+									<?php
+									foreach ($artistList as $artist) {
+										echo "<option value='{$artist->getName()}'>{$artist->getName()}</option>";
+									}
+									?>
+								</select>
+								<button type="button" class="btn btn-danger remove-artist" style="display:none;"
+										onclick="removeArtist(this)">-
+								</button>
+							</div>
 						</div>
+						<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
 					</div>
-					<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
 
 
 					<div class="form-group">
@@ -186,8 +202,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					</div>
 
 					<div class="form-group">
-						<label for="albumImage">Image:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
-						<input type="file" id="albumImage" name="albumImageInput" class="form-control" accept="image/*">
+						<label for="albumImage">Image:</label>
+						<input type="file" id="albumImage" name="albumImageInput" class="form-control" accept="image/*"
+							   required>
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
@@ -252,8 +269,6 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	<!-- Bootstrap JS (optional for some interactive components) -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-	</main>
-</div>
 </div>
 </body>
 

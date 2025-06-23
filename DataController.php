@@ -79,11 +79,11 @@ class DataController
 
 	public static function getPlaylistList(string $sortBy = "playlist.name ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, name, length, duration, creatorID, song.songID
+		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, name, length, duration, creatorID, song.songID, songIndex
 		FROM playlist, in_playlist, song
 		WHERE song.songID = in_playlist.songID
   		AND playlist.playlistID = in_playlist.playlistID
-		ORDER BY " . $sortBy . ";");
+		ORDER BY " . $sortBy . ", in_playlist.songIndex;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -135,16 +135,32 @@ class DataController
 		}
 		$stmt->close();
 
-		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, in_album.songID FROM in_album, album WHERE in_album.albumId = album.albumID");
+		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, in_album.songID, in_album.songIndex
+                                   FROM in_album, album
+                                   WHERE in_album.albumId = album.albumID
+                                   ORDER BY album.albumID, in_album.songIndex");
 		$stmt->execute();
 		$result = $stmt->get_result();
+
+		$albumSongs = [];
 		while ($row = $result->fetch_assoc()) {
+			$albumID = $row['albumID'];
+			if (!isset($albumSongs[$albumID])) {
+				$albumSongs[$albumID] = [];
+			}
+			$albumSongs[$albumID][] = $row['songID'];
+		}
+
+		foreach ($albumSongs as $albumID => $songs) {
 			for ($i = 0; $i < count($albumList); $i++) {
-				if ($albumList[$i]->getAlbumID() == $row['albumID']) {
-					$albumList[$i]->addSongID($row['songID']);
+				if ($albumList[$i]->getAlbumID() == $albumID) {
+					// Replace the existing songIDs with the properly ordered ones
+					$albumList[$i]->setSongIDs($songs);
+					break;
 				}
 			}
 		}
+		$stmt->close();
 
 		return $albumList;
 	}
@@ -278,7 +294,7 @@ class DataController
 		$stmt = DBConn::getConn()->prepare($sqlPlaylist);
 		$stmt->execute();
 		for ($i = 0; $i < count($playlist->getSongIDs()); $i++) {
-			$sqlInPlaylist = "INSERT INTO in_playlist (playlistID, songID) VALUES (" . $newPlaylistID . ", " . $playlist->getSongIDs()[$i] . ")";
+			$sqlInPlaylist = "INSERT INTO in_playlist (playlistID, songID, songIndex) VALUES (" . $newPlaylistID . ", " . $playlist->getSongIDs()[$i] . ", " . $i . ")";
 			$stmt = DBConn::getConn()->prepare($sqlInPlaylist);
 			$stmt->execute();
 			$stmt->close();
@@ -309,19 +325,20 @@ class DataController
 		$artistsInAlbum = explode(", ", $album->getArtists());
 
 		for ($j = 0; $j < count($artistsInAlbum); $j++) {
-
 			for ($i = 0; $i < count($artistList); $i++) {
-
 				if ($artistsInAlbum[$j] == $artistList[$i]->getName()) {
-
 					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_album VALUES (" . $artistList[$i]->getArtistID() . ", " . $newAlbumID . ")");
 					$stmt->execute();
 					$stmt->close();
 				}
 			}
 		}
-
-
+		for ($i = 0; $i < count($album->getSongIDs()); $i++) {
+			$stmt = DBConn::getConn()->prepare("INSERT INTO in_album (songID, albumID, songIndex) VALUES (?, ?, ?)");
+			$stmt->bind_param("iii", $album->getSongIDs()[$i], $newAlbumID, $i);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function deleteSong(int $songID): void
