@@ -1,0 +1,8 @@
+noch zu machen:
+
+ - search
+ - create artist, song und album
+ - edit playlist
+ - Datenbank füllen
+ 
+ - player (erstmal fertig)
