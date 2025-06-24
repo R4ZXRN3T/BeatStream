@@ -54,7 +54,7 @@ include("../topBar.php");
 				<?php if (!$isArtist): ?>
 					<div class="alert alert-info">
 						<p>You are not an artist yet. To create albums and songs, please become an artist.</p>
-						<a href="../becomeArtist.php" class="btn btn-primary">Become an Artist</a>
+						<a href="artist.php" class="btn btn-primary">Become an Artist</a>
 					</div>
 					<div class="card mt-4">
 						<div class="card-body">
@@ -68,7 +68,7 @@ include("../topBar.php");
 							<div class="card mb-3">
 								<div class="card-body">
 									<h5 class="card-title">Create Album</h5>
-									<a href="createAlbum.php" class="btn btn-primary">Create Album</a>
+									<a href="album.php" class="btn btn-primary">Create Album</a>
 								</div>
 							</div>
 						</div>
