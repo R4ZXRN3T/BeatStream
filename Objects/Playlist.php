@@ -45,6 +45,11 @@ class Playlist
 		return $this->songIDs;
 	}
 
+	public function setSongIDs(array $songIDs): void
+	{
+		$this->songIDs = $songIDs;
+	}
+
 	public function getDuration(): DateTime
 	{
 		return $this->duration;
