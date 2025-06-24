@@ -18,84 +18,50 @@ class Album
 		$this->artists = $artists;
 		$this->imageName = $imageName;
 		$this->length = $length;
-		$this->duration = new DateTime($duration);
+		try {
+			$this->duration = new DateTime($duration);
+		} catch (DateMalformedStringException) {
+		}
 	}
 
 	// Getter Methods
 
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
-
-	public function getArtists()
+	public function getArtists(): string
 	{
 		return $this->artists;
 	}
 
-	public function setArtists($artists)
-	{
-		$this->artists = $artists;
-	}
-
-	public function getimageName()
+	public function getimageName(): string
 	{
 		return $this->imageName;
 	}
 
-	public function setimageName($imageName)
-	{
-		$this->imageName = $imageName;
-	}
-
-	public function getLength()
+	public function getLength(): int
 	{
 		return $this->length;
 	}
 
-	// Setter Methods
-
-	public function setLength($length)
-	{
-		$this->length = $length;
-	}
-
-	public function getDuration()
+	public function getDuration(): DateTime
 	{
 		return $this->duration;
 	}
 
-	public function setDuration($duration)
-	{
-		$this->duration = $duration;
-	}
-
-	public function getAlbumID()
+	public function getAlbumID(): int
 	{
 		return $this->albumID;
 	}
 
-	public function setAlbumID($albumID)
-	{
-		$this->albumID = $albumID;
-	}
-
-	public function getSongIDs()
+	public function getSongIDs(): array
 	{
 		return $this->songIDs;
 	}
 
-	public function setSongIDs(array $songIDs)
-	{
-		$this->songIDs = $songIDs;
-	}
-
-	public function addSongID($songID)
+	public function addSongID($songID): void
 	{
 		if (!in_array($songID, $this->songIDs)) {
 			$this->songIDs[] = $songID;

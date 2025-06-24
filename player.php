@@ -29,7 +29,7 @@
 		<div class="row align-items-center">
 			<!-- Song Info -->
 			<div class="col-md-3 d-flex align-items-center">
-				<img id="playerCover" src="../images/defaultSong.webp" alt="Song Cover" class="me-2"
+				<img id="playerCover" src="/BeatStream/images/defaultSong.webp" alt="Song Cover" class="me-2"
 					 style="width: 50px; height: 50px; object-fit: cover;">
 				<div>
 					<h6 id="playerTitle" class="mb-0">No song selected</h6>
@@ -53,7 +53,7 @@
 
 					<!-- Progress Bar -->
 					<div class="progress w-100" style="height: 5px; cursor: pointer;">
-						<div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+						<div id="progressBar" class="progress-bar" role="progressbar" style="width: 0"></div>
 					</div>
 					<div class="d-flex justify-content-between w-100">
 						<small id="currentTime">0:00</small>
@@ -259,8 +259,7 @@
 				if (!song) return;
 
 				// Update audio source
-				const audioPath = `${this.audioBasePath}${song.fileName}`;
-				this.audio.src = audioPath;
+				this.audio.src = `${this.audioBasePath}${song.fileName}`;
 
 				// Update player information
 				this.playerTitle.textContent = song.title;

@@ -45,8 +45,7 @@ $stmt = DBConn::getConn()->prepare("
         FROM song 
         JOIN releases_song ON song.songID = releases_song.songID 
         WHERE releases_song.artistID = ?
-        ORDER BY song.title ASC
-    ");
+        ORDER BY song.title");
 $stmt->bind_param("i", $currentArtistID);
 $stmt->execute();
 $songResult = $stmt->get_result();
@@ -78,8 +77,6 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 			echo "<div class='alert alert-danger'>Failed to upload image.</div>";
 			$isValid = false;
 		}
-	} else {
-		$finalFileName = ""; // No image uploaded
 	}
 
 	$totalDuration = new DateTime("00:00:00");

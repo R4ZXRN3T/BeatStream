@@ -2,11 +2,11 @@
 
 class Artist
 {
-	private $artistID;
-	private $name;
-	private $imageName;
-	private $activeSince;
-	private $userID;
+	private int $artistID;
+	private string $name;
+	private string $imageName;
+	private DateTime $activeSince;
+	private int $userID;
 
 	public function __construct($artistID, $name, $imageName, $activeSince, $userID)
 	{
@@ -23,36 +23,19 @@ class Artist
 
 	// getter methods
 
-	public function getArtistID()
+	public function getArtistID(): int
 	{
 		return $this->artistID;
 	}
 
-	public function setArtistID($artistID)
-	{
-		$this->artistID = $artistID;
-	}
-
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
-
-	public function getimageName()
+	public function getimageName(): string
 	{
 		return $this->imageName;
-	}
-
-	// setter methods
-
-	public function setimageName($imageName)
-	{
-		$this->imageName = $imageName;
 	}
 
 	public function getActiveSince(): DateTime
@@ -60,22 +43,8 @@ class Artist
 		return $this->activeSince;
 	}
 
-	public function setActiveSince($activeSince)
-	{
-		try {
-			$this->activeSince = new DateTime($activeSince);
-		} catch (Exception $e) {
-			throw new RuntimeException("Invalid date format for activeSince: " . $e->getMessage());
-		}
-	}
-
-	public function getUserID()
+	public function getUserID(): int
 	{
 		return $this->userID;
-	}
-
-	public function setUserID($userID)
-	{
-		$this->userID = $userID;
 	}
 }
