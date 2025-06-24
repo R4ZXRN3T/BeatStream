@@ -14,6 +14,59 @@ class DataController
 	/**
 	 * @throws Exception
 	 */
+	public static function insertSong(Song $song): void
+	{
+		$song->setAll(
+			$song->getSongID(),
+			str_replace("'", "\'", $song->getTitle()),
+			str_replace("'", "\'", $song->getArtists()),
+			str_replace("'", "\'", $song->getGenre()),
+			$song->getReleaseDate(),
+			$song->getSongLength(),
+			str_replace("'", "\'", $song->getfileName()),
+			str_replace("'", "\'", $song->getimageName()),
+		);
+
+		$songList = DataController::getSongList();
+		$artistList = DataController::getArtistList();
+
+		$changeMade = false;
+		$newSongID = rand();
+		do {
+			for ($i = 0; $i < count($songList); $i++) {
+				if ($newSongID == $songList[$i]->getSongID()) {
+					$newSongID = rand();
+					$changeMade = true;
+				}
+			}
+		} while ($changeMade == true);
+
+		$sqlSong = "INSERT INTO song
+		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getimageName() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getfileName() . "')";
+
+		$stmt = DBConn::getConn()->prepare($sqlSong);
+		$stmt->execute();
+		$stmt->close();
+
+		$artistsInSong = explode(", ", $song->getArtists());
+
+		for ($j = 0; $j < count($artistsInSong); $j++) {
+
+			for ($i = 0; $i < count($artistList); $i++) {
+
+				if ($artistsInSong[$j] == $artistList[$i]->getName()) {
+
+					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (" . $artistList[$i]->getArtistID() . ", " . $newSongID . ")");
+					$stmt->execute();
+					$stmt->close();
+				}
+			}
+		}
+	}
+
+	/**
+	 * @throws Exception
+	 */
 	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
@@ -60,6 +113,38 @@ class DataController
 		return $artistList;
 	}
 
+	public static function insertArtist(Artist $artist): void
+	{
+		$artistList = DataController::getArtistList();
+		$userList = DataController::getUserList();
+
+		$changeMade = false;
+		$newArtistID = rand();
+		do {
+			for ($i = 0; $i < count($artistList); $i++) {
+				if ($newArtistID == $artistList[$i]->getArtistID()) {
+					$newArtistID = rand();
+					$changeMade = true;
+				}
+			}
+		} while ($changeMade == true);
+
+		$userExists = false;
+
+		for ($i = 0; $i < count($userList); $i++) {
+			if ($artist->getUserID() == $userList[$i]->getUserID()) $userExists = true;
+		}
+
+		if (!$userExists) return;
+
+		$sqlArtist = "INSERT INTO artist VALUES (" . $newArtistID . ", '" . $artist->getName() . "', '" . $artist->getimageName() . "', '" . $artist->getActiveSince()->format("Y-m-d") . "', '" . $artist->getUserID() . "')";
+		$stmt = DBConn::getConn()->prepare($sqlArtist);
+		$stmt->execute();
+		$stmt = DBConn::getConn()->prepare("UPDATE user SET isArtist = TRUE WHERE userID = " . $artist->getUserID());
+		$stmt->execute();
+		$stmt->close();
+	}
+
 	public static function getUserList(string $sortBy = "user.username ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT * FROM user ORDER BY " . $sortBy . ";");
@@ -75,6 +160,73 @@ class DataController
 		$stmt->close();
 
 		return $userList;
+	}
+
+	public static function insertUser(User $user): void
+	{
+		$userList = DataController::getUserList();
+
+		$salt = DataController::generateRandomString(16);
+		$password = hash("sha256", $user->getUserPassword() . $salt);
+
+		$changeMade = false;
+		$newUserID = rand();
+		do {
+			for ($i = 0; $i < count($userList); $i++) {
+				if ($newUserID == $userList[$i]->getUserID()) {
+					$newUserID = rand();
+					$changeMade = true;
+				}
+			}
+		} while ($changeMade == true);
+
+		// Change this line in DataController.php insertUser method
+		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', " . ($user->isAdmin() ? 'TRUE' : 'FALSE') . ", FALSE, '" . $user->getimageName() . "')";
+		$stmt = DBConn::getConn()->prepare($sqlUser);
+		$stmt->execute();
+		$stmt->close();
+	}
+
+	public
+	static function generateRandomString(int $length = 10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?,.:;()<>$#&*+-/=@%'): string
+	{
+		$charactersLength = strlen($characters);
+		$randomString = '';
+
+		for ($i = 0; $i < $length; $i++) {
+			try {
+				$randomString .= $characters[random_int(0, $charactersLength - 1)];
+			} catch (RandomException $e) {
+				return '';
+			}
+		}
+		return $randomString;
+	}
+
+	public static function insertPlaylist(Playlist $playlist): void
+	{
+		$playlistList = DataController::getPlaylistList();
+
+		$changeMade = false;
+		$newPlaylistID = rand();
+		do {
+			for ($i = 0; $i < count($playlistList); $i++) {
+				if ($newPlaylistID == $playlistList[$i]->getPlaylistID()) {
+					$newPlaylistID = rand();
+					$changeMade = true;
+				}
+			}
+		} while ($changeMade == true);
+
+		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getimageName() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration()->format("H:i:s") . "', '" . $playlist->getCreatorID() . "')";
+		$stmt = DBConn::getConn()->prepare($sqlPlaylist);
+		$stmt->execute();
+		for ($i = 0; $i < count($playlist->getSongIDs()); $i++) {
+			$sqlInPlaylist = "INSERT INTO in_playlist (playlistID, songID, songIndex) VALUES (" . $newPlaylistID . ", " . $playlist->getSongIDs()[$i] . ", " . $i . ")";
+			$stmt = DBConn::getConn()->prepare($sqlInPlaylist);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function getPlaylistList(string $sortBy = "playlist.name ASC"): array
@@ -107,6 +259,46 @@ class DataController
 		$stmt->close();
 
 		return $playlistList;
+	}
+
+	public static function insertAlbum(Album $album): void
+	{
+		$albumList = DataController::getAlbumList();
+		$artistList = DataController::getArtistList();
+
+		$changeMade = false;
+		$newAlbumID = rand();
+		do {
+			for ($i = 0; $i < count($albumList); $i++) {
+				if ($newAlbumID == $albumList[$i]->getAlbumID()) {
+					$newAlbumID = rand();
+					$changeMade = true;
+				}
+			}
+		} while ($changeMade == true);
+
+		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getimageName() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("H:i:s") . "')";
+		$stmt = DBConn::getConn()->prepare($sqlAlbum);
+		$stmt->execute();
+		$stmt->close();
+
+		$artistsInAlbum = explode(", ", $album->getArtists());
+
+		for ($j = 0; $j < count($artistsInAlbum); $j++) {
+			for ($i = 0; $i < count($artistList); $i++) {
+				if ($artistsInAlbum[$j] == $artistList[$i]->getName()) {
+					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_album VALUES (" . $artistList[$i]->getArtistID() . ", " . $newAlbumID . ")");
+					$stmt->execute();
+					$stmt->close();
+				}
+			}
+		}
+		for ($i = 0; $i < count($album->getSongIDs()); $i++) {
+			$stmt = DBConn::getConn()->prepare("INSERT INTO in_album (songID, albumID, songIndex) VALUES (?, ?, ?)");
+			$stmt->bind_param("iii", $album->getSongIDs()[$i], $newAlbumID, $i);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public static function getAlbumList(string $sortBy = "album.title ASC"): array
@@ -165,211 +357,6 @@ class DataController
 		return $albumList;
 	}
 
-	/**
-	 * @throws Exception
-	 */
-	public static function insertSong(Song $song): void
-	{
-		$song->setAll(
-			$song->getSongID(),
-			str_replace("'", "\'", $song->getTitle()),
-			str_replace("'", "\'", $song->getArtists()),
-			str_replace("'", "\'", $song->getGenre()),
-			$song->getReleaseDate(),
-			$song->getSongLength(),
-			str_replace("'", "\'", $song->getfileName()),
-			str_replace("'", "\'", $song->getimageName()),
-		);
-
-		$songList = DataController::getSongList();
-		$artistList = DataController::getArtistList();
-
-		$changeMade = false;
-		$newSongID = rand();
-		do {
-			for ($i = 0; $i < count($songList); $i++) {
-				if ($newSongID == $songList[$i]->getSongID()) {
-					$newSongID = rand();
-					$changeMade = true;
-				}
-			}
-		} while ($changeMade == true);
-
-		$sqlSong = "INSERT INTO song
-		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getimageName() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getfileName() . "')";
-
-		$stmt = DBConn::getConn()->prepare($sqlSong);
-		$stmt->execute();
-		$stmt->close();
-
-		$artistsInSong = explode(", ", $song->getArtists());
-
-		for ($j = 0; $j < count($artistsInSong); $j++) {
-
-			for ($i = 0; $i < count($artistList); $i++) {
-
-				if ($artistsInSong[$j] == $artistList[$i]->getName()) {
-
-					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (" . $artistList[$i]->getArtistID() . ", " . $newSongID . ")");
-					$stmt->execute();
-					$stmt->close();
-				}
-			}
-		}
-	}
-
-	public static function insertArtist(Artist $artist): void
-	{
-		$artistList = DataController::getArtistList();
-		$userList = DataController::getUserList();
-
-		$changeMade = false;
-		$newArtistID = rand();
-		do {
-			for ($i = 0; $i < count($artistList); $i++) {
-				if ($newArtistID == $artistList[$i]->getArtistID()) {
-					$newArtistID = rand();
-					$changeMade = true;
-				}
-			}
-		} while ($changeMade == true);
-
-		$userExists = false;
-
-		for ($i = 0; $i < count($userList); $i++) {
-			if ($artist->getUserID() == $userList[$i]->getUserID()) $userExists = true;
-		}
-
-		if (!$userExists) return;
-
-		$sqlArtist = "INSERT INTO artist VALUES (" . $newArtistID . ", '" . $artist->getName() . "', '" . $artist->getimageName() . "', '" . $artist->getActiveSince()->format("Y-m-d") . "', '" . $artist->getUserID() . "')";
-		$stmt = DBConn::getConn()->prepare($sqlArtist);
-		$stmt->execute();
-		$stmt = DBConn::getConn()->prepare("UPDATE user SET isArtist = TRUE WHERE userID = " . $artist->getUserID());
-		$stmt->execute();
-		$stmt->close();
-	}
-
-	public static function insertUser(User $user): void
-	{
-		$userList = DataController::getUserList();
-
-		$salt = DataController::generateRandomString(16);
-		$password = hash("sha256", $user->getUserPassword() . $salt);
-
-		$changeMade = false;
-		$newUserID = rand();
-		do {
-			for ($i = 0; $i < count($userList); $i++) {
-				if ($newUserID == $userList[$i]->getUserID()) {
-					$newUserID = rand();
-					$changeMade = true;
-				}
-			}
-		} while ($changeMade == true);
-
-		// Change this line in DataController.php insertUser method
-		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', " . ($user->isAdmin() ? 'TRUE' : 'FALSE') . ", FALSE, '" . $user->getimageName() . "')";
-		$stmt = DBConn::getConn()->prepare($sqlUser);
-		$stmt->execute();
-		$stmt->close();
-	}
-
-	public static function insertPlaylist(Playlist $playlist): void
-	{
-		$playlistList = DataController::getPlaylistList();
-
-		$changeMade = false;
-		$newPlaylistID = rand();
-		do {
-			for ($i = 0; $i < count($playlistList); $i++) {
-				if ($newPlaylistID == $playlistList[$i]->getPlaylistID()) {
-					$newPlaylistID = rand();
-					$changeMade = true;
-				}
-			}
-		} while ($changeMade == true);
-
-		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getimageName() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration()->format("H:i:s") . "', '" . $playlist->getCreatorID() . "')";
-		$stmt = DBConn::getConn()->prepare($sqlPlaylist);
-		$stmt->execute();
-		for ($i = 0; $i < count($playlist->getSongIDs()); $i++) {
-			$sqlInPlaylist = "INSERT INTO in_playlist (playlistID, songID, songIndex) VALUES (" . $newPlaylistID . ", " . $playlist->getSongIDs()[$i] . ", " . $i . ")";
-			$stmt = DBConn::getConn()->prepare($sqlInPlaylist);
-			$stmt->execute();
-			$stmt->close();
-		}
-	}
-
-	public static function insertAlbum(Album $album): void
-	{
-		$albumList = DataController::getAlbumList();
-		$artistList = DataController::getArtistList();
-
-		$changeMade = false;
-		$newAlbumID = rand();
-		do {
-			for ($i = 0; $i < count($albumList); $i++) {
-				if ($newAlbumID == $albumList[$i]->getAlbumID()) {
-					$newAlbumID = rand();
-					$changeMade = true;
-				}
-			}
-		} while ($changeMade == true);
-
-		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getimageName() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("H:i:s") . "')";
-		$stmt = DBConn::getConn()->prepare($sqlAlbum);
-		$stmt->execute();
-		$stmt->close();
-
-		$artistsInAlbum = explode(", ", $album->getArtists());
-
-		for ($j = 0; $j < count($artistsInAlbum); $j++) {
-			for ($i = 0; $i < count($artistList); $i++) {
-				if ($artistsInAlbum[$j] == $artistList[$i]->getName()) {
-					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_album VALUES (" . $artistList[$i]->getArtistID() . ", " . $newAlbumID . ")");
-					$stmt->execute();
-					$stmt->close();
-				}
-			}
-		}
-		for ($i = 0; $i < count($album->getSongIDs()); $i++) {
-			$stmt = DBConn::getConn()->prepare("INSERT INTO in_album (songID, albumID, songIndex) VALUES (?, ?, ?)");
-			$stmt->bind_param("iii", $album->getSongIDs()[$i], $newAlbumID, $i);
-			$stmt->execute();
-			$stmt->close();
-		}
-	}
-
-	public static function deleteSong(int $songID): void
-	{
-		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imageName, fileName FROM song WHERE songID = ?");
-		$deleteImage->bind_param("i", $songID);
-		$deleteImage->execute();
-		$result = $deleteImage->get_result()->fetch_assoc();
-		try {
-			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/" . $result['imageName']);
-			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/" . $result['fileName']);
-
-		} catch (Exception $e) {
-		}
-
-		$queries = [
-			"DELETE FROM releases_song WHERE releases_song.songID=?",
-			"DELETE FROM in_album WHERE in_album.songID=?",
-			"DELETE FROM in_playlist WHERE in_playlist.songID=?",
-			"DELETE FROM song WHERE song.songID=?"
-		];
-
-		foreach ($queries as $sql) {
-			$stmt = $conn->prepare($sql);
-			$stmt->bind_param("i", $songID);
-			$stmt->execute();
-			$stmt->close();
-		}
-	}
-
 	public static function deleteAlbum(int $albumID): void
 	{
 		$conn = DBConn::getConn();
@@ -412,41 +399,6 @@ class DataController
 		foreach ($queries as $sql) {
 			$stmt = $conn->prepare($sql);
 			$stmt->bind_param("i", $playlistID);
-			$stmt->execute();
-			$stmt->close();
-		}
-	}
-
-	public static function deleteArtist(int $artistID): void
-	{
-		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imageName FROM artist WHERE artistID = $artistID");
-		$deleteImage->execute();
-		try {
-			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/artist/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
-		} catch (Exception $e) {
-		}
-
-		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID = ?");
-		$stmt->bind_param("i", $artistID);
-		$stmt->execute();
-		$result = $stmt->get_result();
-		while ($row = $result->fetch_assoc()) {
-			DataController::deleteSong($row['songID']);
-		}
-		$stmt->close();
-
-		// Delete releases_song, albums, etc.
-		$queries = [
-			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
-			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
-			"DELETE FROM releases_album WHERE artistID = ?;",
-			"UPDATE user SET isArtist = FALSE WHERE userID = (SELECT userID FROM artist WHERE artistID = ?);",
-			"DELETE FROM artist WHERE artistID = ?;"
-		];
-		foreach ($queries as $sql) {
-			$stmt = $conn->prepare($sql);
-			$stmt->bind_param("i", $artistID);
 			$stmt->execute();
 			$stmt->close();
 		}
@@ -495,20 +447,68 @@ class DataController
 		$stmt->close();
 	}
 
-	public
-	static function generateRandomString(int $length = 10, string $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?,.:;()<>$#&*+-/=@%'): string
+	public static function deleteArtist(int $artistID): void
 	{
-		$charactersLength = strlen($characters);
-		$randomString = '';
-
-		for ($i = 0; $i < $length; $i++) {
-			try {
-				$randomString .= $characters[random_int(0, $charactersLength - 1)];
-			} catch (RandomException $e) {
-				return '';
-			}
+		$conn = DBConn::getConn();
+		$deleteImage = $conn->prepare("SELECT imageName FROM artist WHERE artistID = $artistID");
+		$deleteImage->execute();
+		try {
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/artist/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
+		} catch (Exception $e) {
 		}
-		return $randomString;
+
+		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID = ?");
+		$stmt->bind_param("i", $artistID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		while ($row = $result->fetch_assoc()) {
+			DataController::deleteSong($row['songID']);
+		}
+		$stmt->close();
+
+		// Delete releases_song, albums, etc.
+		$queries = [
+			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
+			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
+			"DELETE FROM releases_album WHERE artistID = ?;",
+			"UPDATE user SET isArtist = FALSE WHERE userID = (SELECT userID FROM artist WHERE artistID = ?);",
+			"DELETE FROM artist WHERE artistID = ?;"
+		];
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $artistID);
+			$stmt->execute();
+			$stmt->close();
+		}
+	}
+
+	public static function deleteSong(int $songID): void
+	{
+		$conn = DBConn::getConn();
+		$deleteImage = $conn->prepare("SELECT imageName, fileName FROM song WHERE songID = ?");
+		$deleteImage->bind_param("i", $songID);
+		$deleteImage->execute();
+		$result = $deleteImage->get_result()->fetch_assoc();
+		try {
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/" . $result['imageName']);
+			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/" . $result['fileName']);
+
+		} catch (Exception $e) {
+		}
+
+		$queries = [
+			"DELETE FROM releases_song WHERE releases_song.songID=?",
+			"DELETE FROM in_album WHERE in_album.songID=?",
+			"DELETE FROM in_playlist WHERE in_playlist.songID=?",
+			"DELETE FROM song WHERE song.songID=?"
+		];
+
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $songID);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 }
 

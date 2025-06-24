@@ -57,13 +57,6 @@ class MP3File
 		return round($duration);
 	}
 
-	private function estimateDuration($bitrate, $offset)
-	{
-		$kbps = ($bitrate * 1000) / 8;
-		$datasize = filesize($this->filename) - $offset;
-		return round($datasize / $kbps);
-	}
-
 	private function skipID3v2Tag(&$block)
 	{
 		if (substr($block, 0, 3) == "ID3") {
@@ -164,5 +157,12 @@ class MP3File
 			return intval(((12 * $bitrate * 1000 / $sample_rate) + $padding_bit) * 4);
 		else //layer 2, 3
 			return intval(((144 * $bitrate * 1000) / $sample_rate) + $padding_bit);
+	}
+
+	private function estimateDuration($bitrate, $offset)
+	{
+		$kbps = ($bitrate * 1000) / 8;
+		$datasize = filesize($this->filename) - $offset;
+		return round($datasize / $kbps);
 	}
 }

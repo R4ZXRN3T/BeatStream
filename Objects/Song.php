@@ -33,46 +33,14 @@ class Song
 		return $this->songID;
 	}
 
-	public function getTitle()
-	{
-		return $this->title;
-	}
-
-	public function getArtists()
-	{
-		return $this->artists;
-	}
-
-	public function getGenre()
-	{
-		return $this->genre;
-	}
-
-	public function getReleaseDate(): DateTime
-	{
-		return $this->releaseDate;
-	}
-
-	public function getSongLength(): DateTime
-	{
-		return $this->songLength;
-	}
-
-	public function getfileName()
-	{
-		return $this->fileName;
-	}
-
-	public function getimageName()
-	{
-		return $this->imageName;
-	}
-
-	// setter methods
-
 	public function setSongID($songID)
 	{
 		$this->songID = $songID;
+	}
+
+	public function getTitle()
+	{
+		return $this->title;
 	}
 
 	public function setTitle($title)
@@ -80,9 +48,19 @@ class Song
 		$this->title = $title;
 	}
 
+	public function getArtists()
+	{
+		return $this->artists;
+	}
+
 	public function setArtists($artists)
 	{
 		$this->artists = $artists;
+	}
+
+	public function getGenre()
+	{
+		return $this->genre;
 	}
 
 	public function setGenre($genre)
@@ -90,9 +68,21 @@ class Song
 		$this->genre = $genre;
 	}
 
+	// setter methods
+
+	public function getReleaseDate(): DateTime
+	{
+		return $this->releaseDate;
+	}
+
 	public function setReleaseDate($releaseDate)
 	{
 		$this->releaseDate = $releaseDate;
+	}
+
+	public function getSongLength(): DateTime
+	{
+		return $this->songLength;
 	}
 
 	public function setSongLength($songLength)
@@ -100,9 +90,19 @@ class Song
 		$this->songLength = $songLength;
 	}
 
+	public function getfileName()
+	{
+		return $this->fileName;
+	}
+
 	public function setfileName($fileName)
 	{
 		$this->fileName = $fileName;
+	}
+
+	public function getimageName()
+	{
+		return $this->imageName;
 	}
 
 	public function setimageName($imageName)

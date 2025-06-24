@@ -28,31 +28,14 @@ class Artist
 		return $this->artistID;
 	}
 
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function getimageName()
-	{
-		return $this->imageName;
-	}
-
-	public function getActiveSince(): DateTime
-	{
-		return $this->activeSince;
-	}
-
-	public function getUserID()
-	{
-		return $this->userID;
-	}
-
-	// setter methods
-
 	public function setArtistID($artistID)
 	{
 		$this->artistID = $artistID;
+	}
+
+	public function getName()
+	{
+		return $this->name;
 	}
 
 	public function setName($name)
@@ -60,9 +43,21 @@ class Artist
 		$this->name = $name;
 	}
 
+	public function getimageName()
+	{
+		return $this->imageName;
+	}
+
+	// setter methods
+
 	public function setimageName($imageName)
 	{
 		$this->imageName = $imageName;
+	}
+
+	public function getActiveSince(): DateTime
+	{
+		return $this->activeSince;
 	}
 
 	public function setActiveSince($activeSince)
@@ -72,6 +67,11 @@ class Artist
 		} catch (Exception $e) {
 			throw new RuntimeException("Invalid date format for activeSince: " . $e->getMessage());
 		}
+	}
+
+	public function getUserID()
+	{
+		return $this->userID;
 	}
 
 	public function setUserID($userID)

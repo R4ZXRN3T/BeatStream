@@ -29,45 +29,14 @@ class User
 		return $this->userID;
 	}
 
-	public function getUsername()
-	{
-		return $this->username;
-	}
-
-	public function getEmail()
-	{
-		return $this->email;
-	}
-
-	public function getUserPassword()
-	{
-		return $this->userPassword;
-	}
-
-	public function getSalt()
-	{
-		return $this->salt;
-	}
-
-	public function isAdmin()
-	{
-		return $this->isAdmin;
-	}
-
-	public function isArtist()
-	{
-		return $this->isArtist;
-	}
-
-	public function getimageName()
-	{
-		return $this->imageName;
-	}
-
-	// Setter methods
 	public function setUserID($userID)
 	{
 		$this->userID = $userID;
+	}
+
+	public function getUsername()
+	{
+		return $this->username;
 	}
 
 	public function setUsername($username)
@@ -75,9 +44,19 @@ class User
 		$this->username = $username;
 	}
 
+	public function getEmail()
+	{
+		return $this->email;
+	}
+
 	public function setEmail($email)
 	{
 		$this->email = $email;
+	}
+
+	public function getUserPassword()
+	{
+		return $this->userPassword;
 	}
 
 	public function setUserPassword($userPassword)
@@ -85,9 +64,21 @@ class User
 		$this->userPassword = $userPassword;
 	}
 
+	// Setter methods
+
+	public function getSalt()
+	{
+		return $this->salt;
+	}
+
 	public function setSalt($salt)
 	{
 		$this->salt = $salt;
+	}
+
+	public function isAdmin()
+	{
+		return $this->isAdmin;
 	}
 
 	public function setIsAdmin($isAdmin)
@@ -95,9 +86,19 @@ class User
 		$this->isAdmin = $isAdmin;
 	}
 
+	public function isArtist()
+	{
+		return $this->isArtist;
+	}
+
 	public function setIsArtist($isArtist)
 	{
 		$this->isArtist = $isArtist;
+	}
+
+	public function getimageName()
+	{
+		return $this->imageName;
 	}
 
 	public function setimageName($imageName)

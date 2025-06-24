@@ -11,7 +11,8 @@
 		</a>
 
 		<div class="ms-auto d-flex align-items-center">
-			<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode" style="background-color: transparent; border: none;">
+			<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode"
+					style="background-color: transparent; border: none;">
 				<i class="bi bi-moon fs-4"></i>
 			</button>
 			<?php if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true): ?>
