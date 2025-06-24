@@ -86,11 +86,6 @@ if (isset($_SESSION['account_loggedin'])) {
 						$errorMessage = "Sorry, your file is too large.";
 						$uploadOk = false;
 					}
-					if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-						&& $imageFileType != "gif" && $imageFileType != "webp") {
-						$errorMessage = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-						$uploadOk = false;
-					}
 
 					if ($uploadOk) {
 						move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile);
@@ -169,7 +164,7 @@ if (isset($_SESSION['account_loggedin'])) {
 					</div>
 					<div class="form-group">
 						<label for="imageName">Profile Picture:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
-						<input type="file" id="imageUpload" name="imageToUpload" class="form-control"
+						<input type="file" id="imageUpload" name="imageToUpload" class="form-control" accept="Image/*"
 							   placeholder="Upload a profile picture!">
 					</div>
 					<input type="submit" class="btn btn-primary mt-3" value="Join BeatStream" name="submit">

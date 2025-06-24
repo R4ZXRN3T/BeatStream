@@ -18,7 +18,7 @@ session_start();
 $sortBy = $_POST['sortInput'] ?? 'playlist.name ASC';
 
 include("../DataController.php");
-$playlistList = DataController::getPlaylistList();
+$playlistList = DataController::getPlaylistList($sortBy);
 include("../topBar.php");
 ?>
 

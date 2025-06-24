@@ -18,7 +18,7 @@ session_start();
 $sortBy = $_POST['sortInput'] ?? 'album.title ASC';
 
 include("../DataController.php");
-$albumList = DataController::getAlbumList();
+$albumList = DataController::getAlbumList($sortBy);
 include("../topBar.php");
 ?>
 
