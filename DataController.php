@@ -23,8 +23,8 @@ class DataController
 			str_replace("'", "\'", $song->getGenre()),
 			$song->getReleaseDate(),
 			$song->getSongLength(),
-			str_replace("'", "\'", $song->getfileName()),
-			str_replace("'", "\'", $song->getimageName()),
+			str_replace("'", "\'", $song->getFileName()),
+			str_replace("'", "\'", $song->getImageName()),
 		);
 
 		$songList = DataController::getSongList();
@@ -42,7 +42,7 @@ class DataController
 		} while ($changeMade == true);
 
 		$sqlSong = "INSERT INTO song
-		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getimageName() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getfileName() . "')";
+		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getImageName() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getFileName() . "')";
 
 		$stmt = DBConn::getConn()->prepare($sqlSong);
 		$stmt->execute();
@@ -196,7 +196,7 @@ class DataController
 		for ($i = 0; $i < $length; $i++) {
 			try {
 				$randomString .= $characters[random_int(0, $charactersLength - 1)];
-			} catch (RandomException $e) {
+			} catch (RandomException) {
 				return '';
 			}
 		}
@@ -364,7 +364,7 @@ class DataController
 		$deleteImage->execute();
 		try {
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/album/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
-		} catch (Exception $e) {
+		} catch (Exception) {
 		}
 
 		$queries = [
@@ -388,7 +388,7 @@ class DataController
 		$deleteImage->execute();
 		try {
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/playlist/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
-		} catch (Exception $e) {
+		} catch (Exception) {
 		}
 
 		$queries = [
@@ -414,7 +414,7 @@ class DataController
 
 		try {
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/user/" . $result['imageName']);
-		} catch (Exception $e) {
+		} catch (Exception) {
 		}
 
 		// Delete playlists created by the user
@@ -454,7 +454,7 @@ class DataController
 		$deleteImage->execute();
 		try {
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/artist/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
-		} catch (Exception $e) {
+		} catch (Exception) {
 		}
 
 		$stmt = $conn->prepare("SELECT songID FROM releases_song WHERE artistID = ?");
@@ -493,7 +493,7 @@ class DataController
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/" . $result['imageName']);
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/" . $result['fileName']);
 
-		} catch (Exception $e) {
+		} catch (Exception) {
 		}
 
 		$queries = [

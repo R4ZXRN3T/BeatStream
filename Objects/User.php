@@ -2,14 +2,14 @@
 
 class User
 {
-	private $userID;
-	private $username;
-	private $email;
-	private $userPassword;
-	private $salt;
-	private $isAdmin = false;
-	private $isArtist = false;
-	private $imageName;
+	private int $userID;
+	private string $username;
+	private string $email;
+	private string $userPassword;
+	private string $salt;
+	private bool $isAdmin;
+	private bool $isArtist;
+	private string $imageName;
 
 	public function __construct($userID, $username, $email, $userPassword, $salt, $isAdmin, $isArtist, $imageName)
 	{
@@ -24,85 +24,45 @@ class User
 	}
 
 	// Getter methods
-	public function getUserID()
+	public function getUserID(): int
 	{
 		return $this->userID;
 	}
 
-	public function setUserID($userID)
-	{
-		$this->userID = $userID;
-	}
-
-	public function getUsername()
+	public function getUsername(): string
 	{
 		return $this->username;
 	}
 
-	public function setUsername($username)
-	{
-		$this->username = $username;
-	}
-
-	public function getEmail()
+	public function getEmail(): string
 	{
 		return $this->email;
 	}
 
-	public function setEmail($email)
-	{
-		$this->email = $email;
-	}
-
-	public function getUserPassword()
+	public function getUserPassword(): string
 	{
 		return $this->userPassword;
 	}
 
-	public function setUserPassword($userPassword)
-	{
-		$this->userPassword = $userPassword;
-	}
-
 	// Setter methods
 
-	public function getSalt()
+	public function getSalt(): string
 	{
 		return $this->salt;
 	}
 
-	public function setSalt($salt)
-	{
-		$this->salt = $salt;
-	}
-
-	public function isAdmin()
+	public function isAdmin(): bool
 	{
 		return $this->isAdmin;
 	}
 
-	public function setIsAdmin($isAdmin)
-	{
-		$this->isAdmin = $isAdmin;
-	}
-
-	public function isArtist()
+	public function isArtist(): bool
 	{
 		return $this->isArtist;
 	}
 
-	public function setIsArtist($isArtist)
-	{
-		$this->isArtist = $isArtist;
-	}
-
-	public function getimageName()
+	public function getimageName(): string
 	{
 		return $this->imageName;
-	}
-
-	public function setimageName($imageName)
-	{
-		$this->imageName = $imageName;
 	}
 }

@@ -4,7 +4,7 @@ class Playlist
 {
 	private int $playlistID;
 	private string $name;
-	private array $songIDs = [];
+	private array $songIDs;
 	private DateTime $duration;
 	private int $length;
 	private string $imageName;
@@ -16,86 +16,51 @@ class Playlist
 		$this->imageName = $imageName;
 		$this->name = $name;
 		$this->songIDs = $songIDs;
-		$this->duration = new DateTime($duration);
+		try {
+			$this->duration = new DateTime($duration);
+		} catch (DateMalformedStringException) {
+		}
 		$this->length = $length;
 		$this->creatorID = $creatorID;
 	}
 
 	// Getter methods
-	public function getPlaylistID()
+	public function getPlaylistID(): int
 	{
 		return $this->playlistID;
 	}
 
-	public function setPlaylistID($playlistID)
-	{
-		$this->playlistID = $playlistID;
-	}
-
-	public function getimageName()
+	public function getimageName(): string
 	{
 		return $this->imageName;
 	}
 
-	public function setimageName($imageName)
-	{
-		$this->imageName = $imageName;
-	}
-
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
 
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
-
-	public function getSongIDs()
+	public function getSongIDs(): array
 	{
 		return $this->songIDs;
 	}
 
-
-	// Setter methods
-
-	public function setSongIDs(array $songs)
-	{
-		$this->songIDs = $songs;
-	}
-
-	public function getDuration()
+	public function getDuration(): DateTime
 	{
 		return $this->duration;
 	}
 
-	public function setDuration($duration)
-	{
-		$this->duration = $duration;
-	}
-
-	public function getLength()
+	public function getLength(): int
 	{
 		return $this->length;
 	}
 
-	public function setLength($length)
-	{
-		$this->length = $length;
-	}
-
-	public function getCreatorID()
+	public function getCreatorID(): int
 	{
 		return $this->creatorID;
 	}
 
-	public function setCreatorID($creatorID)
-	{
-		$this->creatorID = $creatorID;
-	}
-
-	public function addSongID($songID)
+	public function addSongID($songID): void
 	{
 		if (!in_array($songID, $this->songIDs)) {
 			$this->songIDs[] = $songID;
