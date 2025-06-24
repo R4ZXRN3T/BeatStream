@@ -290,7 +290,7 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getimageName() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration()->format("h:i:s") . "', '" . $playlist->getCreatorID() . "')";
+		$sqlPlaylist = "INSERT INTO playlist VALUES (" . $newPlaylistID . ", '" . $playlist->getimageName() . "', '" . $playlist->getName() . "', '" . $playlist->getLength() . "', '" . $playlist->getDuration()->format("H:i:s") . "', '" . $playlist->getCreatorID() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlPlaylist);
 		$stmt->execute();
 		for ($i = 0; $i < count($playlist->getSongIDs()); $i++) {
@@ -317,7 +317,7 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getimageName() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("h:i:s") . "')";
+		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getimageName() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("H:i:s") . "')";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 		$stmt->execute();
 		$stmt->close();

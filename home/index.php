@@ -192,7 +192,7 @@ include("../topBar.php"); ?>
 
 					<!-- Albums and Playlists Section -->
 					<div class="col-md-4">
-						<section class="mb-5 g-4 a-p-column" style="margin-left: 50px">
+						<section class="mb-5 g-4 a-p-column">
 							<h2 class="text-start mb-4 recommended-header">Recommended Albums:</h2>
 							<div class="row g-4">
 								<?php foreach ($recommendedAlbums as $album): ?>
@@ -200,16 +200,16 @@ include("../topBar.php"); ?>
 										<a class="customLink"
 										   href="../view/album.php?id=<?php echo $album->getAlbumID() ?>">
 											<div class="card shadow-sm border-0" style="border-radius: 10px;">
-												<div class="card-body d-flex align-items-center p-3">
+												<div class="card-body d-flex align-items-center p-2">
 													<?php if (!empty($album->getimageName())): ?>
 														<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getimageName()); ?>"
 															 class="me-3 rounded"
 															 alt="<?php echo htmlspecialchars($album->getimageName()); ?>"
-															 style="width: 50px; height: 50px; object-fit: cover;">
+															 style="width: 80px; height: 80px; object-fit: cover;">
 													<?php else: ?>
 														<img src="../images/defaultAlbum.webp" class="me-3 rounded"
 															 alt="Default Album Cover"
-															 style="width: 50px; height: 50px; object-fit: cover;">
+															 style="width: 80px; height: 80px; object-fit: cover;">
 													<?php endif; ?>
 													<div class="card-body">
 														<h5 class="card-title"
@@ -242,7 +242,7 @@ include("../topBar.php"); ?>
 													<?php else: ?>
 														<img src="../images/defaultPlaylist.webp" class="me-3 rounded"
 															 alt="Default Playlist Cover"
-															 style="width: 50px; height: 50px; object-fit: cover;">
+															 style="width: 80px; height: 80px; object-fit: cover;">
 													<?php endif; ?>
 													<div class="card-body">
 														<h5 class="card-title"

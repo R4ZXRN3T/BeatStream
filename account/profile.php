@@ -5,10 +5,20 @@ include("../DataController.php");
 // Fetch user info
 $userID = $_SESSION['userID'];
 $userList = DataController::getUserList();
+$artistList = DataController::getArtistList();
 $user = null;
 foreach ($userList as $u) {
 	if ($u->getUserID() == $userID) {
 		$user = $u;
+		break;
+	}
+}
+
+$artistID = -1;
+
+foreach ($artistList as $a) {
+	if ($a->getUserID() == $userID) {
+		$artistID = $a->getArtistID();
 		break;
 	}
 }
@@ -53,13 +63,32 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 					<div class="col-md-4">
 						<div class="card">
 							<img src="<?= htmlspecialchars("../images/user/" . $user->getimageName() ?: '../images/defaultUser.webp') ?>"
-								 class="card-img-top" alt="Profile Image">
+								 class="card-img-top" alt="Profile Image"
+								 style="object-fit: cover; height: 100%; width: 100%;">
 							<div class="card-body">
 								<h4 class="card-title"><?= htmlspecialchars($user->getUsername()) ?></h4>
 								<p class="card-text"><?= htmlspecialchars($user->getEmail()) ?></p>
 								<a href="edit.php" class="btn btn-primary">Edit Profile</a>
 							</div>
 						</div>
+						<?php if ($artistID != -1): ?>
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">Your Artist profile:</h5>
+									<a href=../view/artist.php?id=<?php echo $artistID ?>" class="btn btn-primary">View
+										Artist Profile</a>
+								</div>
+							</div>
+						<?php else: ?>
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">Become an Artist</h5>
+									<p class="card-text">Create your artist profile to share your music with the
+										world.</p>
+									<a href="../create/artist.php" class="btn btn-primary">Create Artist Profile</a>
+								</div>
+							</div>
+						<?php endif; ?>
 					</div>
 					<!-- Playlists and Favorites -->
 					<div class="col-md-8">
@@ -70,7 +99,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 									<div class="card h-auto">
 										<img src="<?= htmlspecialchars($playlist->getimageName() ? "../images/playlist/" . $playlist->getimageName() : "../images/defaultPlaylist.webp") ?>"
 											 class="card-img-top" alt="Playlist Image"
-											 style="object-fit: cover; height: 180px;">
+											 style="object-fit: cover; height: 100%;">
 										<div class="card-body d-flex flex-column">
 											<h5 class="card-title"><?= htmlspecialchars($playlist->getName()) ?></h5>
 											<p class="card-text"><?= $playlist->getLength() ?> songs
