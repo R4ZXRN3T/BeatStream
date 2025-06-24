@@ -115,27 +115,33 @@ $songQueueData = array_map(function ($song) {
 					<?php if (empty($artistSongs)): ?>
 						<div class="alert alert-info">No songs available for this artist.</div>
 					<?php else: ?>
-						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
 							<?php foreach ($artistSongs as $song): ?>
-								<div class="col">
-									<div class="card h-100">
-										<img src="<?php echo $song->getimageName() ? '../images/song/' . $song->getimageName() : '../images/defaultSong.webp'; ?>"
-											 class="card-img-top"
-											 alt="<?php echo $song->getTitle(); ?>">
-										<div class="card-body" data-song-id="<?php echo $song->getSongID(); ?>"
-											 data-song-queue='<?php echo json_encode($songQueueData); ?>'>
-											<h5 class="card-title"><?php echo $song->getTitle(); ?></h5>
-											<p class="card-text">
-												<small class="text-muted">
-													<?php echo $song->getGenre(); ?> •
-													<?php echo $song->getSongLength()->format('i:s'); ?> min
-												</small>
-											</p>
-											<p class="card-text">
-												<small class="text-muted">
-													Released: <?php echo $song->getReleaseDate()->format('M Y'); ?>
-												</small>
-											</p>
+								<div class="col-md-2 mb-2">
+									<div class="card shadow-sm border-0"
+										 style="border-radius: 10px; width: 100%; height: auto;">
+										<div class="card-body d-flex align-items-center p-3 position-relative"
+											 style="width: 100%;"
+											 data-song-id="<?php echo $song->getSongID(); ?>"
+											 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
+											<?php if (!empty($song->getimageName())): ?>
+												<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
+													 class="me-3 rounded"
+													 alt="<?php echo htmlspecialchars($song->getimageName()); ?>"
+													 style="width: 60px; height: 60px; object-fit: cover;">
+											<?php else: ?>
+												<img src="../images/defaultSong.webp" class="me-3 "
+													 alt="Default Song Cover"
+													 style="width: 60px; height: 60px; object-fit: cover;">
+											<?php endif; ?>
+											<div>
+												<h5 class="card-title mb-1"
+													style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
+												<p class="card-text mb-0"
+												   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
+												<p class="card-text mb-0"
+												   style="font-size: 0.8rem; text-align: left; color: #6c757d;"><?php echo htmlspecialchars($song->getSongLength()->format("i:s")); ?></p>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -150,27 +156,31 @@ $songQueueData = array_map(function ($song) {
 					<?php if (empty($artistAlbums)): ?>
 						<div class="alert alert-info">No albums available for this artist.</div>
 					<?php else: ?>
-						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
 							<?php foreach ($artistAlbums as $album): ?>
-								<div class="col">
-									<div class="card h-100">
-										<img src="<?php echo $album->getimageName() ? '../images/album/' . $album->getimageName() : '../images/defaultAlbum.webp'; ?>"
-											 class="card-img-top"
-											 alt="<?php echo $album->getTitle(); ?>">
-										<div class="card-body">
-											<h5 class="card-title"><?php echo $album->getTitle(); ?></h5>
-											<p class="card-text">
-												<small class="text-muted">
-													<?php echo $album->getLength(); ?> songs •
-													<?php echo $album->getDuration()->format('H:i'); ?> total
-												</small>
-											</p>
-											<button class="btn btn-outline-primary btn-sm play-album-btn"
-													data-album-id="<?php echo $album->getAlbumID(); ?>">
-												<i class="bi bi-play-fill"></i> Play Album
-											</button>
+								<div class="col-md-3 mb-3">
+									<a class="customLink" href="album.php?id=<?php echo $album->getAlbumID(); ?>">
+										<div class="card shadow-sm border-0"
+											 style="border-radius: 10px; width: 100%; height: auto;">
+											<div class="d-flex flex-column">
+												<img src="<?php echo $album->getImageName() ? '../images/album/' . $album->getImageName() : '../images/defaultAlbum.webp'; ?>"
+													 class="mb-2 rounded"
+													 alt="<?php echo $album->getName(); ?>"
+													 style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px 10px 0 0;">
+												<div class="card-body p-3">
+													<h5 class="card-title mb-1"
+														style="font-size: 1.1rem; font-weight: bold;"><?php echo $album->getName(); ?></h5>
+													<p class="card-text mb-0"
+													   style="font-size: 0.9rem; color: #6c757d;"><?php echo $album->getArtists(); ?></p>
+													<p class="card-text mb-0"
+													   style="font-size: 0.8rem; text-align: left; color: #6c757d;">
+														<?php echo $album->getLength(); ?> songs •
+														<?php echo $album->getDuration()->format("H") > 0 ? $album->getDuration()->format("H\h i\m s\s") : $album->getDuration()->format("i\m s\s"); ?>
+													</p>
+												</div>
+											</div>
 										</div>
-									</div>
+									</a>
 								</div>
 							<?php endforeach; ?>
 						</div>
@@ -180,6 +190,7 @@ $songQueueData = array_map(function ($song) {
 		</main>
 	</div>
 </div>
+
 <!-- Include the music player -->
 <?php include("../player.php"); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
