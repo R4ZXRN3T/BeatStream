@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 23, 2025 at 08:32 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Erstellungszeit: 24. Jun 2025 um 15:42
+-- Server-Version: 10.4.32-MariaDB
+-- PHP-Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `beatstream`
+-- Datenbank: `beatstream`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `album`
+-- Tabellenstruktur für Tabelle `album`
 --
 
 CREATE TABLE `album` (
@@ -36,7 +36,7 @@ CREATE TABLE `album` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `album`
+-- Daten für Tabelle `album`
 --
 
 INSERT INTO `album` (`albumID`, `title`, `imageName`, `length`, `duration`) VALUES
@@ -45,7 +45,7 @@ INSERT INTO `album` (`albumID`, `title`, `imageName`, `length`, `duration`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `artist`
+-- Tabellenstruktur für Tabelle `artist`
 --
 
 CREATE TABLE `artist` (
@@ -57,7 +57,7 @@ CREATE TABLE `artist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `artist`
+-- Daten für Tabelle `artist`
 --
 
 INSERT INTO `artist` (`artistID`, `name`, `imageName`, `activeSince`, `userID`) VALUES
@@ -77,7 +77,7 @@ INSERT INTO `artist` (`artistID`, `name`, `imageName`, `activeSince`, `userID`) 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `in_album`
+-- Tabellenstruktur für Tabelle `in_album`
 --
 
 CREATE TABLE `in_album` (
@@ -87,7 +87,7 @@ CREATE TABLE `in_album` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `in_album`
+-- Daten für Tabelle `in_album`
 --
 
 INSERT INTO `in_album` (`songID`, `albumId`, `songIndex`) VALUES
@@ -106,7 +106,7 @@ INSERT INTO `in_album` (`songID`, `albumId`, `songIndex`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `in_playlist`
+-- Tabellenstruktur für Tabelle `in_playlist`
 --
 
 CREATE TABLE `in_playlist` (
@@ -116,7 +116,7 @@ CREATE TABLE `in_playlist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `in_playlist`
+-- Daten für Tabelle `in_playlist`
 --
 
 INSERT INTO `in_playlist` (`songID`, `playlistID`, `songIndex`) VALUES
@@ -129,7 +129,7 @@ INSERT INTO `in_playlist` (`songID`, `playlistID`, `songIndex`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `playlist`
+-- Tabellenstruktur für Tabelle `playlist`
 --
 
 CREATE TABLE `playlist` (
@@ -142,7 +142,7 @@ CREATE TABLE `playlist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `playlist`
+-- Daten für Tabelle `playlist`
 --
 
 INSERT INTO `playlist` (`playlistID`, `imageName`, `name`, `length`, `duration`, `creatorID`) VALUES
@@ -151,7 +151,7 @@ INSERT INTO `playlist` (`playlistID`, `imageName`, `name`, `length`, `duration`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `releases_album`
+-- Tabellenstruktur für Tabelle `releases_album`
 --
 
 CREATE TABLE `releases_album` (
@@ -160,7 +160,7 @@ CREATE TABLE `releases_album` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `releases_album`
+-- Daten für Tabelle `releases_album`
 --
 
 INSERT INTO `releases_album` (`artistID`, `albumID`) VALUES
@@ -170,7 +170,7 @@ INSERT INTO `releases_album` (`artistID`, `albumID`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `releases_song`
+-- Tabellenstruktur für Tabelle `releases_song`
 --
 
 CREATE TABLE `releases_song` (
@@ -179,7 +179,7 @@ CREATE TABLE `releases_song` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `releases_song`
+-- Daten für Tabelle `releases_song`
 --
 
 INSERT INTO `releases_song` (`artistID`, `songID`) VALUES
@@ -219,7 +219,7 @@ INSERT INTO `releases_song` (`artistID`, `songID`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `song`
+-- Tabellenstruktur für Tabelle `song`
 --
 
 CREATE TABLE `song` (
@@ -233,7 +233,7 @@ CREATE TABLE `song` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `song`
+-- Daten für Tabelle `song`
 --
 
 INSERT INTO `song` (`songID`, `title`, `genre`, `releaseDate`, `imageName`, `songLength`, `fileName`) VALUES
@@ -272,7 +272,7 @@ INSERT INTO `song` (`songID`, `title`, `genre`, `releaseDate`, `imageName`, `son
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Tabellenstruktur für Tabelle `user`
 --
 
 CREATE TABLE `user` (
@@ -287,7 +287,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `user`
+-- Daten für Tabelle `user`
 --
 
 INSERT INTO `user` (`userID`, `username`, `email`, `userPassword`, `salt`, `isAdmin`, `isArtist`, `imageName`) VALUES
@@ -307,17 +307,17 @@ INSERT INTO `user` (`userID`, `username`, `email`, `userPassword`, `salt`, `isAd
 (1711997645, 'root', 'root@root.root', 'a421fc12fa867397d5ffe9ef03da0356ed5cc850975f0de58ea8b95e82e341f3', 'ddHkq?HD:Sr%J;dg', 1, 0, 'rootuser1750695678.webp');
 
 --
--- Indexes for dumped tables
+-- Indizes der exportierten Tabellen
 --
 
 --
--- Indexes for table `album`
+-- Indizes für die Tabelle `album`
 --
 ALTER TABLE `album`
   ADD PRIMARY KEY (`albumID`);
 
 --
--- Indexes for table `artist`
+-- Indizes für die Tabelle `artist`
 --
 ALTER TABLE `artist`
   ADD PRIMARY KEY (`artistID`),
@@ -325,48 +325,48 @@ ALTER TABLE `artist`
   ADD KEY `userID` (`userID`);
 
 --
--- Indexes for table `in_album`
+-- Indizes für die Tabelle `in_album`
 --
 ALTER TABLE `in_album`
   ADD PRIMARY KEY (`songID`,`albumId`),
   ADD KEY `albumId` (`albumId`);
 
 --
--- Indexes for table `in_playlist`
+-- Indizes für die Tabelle `in_playlist`
 --
 ALTER TABLE `in_playlist`
   ADD PRIMARY KEY (`songID`,`playlistID`),
   ADD KEY `playlistID` (`playlistID`);
 
 --
--- Indexes for table `playlist`
+-- Indizes für die Tabelle `playlist`
 --
 ALTER TABLE `playlist`
   ADD PRIMARY KEY (`playlistID`),
   ADD KEY `creatorID` (`creatorID`);
 
 --
--- Indexes for table `releases_album`
+-- Indizes für die Tabelle `releases_album`
 --
 ALTER TABLE `releases_album`
   ADD PRIMARY KEY (`artistID`,`albumID`),
   ADD KEY `albumID` (`albumID`);
 
 --
--- Indexes for table `releases_song`
+-- Indizes für die Tabelle `releases_song`
 --
 ALTER TABLE `releases_song`
   ADD PRIMARY KEY (`artistID`,`songID`),
   ADD KEY `songID` (`songID`);
 
 --
--- Indexes for table `song`
+-- Indizes für die Tabelle `song`
 --
 ALTER TABLE `song`
   ADD PRIMARY KEY (`songID`);
 
 --
--- Indexes for table `user`
+-- Indizes für die Tabelle `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`userID`),
@@ -374,44 +374,44 @@ ALTER TABLE `user`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Constraints for dumped tables
+-- Constraints der exportierten Tabellen
 --
 
 --
--- Constraints for table `artist`
+-- Constraints der Tabelle `artist`
 --
 ALTER TABLE `artist`
   ADD CONSTRAINT `artist_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`);
 
 --
--- Constraints for table `in_album`
+-- Constraints der Tabelle `in_album`
 --
 ALTER TABLE `in_album`
   ADD CONSTRAINT `in_album_ibfk_1` FOREIGN KEY (`songID`) REFERENCES `song` (`songID`),
   ADD CONSTRAINT `in_album_ibfk_2` FOREIGN KEY (`albumId`) REFERENCES `album` (`albumID`);
 
 --
--- Constraints for table `in_playlist`
+-- Constraints der Tabelle `in_playlist`
 --
 ALTER TABLE `in_playlist`
   ADD CONSTRAINT `in_playlist_ibfk_1` FOREIGN KEY (`songID`) REFERENCES `song` (`songID`),
   ADD CONSTRAINT `in_playlist_ibfk_2` FOREIGN KEY (`playlistID`) REFERENCES `playlist` (`playlistID`);
 
 --
--- Constraints for table `playlist`
+-- Constraints der Tabelle `playlist`
 --
 ALTER TABLE `playlist`
   ADD CONSTRAINT `playlist_ibfk_1` FOREIGN KEY (`creatorID`) REFERENCES `user` (`userID`);
 
 --
--- Constraints for table `releases_album`
+-- Constraints der Tabelle `releases_album`
 --
 ALTER TABLE `releases_album`
   ADD CONSTRAINT `releases_album_ibfk_1` FOREIGN KEY (`artistID`) REFERENCES `artist` (`artistID`),
   ADD CONSTRAINT `releases_album_ibfk_2` FOREIGN KEY (`albumID`) REFERENCES `album` (`albumID`);
 
 --
--- Constraints for table `releases_song`
+-- Constraints der Tabelle `releases_song`
 --
 ALTER TABLE `releases_song`
   ADD CONSTRAINT `releases_song_ibfk_1` FOREIGN KEY (`artistID`) REFERENCES `artist` (`artistID`),
