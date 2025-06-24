@@ -28,41 +28,14 @@ class Album
 		return $this->name;
 	}
 
-	public function getArtists()
-	{
-		return $this->artists;
-	}
-
-	public function getimageName()
-	{
-		return $this->imageName;
-	}
-
-	public function getLength()
-	{
-		return $this->length;
-	}
-
-	public function getDuration()
-	{
-		return $this->duration;
-	}
-
-	public function getAlbumID()
-	{
-		return $this->albumID;
-	}
-
-	public function getSongIDs()
-	{
-		return $this->songIDs;
-	}
-
-	// Setter Methods
-
 	public function setName($name)
 	{
 		$this->name = $name;
+	}
+
+	public function getArtists()
+	{
+		return $this->artists;
 	}
 
 	public function setArtists($artists)
@@ -70,14 +43,31 @@ class Album
 		$this->artists = $artists;
 	}
 
+	public function getimageName()
+	{
+		return $this->imageName;
+	}
+
 	public function setimageName($imageName)
 	{
 		$this->imageName = $imageName;
 	}
 
+	public function getLength()
+	{
+		return $this->length;
+	}
+
+	// Setter Methods
+
 	public function setLength($length)
 	{
 		$this->length = $length;
+	}
+
+	public function getDuration()
+	{
+		return $this->duration;
 	}
 
 	public function setDuration($duration)
@@ -85,15 +75,26 @@ class Album
 		$this->duration = $duration;
 	}
 
+	public function getAlbumID()
+	{
+		return $this->albumID;
+	}
+
 	public function setAlbumID($albumID)
 	{
 		$this->albumID = $albumID;
+	}
+
+	public function getSongIDs()
+	{
+		return $this->songIDs;
 	}
 
 	public function setSongIDs(array $songIDs)
 	{
 		$this->songIDs = $songIDs;
 	}
+
 	public function addSongID($songID)
 	{
 		if (!in_array($songID, $this->songIDs)) {
