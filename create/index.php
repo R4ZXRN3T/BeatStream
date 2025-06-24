@@ -76,7 +76,7 @@ include("../topBar.php");
 							<div class="card mb-3">
 								<div class="card-body">
 									<h5 class="card-title">Create Song</h5>
-									<a href="createSong.php" class="btn btn-primary">Create Song</a>
+									<a href="song.php" class="btn btn-primary">Create Song</a>
 								</div>
 							</div>
 						</div>

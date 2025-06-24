@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include("../../../dbConnection.php");
 session_start();
 $isAdmin = false;
@@ -129,5 +130,5 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	</div>
 </div>
 </body>
-
+<?php ob_end_flush(); ?>
 </html>
