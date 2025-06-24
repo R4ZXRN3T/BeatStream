@@ -63,6 +63,7 @@ body {
 	border-collapse: collapse;
 	margin: 0 auto;
 	width: 50%;
+	overflow: hidden;
 }
 
 th, td {
@@ -87,10 +88,26 @@ tr:nth-child(even) {
 	cursor: pointer;
 	transition: background-color 0.2s, border-radius 0.2s;
 	border-radius: 0;
+	position: relative;
+	overflow: hidden;
+	white-space: nowrap;
+	max-width: 100%;
 }
 
 .card-body[data-song-id]:hover {
 	background-color: rgba(93, 93, 93, 0.5);
+	border-radius: 10px;
+}
+
+.card-body:after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 0%;
+	height: 100%;
+	background: linear-gradient(to right, rgba(255, 255, 255, 0), var(--card-bg, #fff));
+	pointer-events: none;
 	border-radius: 10px;
 }
 
@@ -99,6 +116,7 @@ tr:nth-child(even) {
 	border-left: 3px solid #0d6efd;
 	border-radius: 10px;
 }
+
 
 .playing {
 	background-color: rgba(13, 110, 253, 0.1);
@@ -177,11 +195,11 @@ h2.recommended-header {
 	font-size: 23px !important;
 }
 
+
 .main {
 	padding: 20px;
 	margin-bottom: 300px;
 }
-
 .customLink {
 	text-decoration: none;
 }
@@ -268,4 +286,25 @@ body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
 	text-align: center;
 	padding: 2rem;
 	color: #6c757d;
+}
+
+/* Text Truncation with Fade Effect */
+
+.card-body:after {
+
+}
+
+/* Update the gradient color in dark mode */
+body.dark-mode .card-body:after,
+body.dark-mode .card-body:after {
+	background: linear-gradient(to right, rgba(35, 39, 43, 0), var(--card-bg, #23272b));
+}
+
+/* Add this variable to set the background color */
+:root {
+	--card-bg: #fff;
+}
+
+body.dark-mode {
+	--card-bg: #23272b;
 }

@@ -106,7 +106,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 						<p class="text mb-2"
 						   style="color: #6c757d"><?php echo htmlspecialchars($album->getArtists()); ?></p>
 						<p><?php echo count($albumSongs); ?> songs ·
-							<?php echo $album->getDuration()->format("H") > 0 ? $album->getDuration()->format("H:i:s") : $album->getDuration()->format("i:s"); ?></p>
+							<?php echo $album->getDuration()->format("H") > 0 ? $album->getDuration()->format("H\h i\m s\s") : $album->getDuration()->format("i\m s\s"); ?></p>
 					</div>
 				</div>
 			</div>
