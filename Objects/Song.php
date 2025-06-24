@@ -43,6 +43,11 @@ class Song
 		return $this->artists;
 	}
 
+	public function setArtists(string $artists): void
+	{
+		$this->artists = $artists;
+	}
+
 	public function getGenre(): string
 	{
 		return $this->genre;

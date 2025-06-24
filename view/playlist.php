@@ -113,7 +113,7 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 							<?php echo $playlist->getDuration()->format("H") > 0 ? $playlist->getDuration()->format("H:i:s") : $playlist->getDuration()->format("i:s"); ?></p>
 
 						<?php if (isset($_SESSION['userID']) && $_SESSION['userID'] == $playlist->getCreatorID()): ?>
-							<a href="../edit/playlist.php?id=<?php echo $playlistId; ?>" class="btn btn-primary mb-3">
+							<a href="../create/editPlaylist.php?id=<?php echo $playlistId; ?>" class="btn btn-primary mb-3">
 								Edit Playlist
 							</a>
 						<?php else: ?>

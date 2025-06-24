@@ -36,6 +36,11 @@ class Album
 		return $this->artists;
 	}
 
+	public function setArtists(string $artists): void
+	{
+		$this->artists = $artists;
+	}
+
 	public function getimageName(): string
 	{
 		return $this->imageName;
@@ -59,6 +64,11 @@ class Album
 	public function getSongIDs(): array
 	{
 		return $this->songIDs;
+	}
+
+	public function setSongIDs(array $songIDs): void
+	{
+		$this->songIDs = $songIDs;
 	}
 
 	public function addSongID($songID): void

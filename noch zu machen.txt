@@ -1,4 +1,3 @@
 noch zu machen:
 
- - edit playlist
  - Datenbank füllen
