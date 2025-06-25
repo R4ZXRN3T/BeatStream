@@ -94,3 +94,53 @@ function convertToWebP($sourcePath, $destinationPath, $quality = 60) {
     
     return $result;
 }
+
+function getSupportedImageFormats() {
+    $formats = [];
+    
+    // Check GD support
+    if (function_exists('gd_info')) {
+        $gdInfo = gd_info();
+        
+        if ($gdInfo['JPEG Support']) $formats[] = 'image/jpeg';
+        if ($gdInfo['PNG Support']) $formats[] = 'image/png';
+        if ($gdInfo['GIF Read Support'] || $gdInfo['GIF Create Support']) $formats[] = 'image/gif';
+        if (isset($gdInfo['WebP Support']) && $gdInfo['WebP Support']) $formats[] = 'image/webp';
+        if (function_exists('imagecreatefrombmp')) $formats[] = 'image/bmp';
+        if (function_exists('imagecreatefromavif')) $formats[] = 'image/avif';
+    }
+    
+    // Check ImageMagick support
+    if (extension_loaded('imagick')) {
+        $imagick = new Imagick();
+        $imagickFormats = $imagick->queryFormats();
+        
+        $additionalFormats = [
+            'TIFF' => 'image/tiff',
+            'TIF' => 'image/tiff',
+            'ICO' => 'image/x-icon',
+            'PSD' => 'image/vnd.adobe.photoshop',
+            'SVG' => 'image/svg+xml',
+            'RAW' => 'image/x-canon-cr2', // Example RAW format
+            // Add more as needed
+        ];
+        
+        foreach ($additionalFormats as $format => $mimeType) {
+            if (in_array($format, $imagickFormats)) {
+                $formats[] = $mimeType;
+            }
+        }
+    }
+    
+    return array_unique($formats);
+}
+
+function isValidImageFormat($filePath) {
+    $imageInfo = getimagesize($filePath);
+    if ($imageInfo === false) {
+        return false;
+    }
+    
+    $supportedFormats = getSupportedImageFormats();
+    return in_array($imageInfo['mime'], $supportedFormats);
+}
