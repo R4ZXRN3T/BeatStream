@@ -93,7 +93,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			if ($isValid && isset($_FILES['albumImageInput']) && $_FILES['albumImageInput']['error'] === UPLOAD_ERR_OK) {
 				$fileTmpPath = $_FILES['albumImageInput']['tmp_name'];
 				$fileName = $_FILES['albumImageInput']['name'];
-				$newimageName = uniqid() . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+				$newimageName = uniqid() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
 				$destPath = $imageUploadDir . $newimageName;
 
 				if (!is_dir($imageUploadDir)) {

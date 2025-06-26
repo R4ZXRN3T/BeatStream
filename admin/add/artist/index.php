@@ -96,7 +96,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				}
 
 				$fileExtension = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
-				$imageName = uniqid() . time() . '.' . $fileExtension;
+				$imageName = uniqid() . '.' . $fileExtension;
 				$targetFile = $uploadDir . $imageName;
 
 				// Check if file is an actual image

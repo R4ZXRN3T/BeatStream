@@ -72,7 +72,7 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] == UPLOAD_ERR_OK) {
 		$imageFile = $_FILES['imageFileInput'];
 		$extension = strtolower(pathinfo($imageFile['name'], PATHINFO_EXTENSION));
-		$finalFileName = uniqid() . time() . '.' . $extension;
+		$finalFileName = uniqid() . '.' . $extension;
 		$imageName = $uploadDir . $finalFileName;
 		if (!move_uploaded_file($imageFile['tmp_name'], $imageName)) {
 			echo "<div class='alert alert-danger'>Failed to upload image.</div>";

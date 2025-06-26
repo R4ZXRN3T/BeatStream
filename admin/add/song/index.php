@@ -99,7 +99,7 @@ include_once("../../../mp3file.class.php")
 				$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
 				$fileName = $_FILES['songImageInput']['name'];
 				$extension = pathinfo($fileName, PATHINFO_EXTENSION);
-				$newimageName = uniqid() . time() . '.' . $extension;
+				$newimageName = uniqid() . '.' . $extension;
 				$destPath = $imageUploadDir . $newimageName;
 
 				if (!is_dir($imageUploadDir)) {
@@ -120,7 +120,8 @@ include_once("../../../mp3file.class.php")
 				if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
 					$fileTmpPath = $_FILES['fileInput']['tmp_name'];
 					$fileName = $_FILES['fileInput']['name'];
-					$newFileName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+					$extension = pathinfo($fileName, PATHINFO_EXTENSION);
+					$newFileName = uniqid() . '.' . $extension;
 					$destPath = $audioUploadDir . $newFileName;
 
 					if (!is_dir($audioUploadDir)) {
