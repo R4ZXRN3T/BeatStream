@@ -166,7 +166,7 @@ class DataController
 	{
 		$userList = DataController::getUserList();
 
-		$salt = DataController::generateRandomString(16);
+		$salt = htmlspecialchars(DataController::generateRandomString(16));
 		$password = hash("sha256", $user->getUserPassword() . $salt);
 
 		$changeMade = false;
@@ -362,9 +362,14 @@ class DataController
 		$conn = DBConn::getConn();
 		$deleteImage = $conn->prepare("SELECT imageName FROM album WHERE albumID = $albumID");
 		$deleteImage->execute();
-		try {
-			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/album/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
-		} catch (Exception) {
+
+		$result = $deleteImage->get_result()->fetch_assoc();
+		if ($result) {
+
+			try {
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/album/" . $deleteImage->get_result()->fetch_assoc()['imageName']);
+			} catch (Exception) {
+			}
 		}
 
 		$queries = [
@@ -412,9 +417,11 @@ class DataController
 		$stmt->execute();
 		$result = $stmt->get_result()->fetch_assoc();
 
-		try {
-			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/user/" . $result['imageName']);
-		} catch (Exception) {
+		if ($result['imageName']) {
+			try {
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/user/" . $result['imageName']);
+			} catch (Exception) {
+			}
 		}
 
 		// Delete playlists created by the user
@@ -468,9 +475,9 @@ class DataController
 
 		// Delete releases_song, albums, etc.
 		$queries = [
-			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"DELETE FROM releases_album WHERE artistID = ?;",
+			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",			
 			"UPDATE user SET isArtist = FALSE WHERE userID = (SELECT userID FROM artist WHERE artistID = ?);",
 			"DELETE FROM artist WHERE artistID = ?;"
 		];
@@ -492,7 +499,6 @@ class DataController
 		try {
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/" . $result['imageName']);
 			unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/" . $result['fileName']);
-
 		} catch (Exception) {
 		}
 
