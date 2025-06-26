@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					$errorMessage = "File is not an image.";
 				} else {
 					// Generate unique filename
-					$newImageName = uniqid() . time() . '.' . $fileExtension;
+					$newImageName = uniqid() . '.' . $fileExtension;
 					$targetFile = $targetDir . $newImageName;
 
 					// Try to upload file

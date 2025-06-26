@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if ($isValid && isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
 		$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
 		$fileName = $_FILES['songImageInput']['name'];
-		$newimageName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+		$newimageName = uniqid() . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
 		$destPath = $imageUploadDir . $newimageName;
 
 		if (!is_dir($imageUploadDir)) {
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$fileTmpPath = $_FILES['fileInput']['tmp_name'];
 			$fileName = $_FILES['fileInput']['name'];
 			$extension = pathinfo($fileName, PATHINFO_EXTENSION);
-			$newFileName = uniqid() . time() . '.' . $extension;
+			$newFileName = uniqid() . '.' . $extension;
 			$destPath = $audioUploadDir . $newFileName;
 
 			if (!is_dir($audioUploadDir)) {

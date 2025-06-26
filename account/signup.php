@@ -62,11 +62,32 @@ if (isset($_SESSION['account_loggedin'])) {
 			if ($isValid) {
 				$uploadOk = true;
 				$targetFile = null;
+				$fileName = "";
 
-				if (!empty($_FILES["imageToUpload"]["name"])) {
+				$usernameList = array();
+				$emailList = array();
+
+				for ($i = 0; $i < count(DataController::getUserList()); $i++) {
+					$usernameList[] = DataController::getUserList()[$i]->getUsername();
+					$emailList[] = DataController::getUserList()[$i]->getEmail();
+				}
+
+				if (in_array($_POST['usernameInput'], $usernameList)) {
+					$errorMessage = "Username already exists.";
+					$loginOk = false;
+					$uploadOk = false;
+				} elseif (in_array($_POST['emailInput'], $emailList)) {
+					$errorMessage = "Email already exists.";
+					$loginOk = false;
+					$uploadOk = false;
+				}
+
+				if (!empty($_FILES["imageToUpload"]["name"]) && $_FILES["imageToUpload"]["error"] == UPLOAD_ERR_OK && $uploadOk) {
+
 					$targetDir = "../images/user/";
 					$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
-					$targetFile = uniqid() . time() . "." . $fileExtension;
+					$fileName = uniqid() . "." . $fileExtension;
+					$targetFile = $targetDir . $fileName;
 					$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));// Check if image file is an actual image or fake image
 					if (isset($_POST["submit"])) {
 						$check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
@@ -92,24 +113,6 @@ if (isset($_SESSION['account_loggedin'])) {
 					}
 				}
 
-				$usernameList = array();
-				$emailList = array();
-
-				for ($i = 0; $i < count(DataController::getUserList()); $i++) {
-					$usernameList[] = DataController::getUserList()[$i]->getUsername();
-					$emailList[] = DataController::getUserList()[$i]->getEmail();
-				}
-
-				if (in_array($_POST['usernameInput'], $usernameList)) {
-					$errorMessage = "Username already exists.";
-					$loginOk = false;
-					$uploadOk = false;
-				} elseif (in_array($_POST['emailInput'], $emailList)) {
-					$errorMessage = "Email already exists.";
-					$loginOk = false;
-					$uploadOk = false;
-				}
-
 				if ($loginOk) {
 					DataController::insertUser(new User(
 						0,
@@ -119,7 +122,7 @@ if (isset($_SESSION['account_loggedin'])) {
 						"",
 						FALSE,
 						FALSE,
-						isset($_FILES['imageToUpload']) ? pathinfo($targetFile, PATHINFO_BASENAME) : null
+						$fileName
 					));
 					$_SESSION['account_loggedin'] = true;// Set session variable to indicate user is logged in
 					$_SESSION['email'] = $_POST['emailInput'];
