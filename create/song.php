@@ -77,7 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
 			$fileTmpPath = $_FILES['fileInput']['tmp_name'];
 			$fileName = $_FILES['fileInput']['name'];
-			$newFileName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+			$extension = pathinfo($fileName, PATHINFO_EXTENSION);
+			$newFileName = uniqid() . time() . '.' . $extension;
 			$destPath = $audioUploadDir . $newFileName;
 
 			if (!is_dir($audioUploadDir)) {

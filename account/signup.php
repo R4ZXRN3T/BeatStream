@@ -66,7 +66,7 @@ if (isset($_SESSION['account_loggedin'])) {
 				if (!empty($_FILES["imageToUpload"]["name"])) {
 					$targetDir = "../images/user/";
 					$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
-					$targetFile = $targetDir . basename(pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_FILENAME) . time() . "." . $fileExtension);
+					$targetFile = uniqid() . time() . "." . $fileExtension;
 					$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));// Check if image file is an actual image or fake image
 					if (isset($_POST["submit"])) {
 						$check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
@@ -112,7 +112,7 @@ if (isset($_SESSION['account_loggedin'])) {
 
 				if ($loginOk) {
 					DataController::insertUser(new User(
-						"",
+						0,
 						$_POST["usernameInput"],
 						$_POST["emailInput"],
 						$_POST["userPasswordInput"],

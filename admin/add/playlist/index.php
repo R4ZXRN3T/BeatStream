@@ -87,12 +87,13 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			if ($isValid) {
 				DataController::insertPlaylist(new Playlist(
-					"",
-					$_POST["imageNameInput"],
+					0,
 					$_POST["nameInput"],
+					$_POST["songIDInput"],
 					$_POST["durationInput"],
 					$_POST["lengthInput"],
-					$_POST["creatorInput"],
+					$_POST["imageNameInput"],
+					$_POST["creatorIDInput"]
 				));
 			}
 			?>

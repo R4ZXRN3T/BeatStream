@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		unlink("../images/user/" . $currentUser->getimageName());
 		$uploadDir = "../images/user/";
 		$ext = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
-		$newFileName = "user_" . $userID . "_" . time() . "." . $ext;
+		$newFileName = uniqid() . time() . "." . $ext;
 		$destPath = $uploadDir . $newFileName;
 		if (move_uploaded_file($_FILES['imageFile']['tmp_name'], $destPath)) {
 			$imageName = $newFileName;

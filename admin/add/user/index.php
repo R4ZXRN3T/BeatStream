@@ -96,8 +96,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				$newFileName = "";
 				if (isset($_FILES["userImage"]) && $_FILES["userImage"]["error"] == UPLOAD_ERR_OK) {
 					$fileName = $_FILES["userImage"]["name"];
-					$fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-					$newFileName = uniqid() . '.' . $fileType;// Generate unique filename
+					$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+					$newFileName = uniqid() . time() . '.' . $extension;// Generate unique filename
 					$targetFilePath = $uploadDir . $newFileName;// Check file size (limit to 5MB)
 					if ($_FILES["userImage"]["size"] > 5000000) {
 						$isValid = false;

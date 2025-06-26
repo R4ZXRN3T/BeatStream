@@ -48,7 +48,7 @@ if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imag
 	}
 
 	$fileExtension = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
-	$imageName = uniqid() . '.' . $fileExtension;
+	$imageName = uniqid() . time() . '.' . $fileExtension;
 	$targetFile = $uploadDir . $imageName;
 
 	// Check if file is an actual image

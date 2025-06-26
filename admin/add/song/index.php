@@ -98,7 +98,8 @@ include_once("../../../mp3file.class.php")
 			if ($isValid && isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
 				$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
 				$fileName = $_FILES['songImageInput']['name'];
-				$newimageName = pathinfo($fileName, PATHINFO_FILENAME) . "_" . time() . "." . pathinfo($fileName, PATHINFO_EXTENSION);
+				$extension = pathinfo($fileName, PATHINFO_EXTENSION);
+				$newimageName = uniqid() . time() . '.' . $extension;
 				$destPath = $imageUploadDir . $newimageName;
 
 				if (!is_dir($imageUploadDir)) {
