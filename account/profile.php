@@ -104,7 +104,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 											<h5 class="card-title"><?= htmlspecialchars($playlist->getName()) ?></h5>
 											<p class="card-text"><?= $playlist->getLength() ?> songs
 												- <?= $playlist->getDuration()->format("i:s") ?></p>
-											<a href="../playlist/view.php?id=<?= $playlist->getPlaylistID() ?>"
+											<a href="../view/playlist.php?id=<?= $playlist->getPlaylistID() ?>"
 											   class="btn btn-outline-secondary btn-sm mt-auto">View</a>
 										</div>
 									</div>
