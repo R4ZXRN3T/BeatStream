@@ -197,7 +197,7 @@ include("../topBar.php"); ?>
 							<div class="row g-4">
 								<?php foreach ($recommendedAlbums as $album): ?>
 									<div class="col-12">
-										<a class="customLink"
+										<a class="custom-link"
 										   href="../view/album.php?id=<?php echo $album->getAlbumID() ?>">
 											<div class="card shadow-sm border-0" style="border-radius: 10px;">
 												<div class="card-body d-flex align-items-center p-2">
@@ -230,7 +230,7 @@ include("../topBar.php"); ?>
 							<div class="row g-4">
 								<?php foreach ($recommendedPlaylists as $playlist): ?>
 									<div class="col-12">
-										<a class="customLink"
+										<a class="custom-link"
 										   href="../view/playlist.php?id=<?php echo $playlist->getPlaylistID() ?>">
 											<div class="card shadow-sm border-0" style="border-radius: 10px;">
 												<div class="card-body d-flex align-items-center p-2">
