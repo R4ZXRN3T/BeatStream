@@ -213,7 +213,7 @@ include_once("../../../mp3file.class.php")
 
 					<div class="form-group">
 						<label for="songFile">File:</label>
-						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/*"
+						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/mpeg"
 							   placeholder="Upload song file"
 							   required>
 					</div>

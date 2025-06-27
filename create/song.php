@@ -197,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 					<div class="form-group mb-3">
 						<label for="songFile">Audio File:</label>
-						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/*"
+						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/mpeg"
 							   required>
 					</div>
 
