@@ -82,7 +82,7 @@ include("../topBar.php");
 					<?php if (!empty($albumList)): ?>
 						<?php foreach ($albumList as $album): ?>
 							<div class="col-md-4 mb-4">
-								<a href="../view/album.php?id=<?php echo $album->getAlbumID() ?>">
+								<a href="../view/album.php?id=<?php echo $album->getAlbumID() ?>" class="custom-link">
 									<div class="card shadow-sm border-0" style="border-radius: 10px;">
 										<div class="card-body d-flex align-items-center p-3">
 											<?php if (!empty($album->getimageName())): ?>
@@ -101,6 +101,7 @@ include("../topBar.php");
 											</div>
 										</div>
 									</div>
+								</a>
 							</div>
 						<?php endforeach; ?>
 					<?php else: ?>

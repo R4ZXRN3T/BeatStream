@@ -182,54 +182,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<link href="../favicon.ico" rel="icon">
 	<link href="../mainStyle.css" rel="stylesheet">
 	<style>
-		.song-list {
-			height: 300px;
-			overflow-y: auto;
-			border: 1px solid #dee2e6;
-			border-radius: 0.25rem;
-			padding: 10px;
-		}
+        .song-list {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 10px;
+        }
 
-		.song-item {
-			padding: 8px;
-			margin-bottom: 5px;
-			border-radius: 4px;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			transition: background-color 0.2s;
-		}
+        .song-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
 
-		.song-item:hover {
-			background-color: rgba(93, 93, 93, 0.2);
-		}
+        .song-item:hover {
+            background-color: rgba(93, 93, 93, 0.2);
+        }
 
-		.song-item.selected {
-			background-color: rgba(13, 110, 253, 0.1);
-			border-left: 3px solid #0d6efd;
-		}
+        .song-item.selected {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-left: 3px solid #0d6efd;
+        }
 
-		.song-item img {
-			width: 40px;
-			height: 40px;
-			object-fit: cover;
-			margin-right: 10px;
-			border-radius: 4px;
-		}
+        .song-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
 
-		.song-info {
-			flex-grow: 1;
-		}
+        .song-info {
+            flex-grow: 1;
+        }
 
-		.song-title {
-			font-weight: bold;
-			margin-bottom: 0;
-		}
+        .song-title {
+            font-weight: bold;
+            margin-bottom: 0;
+        }
 
-		.song-artist {
-			font-size: 0.8rem;
-			color: #6c757d;
-		}
+        .song-artist {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
 	</style>
 </head>
 

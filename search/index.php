@@ -225,7 +225,7 @@ if (!empty($_GET['search'])) {
 								<div class="row g-4">
 									<?php foreach ($artistResults as $artist): ?>
 										<div class="col-12 col-md-6 col-lg-4">
-											<a class="customLink"
+											<a class="custom-link"
 											   href="../view/artist.php?id=<?php echo $artist->getArtistID(); ?>">
 												<div class="card shadow-sm border-0" style="border-radius: 10px;">
 													<div class="card-body d-flex align-items-center p-3">
@@ -266,7 +266,7 @@ if (!empty($_GET['search'])) {
 								<div class="row g-4">
 									<?php foreach ($albumResults as $album): ?>
 										<div class="col-12 col-md-6 col-lg-4">
-											<a class="customLink"
+											<a class="custom-link"
 											   href="../view/album.php?id=<?php echo $album->getAlbumID(); ?>">
 												<div class="card shadow-sm border-0" style="border-radius: 10px;">
 													<div class="card-body d-flex align-items-center p-3">
@@ -307,7 +307,7 @@ if (!empty($_GET['search'])) {
 								<div class="row g-4">
 									<?php foreach ($playlistResults as $playlist): ?>
 										<div class="col-12 col-md-6 col-lg-4">
-											<a class="customLink"
+											<a class="custom-link"
 											   href="../view/playlist.php?id=<?php echo $playlist->getPlaylistID(); ?>">
 												<div class="card shadow-sm border-0" style="border-radius: 10px;">
 													<div class="card-body d-flex align-items-center p-3">

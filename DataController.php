@@ -477,7 +477,7 @@ class DataController
 		$queries = [
 			"DELETE FROM in_album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"DELETE FROM releases_album WHERE artistID = ?;",
-			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",			
+			"DELETE FROM album WHERE albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?);",
 			"UPDATE user SET isArtist = FALSE WHERE userID = (SELECT userID FROM artist WHERE artistID = ?);",
 			"DELETE FROM artist WHERE artistID = ?;"
 		];

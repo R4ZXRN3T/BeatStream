@@ -159,7 +159,7 @@ $songQueueData = array_map(function ($song) {
 						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
 							<?php foreach ($artistAlbums as $album): ?>
 								<div class="col-md-3 mb-3">
-									<a class="customLink" href="album.php?id=<?php echo $album->getAlbumID(); ?>">
+									<a class="custom-link" href="album.php?id=<?php echo $album->getAlbumID(); ?>">
 										<div class="card shadow-sm border-0"
 											 style="border-radius: 10px; width: 100%; height: auto;">
 											<div class="d-flex flex-column">
