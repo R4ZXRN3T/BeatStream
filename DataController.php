@@ -56,7 +56,7 @@ class DataController
 
 				if ($artistsInSong[$j] == $artistList[$i]->getName()) {
 
-					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (" . $artistList[$i]->getArtistID() . ", " . $newSongID . ")");
+					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (" . $artistList[$i]->getArtistID() . ", " . $newSongID . ", " . $j . ")");
 					$stmt->execute();
 					$stmt->close();
 				}
@@ -70,10 +70,10 @@ class DataController
 	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
-		FROM song, artist, releases_song
-		WHERE song.songID = releases_song.songID
-		AND artist.artistID = releases_song.artistID
-		ORDER BY " . $sortBy . ";");
+  		FROM song, artist, releases_song
+  		WHERE song.songID = releases_song.songID
+  		AND artist.artistID = releases_song.artistID
+  		ORDER BY " . $sortBy . ", releases_song.artistIndex;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
