@@ -153,6 +153,10 @@ class MP3File
 
 	private static function framesize($layer, $bitrate, $sample_rate, $padding_bit): int
 	{
+		if ($bitrate == 0 || $sample_rate == 0) {
+			return 0; //invalid bitrate or sample rate
+		}
+
 		if ($layer == 1)
 			return intval(((12 * $bitrate * 1000 / $sample_rate) + $padding_bit) * 4);
 		else //layer 2, 3
