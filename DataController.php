@@ -180,7 +180,6 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		// Change this line in DataController.php insertUser method
 		$sqlUser = "INSERT INTO user VALUES (" . $newUserID . ", '" . $user->getUsername() . "', '" . $user->getEmail() . "', '" . $password . "', '" . $salt . "', " . ($user->isAdmin() ? 'TRUE' : 'FALSE') . ", FALSE, '" . $user->getimageName() . "')";
 		$stmt = DBConn::getConn()->prepare($sqlUser);
 		$stmt->execute();
@@ -346,7 +345,6 @@ class DataController
 		foreach ($albumSongs as $albumID => $songs) {
 			for ($i = 0; $i < count($albumList); $i++) {
 				if ($albumList[$i]->getAlbumID() == $albumID) {
-					// Replace the existing songIDs with the properly ordered ones
 					$albumList[$i]->setSongIDs($songs);
 					break;
 				}
