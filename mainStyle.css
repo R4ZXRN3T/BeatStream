@@ -265,9 +265,9 @@ body.dark-mode .artist-header {
     color: var(--text-muted);
 }
 
-/* ===== MUSIC PLAYER ===== */
+/*!* ===== MUSIC PLAYER ===== *!
 #musicPlayer {
-    background-color: rgba(33, 37, 41, 0.2) !important;
+    background-color: rgba(33, 37, 41, 0.5) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -283,7 +283,7 @@ body.dark-mode .artist-header {
     background-color: transparent !important;
 }
 
-/* Music Player Dark Mode */
+!* Music Player Dark Mode *!
 body.dark-mode #musicPlayer {
     background-color: rgba(24, 24, 24, 0.2) !important;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -291,6 +291,290 @@ body.dark-mode #musicPlayer {
 
 body.dark-mode #queuePanel {
     background-color: rgba(24, 24, 24, 0.2) !important;
+}*/
+
+/* ===== ENHANCED MUSIC PLAYER ===== */
+#musicPlayer {
+    background: linear-gradient(135deg, rgba(33, 37, 41, 0.8), rgba(52, 58, 64, 0.8)) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    padding: 0.75rem 0 !important;
+    transition: all 0.3s ease;
+}
+
+/* Player Cover Image */
+#playerCover {
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+    width: 60px !important;
+    height: 60px !important;
+}
+
+/* Song Info Styling */
+#playerTitle {
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    margin-bottom: 0.1rem !important;
+    line-height: 1.2 !important;
+}
+
+#playerArtist {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.8rem !important;
+    font-weight: 400 !important;
+    line-height: 1.2 !important;
+}
+
+.controls {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    /*margin-left: 50px !important;*/
+}
+
+.controls .btn {
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    border: 2px solid transparent !important;
+    position: relative !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+}
+
+.controls .btn:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.controls .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#playPauseBtn {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    border: none !important;
+    width: 40px !important;
+    height: 40px !important;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+}
+
+#playPauseBtn:hover {
+    background: linear-gradient(135deg, #0056b3, #004085) !important;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+}
+
+#prevBtn, #nextBtn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+#prevBtn:hover, #nextBtn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+#queueBtn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 0.75rem !important;
+    width: auto !important;
+    height: auto !important;
+    transition: all 0.3s ease !important;
+}
+
+#queueBtn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+#prevBtn, #playPauseBtn, #nextBtn, #queueBtn {
+    order: unset !important;
+}
+
+/* Enhanced Progress Bar */
+.progress {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    height: 6px !important;
+    overflow: hidden !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #007bff, #28a745) !important;
+    border-radius: 10px !important;
+    transition: width 0.1s ease !important;
+    position: relative !important;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -3px;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.progress:hover .progress-bar::after {
+    opacity: 1;
+}
+
+/* Time Display */
+#currentTime, #totalTime {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Volume Control */
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#volumeIcon {
+    color: rgba(255, 255, 255, 0.9) !important;
+    cursor: pointer !important;
+    transition: color 0.3s ease !important;
+    font-size: 1.1rem !important;
+}
+
+#volumeIcon:hover {
+    color: #007bff !important;
+}
+
+#volumeControl {
+    accent-color: #007bff !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    height: 4px !important;
+}
+
+#volumeControl::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+#volumeControl::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Enhanced Queue Panel */
+#queuePanel {
+    background: linear-gradient(135deg, rgba(33, 37, 41, 0.95), rgba(52, 58, 64, 0.95)) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    margin-bottom: 1rem !important;
+}
+
+#queuePanel h6 {
+    color: white !important;
+    font-weight: 600 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+#clearQueueBtn {
+    background: rgba(220, 53, 69, 0.2) !important;
+    border: 1px solid rgba(220, 53, 69, 0.4) !important;
+    color: #dc3545 !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+#clearQueueBtn:hover {
+    background: rgba(220, 53, 69, 0.3) !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+#queueList .list-group-item {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    margin-bottom: 0.25rem !important;
+    transition: all 0.3s ease !important;
+}
+
+#queueList .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateX(4px);
+}
+
+#queueList .list-group-item.active {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.3), rgba(0, 86, 179, 0.3)) !important;
+    border-color: rgba(0, 123, 255, 0.5) !important;
+}
+
+/* Dark Mode Enhancements */
+body.dark-mode #musicPlayer {
+    background: linear-gradient(135deg, rgba(24, 24, 24, 0.2), rgba(35, 39, 43, 0.2)) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode #queuePanel {
+    background: linear-gradient(135deg, rgba(24, 24, 24, 0.2), rgba(35, 39, 43, 0.2)) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .controls {
+        gap: 0.5rem !important;
+    }
+
+    .controls .btn {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    #playPauseBtn {
+        width: 42px !important;
+        height: 42px !important;
+    }
+}
+
+/* Subtle animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.controls .btn:active {
+    animation: pulse 0.2s ease;
 }
 
 /* ===== UTILITY CLASSES ===== */
@@ -313,6 +597,7 @@ body.dark-mode #queuePanel {
 
 .custom-link {
     text-decoration: none;
+    color: inherit;
 }
 
 /* ===== TYPOGRAPHY ===== */
