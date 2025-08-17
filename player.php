@@ -40,15 +40,18 @@
 			<!-- Player Controls -->
 			<div class="col-md-6 text-center">
 				<div class="d-flex flex-column align-items-center">
-					<div class="controls d-flex align-items-center justify-content-center mb-1">
-						<button id="prevBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
-									class="bi bi-skip-backward-fill"></i></button>
-						<button id="playPauseBtn" class="btn btn-sm btn-primary rounded-circle mx-2"><i
-									class="bi bi-play-fill"></i></button>
-						<button id="nextBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
-									class="bi bi-skip-forward-fill"></i></button>
-						<button id="queueBtn" class="btn btn-sm btn-outline-light ms-3"><i
+					<div class="d-flex align-items-center justify-content-center mb-1 gap-3">
+						<!-- Main playback controls -->
+						<div class="controls d-flex align-items-center justify-content-center">
+							<button id="prevBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
+										class="bi bi-skip-backward-fill"></i></button>
+							<button id="playPauseBtn" class="btn btn-sm btn-primary rounded-circle mx-2"><i
+										class="bi bi-play-fill"></i></button>
+							<button id="nextBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
+										class="bi bi-skip-forward-fill"></i></button>
+							<button id="queueBtn" class="btn btn-sm btn-outline-light"><i
 									class="bi bi-music-note-list"></i></button>
+						</div>
 					</div>
 
 					<!-- Progress Bar -->
@@ -74,7 +77,7 @@
 	</div>
 	<audio id="audioPlayer"></audio>
 	<div id="queuePanel" class="position-absolute end-0 bottom-100 bg-dark p-3 d-none"
-		 style="width: 300px; max-height: 400px; overflow-y: auto;">
+		 style="width: 600px; max-height: 400px; overflow-y: auto;">
 		<h6 class="mb-3">Queue
 			<button id="clearQueueBtn" class="btn btn-sm btn-outline-danger float-end">Clear</button>
 		</h6>
@@ -435,12 +438,12 @@
 					img.src = song.imageName ? `${this.imageBasePath}${song.imageName}` : '../images/defaultSong.webp';
 					img.alt = song.title;
 					img.className = 'me-2';
-					img.style = 'width: 30px; height: 30px; object-fit: cover;';
+					img.style = 'width: 50px; height: 50px; object-fit: cover; border-radius: 5px;';
 
 					// Create song info
 					const songInfo = document.createElement('div');
 					songInfo.className = 'flex-grow-1';
-					songInfo.innerHTML = `<div class="text-truncate">${song.title}</div><small class="text-muted">${song.artists}</small>`;
+					songInfo.innerHTML = `<div class="text-truncate">${song.title}</div><small class="text" style="color: rgb(200, 200, 200)">${song.artists}</small>`;
 
 					// Create remove button
 					const removeBtn = document.createElement('button');
