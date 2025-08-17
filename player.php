@@ -78,7 +78,7 @@
 		<h6 class="mb-3">Queue
 			<button id="clearQueueBtn" class="btn btn-sm btn-outline-danger float-end">Clear</button>
 		</h6>
-		<ul id="queueList" class="list-group list-group-flush bg-transparent"></ul>
+		<ul id="queueList" class="list-group list-group-flush"></ul>
 	</div>
 </div>
 

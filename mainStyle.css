@@ -1,23 +1,46 @@
-/*
- * Base Styles
- */
-body {
-    background-color: #f8f9fa;
-    margin-left: 220px;
-    margin-top: 67px;
+/* ===== CSS VARIABLES ===== */
+:root {
+    --card-bg: #fff;
+    --primary-dark: #343a40;
+    --secondary-dark: #212529;
+    --border-color: #495057;
+    --text-muted: #6c757d;
+    --light-bg: #f8f9fa;
+    --sidebar-width: 220px;
+    --navbar-height: 67px;
 }
 
-/*
- * Sidebar
- */
+body.dark-mode {
+    --card-bg: #23272b;
+}
+
+/* ===== BASE STYLES ===== */
+body {
+    background-color: var(--light-bg);
+    margin-left: var(--sidebar-width);
+    margin-top: var(--navbar-height);
+}
+
+body.dark-mode {
+    background-color: #181818 !important;
+    color: #e0e0e0;
+}
+
+/* ===== LAYOUT ===== */
+.main {
+    padding: 20px;
+    margin-bottom: 300px;
+}
+
+/* ===== SIDEBAR ===== */
 .sidebar {
-    background: linear-gradient(180deg, #343a40, #212529);
-    border-right: 2px solid #495057;
+    background: linear-gradient(180deg, var(--primary-dark), var(--secondary-dark));
+    border-right: 2px solid var(--border-color);
     color: white;
-    margin-top: 67px;
+    margin-top: var(--navbar-height);
     min-height: 100vh;
     padding: 20px;
-    width: 220px;
+    width: var(--sidebar-width);
 }
 
 .sidebar a {
@@ -30,19 +53,34 @@ body {
 }
 
 .sidebar a:hover {
-    background-color: #495057;
+    background-color: var(--border-color);
     color: white;
 }
 
 .sidebar a.active {
-    background-color: #6c757d;
+    background-color: var(--text-muted);
     color: white;
     font-weight: bold;
 }
 
-/*
- * Navigation
- */
+/* Sidebar Dark Mode */
+body.dark-mode .sidebar {
+    background: linear-gradient(180deg, #23272b, #181a1b);
+    border-right: 2px solid var(--primary-dark);
+    color: #e0e0e0;
+}
+
+body.dark-mode .sidebar a {
+    color: #b0b8c1;
+}
+
+body.dark-mode .sidebar a:hover,
+body.dark-mode .sidebar a.active {
+    background-color: var(--primary-dark);
+    color: #fff;
+}
+
+/* ===== NAVIGATION ===== */
 .myNavbar {
     margin-bottom: 20px;
 }
@@ -52,13 +90,21 @@ body {
 }
 
 .nav-tabs .nav-link.active {
-    background-color: #343a40;
+    background-color: var(--primary-dark);
     color: white;
 }
 
-/*
- * Tables
- */
+/* Navigation Dark Mode */
+body.dark-mode .nav-tabs .nav-link.active {
+    background-color: #23272b;
+    color: #fff;
+}
+
+body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
+    color: #646464;
+}
+
+/* ===== TABLES ===== */
 .table {
     border-collapse: collapse;
     margin: 0 auto;
@@ -73,7 +119,7 @@ th, td {
 }
 
 th {
-    background-color: #343a40;
+    background-color: var(--primary-dark);
     color: white;
 }
 
@@ -81,9 +127,22 @@ tr:nth-child(even) {
     background-color: #c7c7c7;
 }
 
-/*
- * Cards and Media
- */
+/* Tables Dark Mode */
+body.dark-mode th {
+    background-color: #23272b;
+    color: #e0e0e0;
+}
+
+body.dark-mode tr:nth-child(even) {
+    background-color: #23272b;
+}
+
+/* ===== CARDS ===== */
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
 .card-body[data-song-id] {
     cursor: pointer;
     transition: background-color 0.2s, border-radius 0.2s;
@@ -106,36 +165,38 @@ tr:nth-child(even) {
     top: 0;
     width: 0%;
     height: 100%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0), var(--card-bg, #fff));
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), var(--card-bg));
     pointer-events: none;
     border-radius: 10px;
 }
 
-.card-body.playing {
+.card-body.playing,
+.playing {
     background-color: rgba(13, 110, 253, 0.1);
     border-left: 3px solid #0d6efd;
     border-radius: 10px;
 }
 
-
 .playing {
-    background-color: rgba(13, 110, 253, 0.1);
-    border-left: 4px solid #0d6efd;
-    border-radius: 10px;
+    border-left-width: 4px;
 }
 
-.card-img-top {
-    height: 180px;
-    object-fit: cover;
+/* Cards Dark Mode */
+body.dark-mode .card {
+    background-color: #23272b;
+    color: #e0e0e0;
 }
 
-.a-p-column {
-    margin-left: 50px;
+body.dark-mode .card-title,
+body.dark-mode .card-text {
+    color: #e0e0e0;
 }
 
-/*
- * Artist Styles
- */
+body.dark-mode .card-body:after {
+    background: linear-gradient(to right, rgba(35, 39, 43, 0), var(--card-bg));
+}
+
+/* ===== ARTIST STYLES ===== */
 .artist-header {
     background-color: #ffffff;
     margin-bottom: 2rem;
@@ -156,14 +217,21 @@ tr:nth-child(even) {
 }
 
 .song-artist {
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 1rem;
     font-weight: 500;
 }
 
-/*
- * Form Elements
- */
+.a-p-column {
+    margin-left: 50px;
+}
+
+/* Artist Dark Mode */
+body.dark-mode .artist-header {
+    background-color: #23272b;
+}
+
+/* ===== FORMS ===== */
 .form-control {
     border: 1px solid #ced4da;
     border-radius: 5px;
@@ -171,9 +239,61 @@ tr:nth-child(even) {
     padding: 10px;
 }
 
-/*
- * Utility Classes
- */
+.form-control.dark-mode {
+    background-color: var(--primary-dark);
+}
+
+/* ===== SEARCH ===== */
+.search-container {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+.results-section {
+    margin-bottom: 2rem;
+}
+
+.result-count {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+
+/* ===== MUSIC PLAYER ===== */
+#musicPlayer {
+    background-color: rgba(33, 37, 41, 0.2) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#queuePanel {
+    background-color: rgba(33, 37, 41, 0.2) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+#queueList {
+    background-color: transparent !important;
+}
+
+/* Music Player Dark Mode */
+body.dark-mode #musicPlayer {
+    background-color: rgba(24, 24, 24, 0.2) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode #queuePanel {
+    background-color: rgba(24, 24, 24, 0.2) !important;
+}
+
+/* ===== UTILITY CLASSES ===== */
 .rcorners1 {
     border-radius: 10px;
     height: 40px;
@@ -191,121 +311,11 @@ tr:nth-child(even) {
     text-align: left;
 }
 
-h2.recommended-header {
-    font-size: 23px !important;
-}
-
-
-.main {
-    padding: 20px;
-    margin-bottom: 300px;
-}
-
 .custom-link {
     text-decoration: none;
 }
 
-/*
- * Dark Mode
- */
-body.dark-mode {
-    background-color: #181818 !important;
-    color: #e0e0e0;
-}
-
-body.dark-mode .sidebar {
-    background: linear-gradient(180deg, #23272b, #181a1b);
-    border-right: 2px solid #343a40;
-    color: #e0e0e0;
-}
-
-body.dark-mode .sidebar a {
-    color: #b0b8c1;
-}
-
-body.dark-mode .sidebar a:hover,
-body.dark-mode .sidebar a.active {
-    background-color: #343a40;
-    color: #fff;
-}
-
-body.dark-mode .card {
-    background-color: #23272b;
-    color: #e0e0e0;
-}
-
-body.dark-mode .card-title,
-body.dark-mode .card-text {
-    color: #e0e0e0;
-}
-
-body.dark-mode .artist-header {
-    background-color: #23272b;
-}
-
-body.dark-mode th {
-    background-color: #23272b;
-    color: #e0e0e0;
-}
-
-body.dark-mode tr:nth-child(even) {
-    background-color: #23272b;
-}
-
-body.dark-mode .nav-tabs .nav-link.active {
-    background-color: #23272b;
-    color: #fff;
-}
-
-body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
-    color: #646464;
-}
-
-.form-control.dark-mode {
-    background-color: #343a40;
-}
-
-/*
- * Search
- */
-.search-container {
-    max-width: 800px;
-    margin: 0 auto 2rem;
-}
-
-.results-section {
-    margin-bottom: 2rem;
-}
-
-.result-count {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-}
-
-.no-results {
-    text-align: center;
-    padding: 2rem;
-    color: #6c757d;
-}
-
-/* Text Truncation with Fade Effect */
-
-.card-body:after {
-
-}
-
-/* Update the gradient color in dark mode */
-body.dark-mode .card-body:after,
-body.dark-mode .card-body:after {
-    background: linear-gradient(to right, rgba(35, 39, 43, 0), var(--card-bg, #23272b));
-}
-
-/* Add this variable to set the background color */
-:root {
-    --card-bg: #fff;
-}
-
-body.dark-mode {
-    --card-bg: #23272b;
+/* ===== TYPOGRAPHY ===== */
+h2.recommended-header {
+    font-size: 23px !important;
 }
