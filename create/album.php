@@ -105,13 +105,12 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 			}
 		}
 	}
-	$artistString = implode(', ', $artistNames);
 
 	DataController::insertAlbum(new Album(
 		0,
 		$_POST['albumName'],
 		$_POST['songInput'],
-		$artistString,
+		$artistNames,
 		$finalFileName,
 		count($_POST['songInput']),
 		$totalDuration->format('H:i:s')

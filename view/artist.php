@@ -31,8 +31,7 @@ if (!$artist) {
 $allSongs = DataController::getSongList();
 $artistSongs = [];
 foreach ($allSongs as $song) {
-	$songArtists = explode(", ", $song->getArtists());
-	if (in_array($artist->getName(), $songArtists)) {
+	if (in_array($artist->getName(), $song->getArtists())) {
 		$artistSongs[] = $song;
 	}
 }
@@ -41,8 +40,7 @@ foreach ($allSongs as $song) {
 $allAlbums = DataController::getAlbumList();
 $artistAlbums = [];
 foreach ($allAlbums as $album) {
-	$albumArtists = explode(", ", $album->getArtists());
-	if (in_array($artist->getName(), $albumArtists)) {
+	if (in_array($artist->getName(), $album->getArtists())) {
 		$artistAlbums[] = $album;
 	}
 }
@@ -51,7 +49,7 @@ $songQueueData = array_map(function ($song) {
 	return [
 		'songID' => $song->getSongID(),
 		'title' => $song->getTitle(),
-		'artists' => $song->getArtists(),
+		'artists' => implode(", ", $song->getArtists()),
 		'fileName' => $song->getFileName(),
 		'imageName' => $song->getImageName()
 	];
@@ -112,42 +110,20 @@ $songQueueData = array_map(function ($song) {
 				<!-- Songs Section -->
 				<div class="container mb-5">
 					<h2 class="mb-4">Songs</h2>
-					<?php if (empty($artistSongs)): ?>
-						<div class="alert alert-info">No songs available for this artist.</div>
-					<?php else: ?>
-						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
-							<?php foreach ($artistSongs as $song): ?>
-								<div class="col-md-2 mb-2">
-									<div class="card shadow-sm border-0"
-										 style="border-radius: 10px; width: 100%; height: auto;">
-										<div class="card-body d-flex align-items-center p-3 position-relative"
-											 style="width: 100%;"
-											 data-song-id="<?php echo $song->getSongID(); ?>"
-											 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
-											<?php if (!empty($song->getimageName())): ?>
-												<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
-													 class="me-3 rounded"
-													 alt="<?php echo htmlspecialchars($song->getimageName()); ?>"
-													 style="width: 60px; height: 60px; object-fit: cover;">
-											<?php else: ?>
-												<img src="../images/defaultSong.webp" class="me-3 "
-													 alt="Default Song Cover"
-													 style="width: 60px; height: 60px; object-fit: cover;">
-											<?php endif; ?>
-											<div>
-												<h5 class="card-title mb-1"
-													style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-												<p class="card-text mb-0"
-												   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
-												<p class="card-text mb-0"
-												   style="font-size: 0.8rem; text-align: left; color: #6c757d;"><?php echo htmlspecialchars($song->getSongLength()->format("i:s")); ?></p>
-											</div>
-										</div>
-									</div>
-								</div>
-							<?php endforeach; ?>
-						</div>
-					<?php endif; ?>
+					<?php
+					$songListOptions = [
+							'layout' => 'grid',
+							'showIndex' => false,
+							'showDuration' => true,
+							'showArtistLinks' => true,
+							'containerClass' => 'col-md-4 mb-2',
+							'emptyMessage' => 'No songs available for this artist.'
+					];
+
+					$songs = $artistSongs;
+					$options = $songListOptions;
+					include('../components/song-list.php');
+					?>
 				</div>
 
 				<!-- Albums Section -->
@@ -159,7 +135,7 @@ $songQueueData = array_map(function ($song) {
 						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
 							<?php foreach ($artistAlbums as $album): ?>
 								<div class="col-md-3 mb-3">
-									<a class="custom-link" href="album.php?id=<?php echo $album->getAlbumID(); ?>">
+									<a class="on-card-link" href="album.php?id=<?php echo $album->getAlbumID(); ?>">
 										<div class="card shadow-sm border-0"
 											 style="border-radius: 10px; width: 100%; height: auto;">
 											<div class="d-flex flex-column">
@@ -171,7 +147,7 @@ $songQueueData = array_map(function ($song) {
 													<h5 class="card-title mb-1"
 														style="font-size: 1.1rem; font-weight: bold;"><?php echo $album->getName(); ?></h5>
 													<p class="card-text mb-0"
-													   style="font-size: 0.9rem; color: #6c757d;"><?php echo $album->getArtists(); ?></p>
+													   style="font-size: 0.9rem; color: #6c757d;"><?php echo implode(", ", $album->getArtists()); ?></p>
 													<p class="card-text mb-0"
 													   style="font-size: 0.8rem; text-align: left; color: #6c757d;">
 														<?php echo $album->getLength(); ?> songs •

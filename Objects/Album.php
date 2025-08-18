@@ -5,12 +5,12 @@ class Album
 	private int $albumID;
 	private string $name;
 	private array $songIDs;
-	private string $artists;
+	private array $artists;
 	private string $imageName;
 	private int $length;
 	private DateTime $duration;
 
-	public function __construct(int $albumID, string $name, array $songIDs, string $artists, string $imageName, int $length, string $duration)
+	public function __construct(int $albumID, string $name, array $songIDs, array $artists, string $imageName, int $length, string $duration)
 	{
 		$this->albumID = $albumID;
 		$this->name = $name;
@@ -31,17 +31,17 @@ class Album
 		return $this->name;
 	}
 
-	public function getArtists(): string
+	public function getArtists(): array
 	{
 		return $this->artists;
 	}
 
-	public function setArtists(string $artists): void
+	public function setArtists(array $artists): void
 	{
 		$this->artists = $artists;
 	}
 
-	public function getimageName(): string
+	public function getImageName(): string
 	{
 		return $this->imageName;
 	}

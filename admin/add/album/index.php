@@ -133,12 +133,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				$albumLength = count($_POST["songInput"]);
 
 				try {
-					$artists = implode(", ", $_POST["artistInput"]);
 					DataController::insertAlbum(new Album(
 						0, // Random ID will be generated in DataController
 						$_POST["nameInput"],
 						$_POST["songInput"],
-						$artists,
+						$_POST["artistInput"],
 						$newimageName,
 						$albumLength,
 						$formattedDuration

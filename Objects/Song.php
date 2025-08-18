@@ -4,7 +4,7 @@ class Song
 {
 	private int $songID;
 	private string $title;
-	private string $artists;
+	private array $artists;
 	private string $genre;
 	private DateTime $releaseDate;
 	private DateTime $songLength;
@@ -14,7 +14,7 @@ class Song
 	/**
 	 * @throws Exception
 	 */
-	function __construct($songID, $title, $artists, $genre, $releaseDate, $songLength, $fileName, $imageName)
+	function __construct(int $songID, string $title, array $artists, string $genre, string $releaseDate, string $songLength, string $fileName, string $imageName)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
@@ -38,12 +38,12 @@ class Song
 		return $this->title;
 	}
 
-	public function getArtists(): string
+	public function getArtists(): array
 	{
 		return $this->artists;
 	}
 
-	public function setArtists(string $artists): void
+	public function setArtists(array $artists): void
 	{
 		$this->artists = $artists;
 	}

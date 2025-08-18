@@ -37,71 +37,15 @@ foreach ($userList as $user) {
 	$usernames[$user->getUserID()] = $user->getUsername();
 }
 
-$recommendedSongs = [];
-$IDsToRecommend = [];
-
-if (!empty($songList)) {
-	for ($i = 0; $i < ((count($songList) > 20) ? 20 : count($songList)); $i++) {
-		$randomSongIndex = rand(0, count($songList) - 1);
-		$songID = $songList[$randomSongIndex]->getSongID();
-		if (!in_array($songID, $IDsToRecommend)) {
-			$IDsToRecommend[] = $songID;
-			$recommendedSongs[] = $songList[$randomSongIndex];
-		} else {
-			if ($i > 0) {
-				$i--;
-			} else {
-				break;
-			}
-		}
-	}
-}
-
-
-$recommendedAlbums = [];
-$recommendedPlaylists = [];
-$albumIDsToRecommend = [];
-$playlistIDsToRecommend = [];
-
-if (!empty($albumList)) {
-	for ($i = 0; $i < ((count($albumList) > 3) ? 3 : count($albumList)); $i++) {
-		$randomAlbumIndex = rand(0, count($albumList) - 1);
-		$albumID = $albumList[$randomAlbumIndex]->getAlbumID();
-		if (!in_array($albumID, $albumIDsToRecommend)) {
-			$albumIDsToRecommend[] = $albumID;
-			$recommendedAlbums[] = $albumList[$randomAlbumIndex];
-		} else {
-			if ($i > 0) {
-				$i--;
-			} else {
-				break;
-			}
-		}
-	}
-}
-
-if (!empty($playlistList)) {
-	for ($i = 0; $i < ((count($playlistList) > 3) ? 3 : count($playlistList)); $i++) {
-		$randomPlaylistIndex = rand(0, count($playlistList) - 1);
-		$playlistID = $playlistList[$randomPlaylistIndex]->getPlaylistID();
-		if (!in_array($playlistID, $playlistIDsToRecommend)) {
-			$playlistIDsToRecommend[] = $playlistID;
-			$recommendedPlaylists[] = $playlistList[$randomPlaylistIndex];
-		} else {
-			if ($i > 0) {
-				$i--;
-			} else {
-				break;
-			}
-		}
-	}
-}
+$recommendedSongs = DataController::getRandomSongs();
+$recommendedAlbums = DataController::getRandomAlbums();
+$recommendedPlaylists = DataController::getPlaylistList();
 
 $songQueueData = array_map(function ($song) {
 	return [
 		'songID' => $song->getSongID(),
 		'title' => $song->getTitle(),
-		'artists' => $song->getArtists(),
+		'artists' => implode(", ", $song->getArtists()),
 		'fileName' => $song->getFileName(),
 		'imageName' => $song->getImageName()
 	];
@@ -158,35 +102,20 @@ include("../topBar.php"); ?>
 					<div class="col-md-8">
 						<section class="mb-5">
 							<h2 class="text-start mb-4 recommended-header">Recommended Songs:</h2>
-							<div class="row g-4">
-								<?php foreach ($recommendedSongs as $song): ?>
-									<div class="col-12 col-md-6">
-										<div class="card shadow-sm border-0"
-											 style="border-radius: 10px; cursor: pointer;">
-											<div class="card-body d-flex align-items-center p-3"
-												 data-song-id="<?php echo $song->getSongID(); ?>"
-												 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
-												<?php if (!empty($song->getimageName())): ?>
-													<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
-														 class="me-3 rounded"
-														 alt="<?php echo htmlspecialchars($song->getimageName()); ?>"
-														 style="width: 50px; height: 50px; object-fit: cover;">
-												<?php else: ?>
-													<img src="../images/defaultSong.webp" class="me-3 rounded"
-														 alt="Default Album Cover"
-														 style="width: 50px; height: 50px; object-fit: cover;">
-												<?php endif; ?>
-												<div>
-													<h5 class="card-title mb-1"
-														style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-													<p class="card-text mb-0"
-													   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
-												</div>
-											</div>
-										</div>
-									</div>
-								<?php endforeach; ?>
-							</div>
+							<?php
+							$songListOptions = [
+									'layout' => 'grid',
+									'showIndex' => false,
+									'showDuration' => true,
+									'showArtistLinks' => true,
+									'containerClass' => 'col-12 col-md-6',
+									'emptyMessage' => 'No recommended songs available.'
+							];
+
+							$songs = $recommendedSongs;
+							$options = $songListOptions;
+							include('../components/song-list.php');
+							?>
 						</section>
 					</div>
 
@@ -197,10 +126,11 @@ include("../topBar.php"); ?>
 							<div class="row g-4">
 								<?php foreach ($recommendedAlbums as $album): ?>
 									<div class="col-12">
-										<a class="custom-link"
-										   href="../view/album.php?id=<?php echo $album->getAlbumID() ?>">
-											<div class="card shadow-sm border-0" style="border-radius: 10px;">
-												<div class="card-body d-flex align-items-center p-2">
+										<div class="card shadow-sm border-0" style="border-radius: 10px;">
+											<a class="on-card-link"
+											   href="../view/album.php?id=<?php echo $album->getAlbumID() ?>">
+												<div class="card-body d-flex align-items-center p-2"
+													 data-song-id="album-<?php echo $album->getAlbumID(); ?>">
 													<?php if (!empty($album->getimageName())): ?>
 														<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getimageName()); ?>"
 															 class="me-3 rounded"
@@ -212,14 +142,16 @@ include("../topBar.php"); ?>
 															 style="width: 80px; height: 80px; object-fit: cover;">
 													<?php endif; ?>
 													<div class="card-body">
-														<h5 class="card-title"
-															style="font-weight: bold;"><?php echo htmlspecialchars($album->getName()); ?></h5>
-														<p class="card-text"
-														   style="color: #6c757d;"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+														<h5 class="card-title" style="font-weight: bold;">
+															<?php echo htmlspecialchars($album->getName()); ?>
+														</h5>
+														<p class="card-text" style="color: #6c757d;">
+															<?php echo htmlspecialchars(implode(", ", $album->getArtists())); ?>
+														</p>
 													</div>
 												</div>
-											</div>
-										</a>
+											</a>
+										</div>
 									</div>
 								<?php endforeach; ?>
 							</div>
@@ -230,7 +162,7 @@ include("../topBar.php"); ?>
 							<div class="row g-4">
 								<?php foreach ($recommendedPlaylists as $playlist): ?>
 									<div class="col-12">
-										<a class="custom-link"
+										<a class="on-card-link"
 										   href="../view/playlist.php?id=<?php echo $playlist->getPlaylistID() ?>">
 											<div class="card shadow-sm border-0" style="border-radius: 10px;">
 												<div class="card-body d-flex align-items-center p-2">

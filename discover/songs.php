@@ -24,7 +24,7 @@ $songQueueData = array_map(function ($song) {
 	return [
 		'songID' => $song->getSongID(),
 		'title' => $song->getTitle(),
-		'artists' => $song->getArtists(),
+		'artists' => implode(", ", $song->getArtists()),
 		'fileName' => $song->getFileName(),
 		'imageName' => $song->getImageName()
 	];
@@ -87,42 +87,20 @@ include("../topBar.php");
 
 			<!-- Song List -->
 			<div class="container mt-4">
-				<div class="row" style="justify-content: center; width: 100%; margin: auto;">
-					<?php if (!empty($songList)): ?>
-						<?php foreach ($songList as $song): ?>
-							<div class="col-md-4 mb-4">
-								<div class="card shadow-sm border-0"
-									 style="border-radius: 10px; width: 100%; height: auto;">
-									<div class="card-body d-flex align-items-center p-3 position-relative"
-										 style="width: 100%;"
-										 data-song-id="<?php echo $song->getSongID(); ?>"
-										 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
-										<?php if (!empty($song->getimageName())): ?>
-											<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
-												 class="me-3 rounded"
-												 alt="<?php echo htmlspecialchars($song->getimageName()); ?>"
-												 style="width: 60px; height: 60px; object-fit: cover;">
-										<?php else: ?>
-											<img src="../images/defaultSong.webp" class="me-3 "
-												 alt="Default Song Cover"
-												 style="width: 60px; height: 60px; object-fit: cover;">
-										<?php endif; ?>
-										<div>
-											<h5 class="card-title mb-1"
-												style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-											<p class="card-text mb-0"
-											   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
-											<p class="card-text mb-0"
-											   style="font-size: 0.8rem; text-align: left; color: #6c757d;"><?php echo htmlspecialchars($song->getSongLength()->format("i:s")); ?></p>
-										</div>
-									</div>
-								</div>
-							</div>
-						<?php endforeach; ?>
-					<?php else: ?>
-						<p class="text-center">No songs available at the moment.</p>
-					<?php endif; ?>
-				</div>
+				<?php
+				$songListOptions = [
+						'layout' => 'grid',
+						'showIndex' => false,
+						'showDuration' => true,
+						'showArtistLinks' => true,
+						'containerClass' => 'col-md-4 mb',
+						'emptyMessage' => 'No songs available at the moment.'
+				];
+
+				$songs = $songList;
+				$options = $songListOptions;
+				include('../components/song-list.php');
+				?>
 			</div>
 		</main>
 	</div>

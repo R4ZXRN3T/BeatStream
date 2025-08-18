@@ -114,7 +114,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<tr>
 						<td><?php echo $songList[$i]->getSongID() ?></td>
 						<td><?php echo $songList[$i]->getTitle() ?></td>
-						<td><?php echo $songList[$i]->getArtists() ?></td>
+						<td><?php echo implode(", ", $songList[$i]->getArtists()) ?></td>
 						<td><?php echo $songList[$i]->getGenre() ?></td>
 						<td><?php echo $songList[$i]->getReleaseDate()->format('d.m.Y') ?></td>
 						<td><?php echo $songList[$i]->getSongLength()->format('i:s') ?></td>

@@ -48,7 +48,7 @@ class DataController
 		$stmt->execute();
 		$stmt->close();
 
-		$artistsInSong = explode(", ", $song->getArtists());
+		$artistsInSong = $song->getArtists();
 
 		for ($j = 0; $j < count($artistsInSong); $j++) {
 
@@ -80,16 +80,67 @@ class DataController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], $row["name"], $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
 				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
 					$alreadyExists = true;
-					$songList[$i]->setArtists($songList[$i]->getArtists() . ", " . $newSong->getArtists());
+					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
 				}
 			}
 			if (!$alreadyExists) $songList[] = $newSong;
+		}
+		$stmt->close();
+
+		return $songList;
+	}
+
+	public static function getRandomSongs(int $limit = 20): array
+	{
+		// First, get random song IDs
+		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT songID FROM song ORDER BY RAND() LIMIT ?");
+		$stmt->bind_param("i", $limit);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$songIDs = [];
+		while ($row = $result->fetch_assoc()) {
+			$songIDs[] = $row['songID'];
+		}
+		$stmt->close();
+
+		if (empty($songIDs)) {
+			return [];
+		}
+
+		// Then get all data for those songs with proper artist ordering
+		$placeholders = str_repeat('?,', count($songIDs) - 1) . '?';
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
+        FROM song, artist, releases_song
+        WHERE song.songID = releases_song.songID
+        AND artist.artistID = releases_song.artistID
+        AND song.songID IN ($placeholders)
+        ORDER BY song.songID, releases_song.artistIndex");
+
+		$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$songList = array();
+		while ($row = $result->fetch_assoc()) {
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+			$alreadyExists = false;
+
+			for ($i = 0; $i < count($songList); $i++) {
+				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
+					$alreadyExists = true;
+					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
+				}
+			}
+			if (!$alreadyExists) {
+				$songList[] = $newSong;
+			}
 		}
 		$stmt->close();
 
@@ -276,12 +327,12 @@ class DataController
 			}
 		} while ($changeMade == true);
 
-		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getimageName() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("H:i:s") . "')";
+		$sqlAlbum = "INSERT INTO album VALUES (" . $newAlbumID . ", '" . $album->getName() . "', '" . $album->getImageName() . "', '" . $album->getLength() . "', '" . $album->getDuration()->format("H:i:s") . "')";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 		$stmt->execute();
 		$stmt->close();
 
-		$artistsInAlbum = explode(", ", $album->getArtists());
+		$artistsInAlbum = $album->getArtists();
 
 		for ($j = 0; $j < count($artistsInAlbum); $j++) {
 			for ($i = 0; $i < count($artistList); $i++) {
@@ -313,13 +364,13 @@ class DataController
 
 		$albumList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newAlbum = new Album($row["albumID"], $row["title"], array(), $row["name"], $row["imageName"], $row["length"], $row["duration"]);
+			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), $row["imageName"], $row["length"], $row["duration"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($albumList); $i++) {
 				if ($albumList[$i]->getAlbumID() == $newAlbum->getAlbumID()) {
 					$alreadyExists = true;
-					$albumList[$i]->setArtists($albumList[$i]->getArtists() . ", " . $newAlbum->getArtists());
+					$albumList[$i]->setArtists(array_merge($albumList[$i]->getArtists(), $newAlbum->getArtists()));
 				}
 			}
 			if (!$alreadyExists) $albumList[] = $newAlbum;
@@ -330,6 +381,90 @@ class DataController
                                    FROM in_album, album
                                    WHERE in_album.albumId = album.albumID
                                    ORDER BY album.albumID, in_album.songIndex");
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$albumSongs = [];
+		while ($row = $result->fetch_assoc()) {
+			$albumID = $row['albumID'];
+			if (!isset($albumSongs[$albumID])) {
+				$albumSongs[$albumID] = [];
+			}
+			$albumSongs[$albumID][] = $row['songID'];
+		}
+
+		foreach ($albumSongs as $albumID => $songs) {
+			for ($i = 0; $i < count($albumList); $i++) {
+				if ($albumList[$i]->getAlbumID() == $albumID) {
+					$albumList[$i]->setSongIDs($songs);
+					break;
+				}
+			}
+		}
+		$stmt->close();
+
+		return $albumList;
+	}
+
+	public static function getRandomAlbums(int $limit = 3): array
+	{
+		// First get random album IDs
+		$stmt = DBConn::getConn()->prepare("
+        SELECT DISTINCT album.albumID 
+        FROM album 
+        ORDER BY RAND() 
+        LIMIT ?
+    ");
+		$stmt->bind_param("i", $limit);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$albumIDs = [];
+		while ($row = $result->fetch_assoc()) {
+			$albumIDs[] = $row['albumID'];
+		}
+		$stmt->close();
+
+		if (empty($albumIDs)) {
+			return [];
+		}
+
+		// Then get all data for those albums
+		$placeholders = str_repeat('?,', count($albumIDs) - 1) . '?';
+		$stmt = DBConn::getConn()->prepare("
+        SELECT album.albumID, title, name, album.imageName, length, duration
+        FROM album, artist, releases_album
+        WHERE releases_album.artistID = artist.artistID
+        AND album.albumID = releases_album.albumID
+        AND album.albumID IN ($placeholders)
+        ORDER BY album.albumID
+    ");
+		$stmt->bind_param(str_repeat('i', count($albumIDs)), ...$albumIDs);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$albumList = array();
+		while ($row = $result->fetch_assoc()) {
+			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), $row["imageName"], $row["length"], $row["duration"]);
+			$alreadyExists = false;
+
+			for ($i = 0; $i < count($albumList); $i++) {
+				if ($albumList[$i]->getAlbumID() == $newAlbum->getAlbumID()) {
+					$alreadyExists = true;
+					$albumList[$i]->setArtists(array_merge($albumList[$i]->getArtists(), $newAlbum->getArtists()));
+				}
+			}
+			if (!$alreadyExists) $albumList[] = $newAlbum;
+		}
+		$stmt->close();
+
+		// Get song data for albums (same as original method)
+		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, in_album.songID, in_album.songIndex
+                                   FROM in_album, album
+                                   WHERE in_album.albumId = album.albumID
+                                   AND album.albumID IN ($placeholders)
+                                   ORDER BY album.albumID, in_album.songIndex");
+		$stmt->bind_param(str_repeat('i', count($albumIDs)), ...$albumIDs);
 		$stmt->execute();
 		$result = $stmt->get_result();
 

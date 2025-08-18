@@ -12,6 +12,16 @@ $albumId = (int)$_GET['id'];
 // Include data controller
 include_once("../DataController.php");
 
+// get artists
+$artistIDs = array();
+$stmt = DBConn::getConn()->prepare("SELECT artistID FROM releases_album WHERE albumID = ?");
+$stmt->bind_param("i", $albumId);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+	$artistIDs[] = $row['artistID'];
+}
+
 // Get album data
 $albumList = DataController::getAlbumList();
 $album = null;
@@ -45,13 +55,14 @@ foreach ($album->getSongIDs() as $songId) {
 }
 
 // Prepare song queue data for player
-$songQueueData = array_map(function ($song) use ($album) {
+$songQueueData = array_map(function ($song) use ($album, $artistIDs) {
 	return [
-		'songID' => $song->getSongID(),
-		'title' => $song->getTitle(),
-		'artists' => $song->getArtists(),
-		'fileName' => $song->getFileName(),
-		'imageName' => "../album/" . $album->getImageName() // Use album image for all songs
+			'songID' => $song->getSongID(),
+			'title' => $song->getTitle(),
+			'artists' => implode(", ", $song->getArtists()),
+			'artistIDs' => $artistIDs, // Add artist IDs
+			'fileName' => $song->getFileName(),
+			'imageName' => "../album/" . $album->getImageName()
 	];
 }, $albumSongs);
 ?>
@@ -103,8 +114,14 @@ $songQueueData = array_map(function ($song) use ($album) {
 					</div>
 					<div class="col-md-8">
 						<h1 class="mb-2"><?php echo htmlspecialchars($album->getName()); ?></h1>
-						<p class="text mb-2"
-						   style="color: #6c757d"><?php echo htmlspecialchars($album->getArtists()); ?></p>
+						<p class="text mb-2" style="color: #6c757d"><?php
+							$artistLinks = [];
+							for ($i = 0; $i < count($artistIDs); $i++) {
+								$artistLinks[$i] = "<a class='custom-link' href='artist.php?id=" . $artistIDs[$i] . "'>" . $album->getArtists()[$i] . "</a>";
+							}
+							echo implode(", ", $artistLinks);
+							?>
+						</p>
 						<p><?php echo count($albumSongs); ?> songs ·
 							<?php echo $album->getDuration()->format("H") > 0 ? $album->getDuration()->format("H\h i\m s\s") : $album->getDuration()->format("i\m s\s"); ?></p>
 					</div>
@@ -113,44 +130,20 @@ $songQueueData = array_map(function ($song) use ($album) {
 
 			<!-- Song List -->
 			<div class="container" style="max-width: 800px; margin-top: 50px;">
-				<?php if (!empty($albumSongs)): ?>
-					<?php foreach ($albumSongs as $index => $song): ?>
-						<div class="card shadow-sm border-0 mb-3">
-							<div class="card-body d-flex align-items-center p-3 position-relative"
-								 data-song-id="<?php echo $song->getSongID(); ?>"
-								 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
-								<div class="position-relative me-3">
-									<?php if (!empty($album->getImageName())): ?>
-										<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getImageName()); ?>"
-											 class="rounded"
-											 alt="<?php echo htmlspecialchars($album->getName()); ?>"
-											 style="width: 60px; height: 60px; object-fit: cover;">
-									<?php else: ?>
-										<img src="../images/defaultAlbum.webp" class="rounded"
-											 alt="Default Album Cover"
-											 style="width: 60px; height: 60px; object-fit: cover;">
-									<?php endif; ?>
-									<div class="position-absolute"
-										 style="left: -10px; top: 20px; background: rgba(0,0,0,0.6); color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">
-										<?php echo $index + 1; ?>
-									</div>
-								</div>
-								<div>
-									<h5 class="card-title mb-1"
-										style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-									<p class="card-text mb-0"
-									   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
-								</div>
-								<div class="ms-auto">
-									<p class="card-text mb-0"
-									   style="font-size: 0.8rem; color: #6c757d;"><?php echo $song->getSongLength()->format("i:s"); ?></p>
-								</div>
-							</div>
-						</div>
-					<?php endforeach; ?>
-				<?php else: ?>
-					<p class="text-center">No songs available in this album.</p>
-				<?php endif; ?>
+				<?php
+				$songListOptions = [
+						'layout' => 'list',
+						'showIndex' => true,
+						'showDuration' => true,
+						'showArtistLinks' => true,
+						'containerClass' => 'col-12',
+						'emptyMessage' => 'No songs available in this album.'
+				];
+
+				$songs = $albumSongs;
+				$options = $songListOptions;
+				include('../components/song-list.php');
+				?>
 			</div>
 		</main>
 	</div>
@@ -158,5 +151,15 @@ $songQueueData = array_map(function ($song) use ($album) {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <?php include("../player.php"); ?>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// Prevent song playback when clicking on artist links
+		document.querySelectorAll('.card-body a.custom-link').forEach(link => {
+			link.addEventListener('click', function(event) {
+				event.stopPropagation();
+			});
+		});
+	});
+</script>
 </body>
 </html>

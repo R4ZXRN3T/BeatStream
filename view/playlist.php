@@ -129,49 +129,20 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 
 			<!-- Song List -->
 			<div class="container" style="max-width: 800px; margin-top: 50px;">
-				<?php if (!empty($playlistSongs)): ?>
-					<?php foreach ($playlistSongs as $index => $song): ?>
-						<div class="card shadow-sm border-0 mb-3">
-							<div class="card-body d-flex align-items-center p-3 position-relative"
-								 data-song-id="<?php echo $song->getSongID(); ?>"
-								 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
-								<div class="position-relative me-3">
-									<?php if (!empty($song->getimageName())): ?>
-										<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
-											 class="rounded"
-											 alt="<?php echo htmlspecialchars($song->getTitle()); ?>"
-											 style="width: 60px; height: 60px; object-fit: cover;">
-									<?php elseif (!empty($playlist->getimageName())): ?>
-										<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
-											 class="rounded"
-											 alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
-											 style="width: 60px; height: 60px; object-fit: cover;">
-									<?php else: ?>
-										<img src="../images/defaultSong.webp" class="rounded"
-											 alt="Default Song Cover"
-											 style="width: 60px; height: 60px; object-fit: cover;">
-									<?php endif; ?>
-									<div class="position-absolute"
-										 style="left: -10px; top: 20px; background: rgba(0,0,0,0.6); color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">
-										<?php echo $index + 1; ?>
-									</div>
-								</div>
-								<div>
-									<h5 class="card-title mb-1"
-										style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($song->getTitle()); ?></h5>
-									<p class="card-text mb-0"
-									   style="font-size: 0.9rem; color: #6c757d;"><?php echo htmlspecialchars($song->getArtists()); ?></p>
-								</div>
-								<div class="ms-auto">
-									<p class="card-text mb-0"
-									   style="font-size: 0.8rem; color: #6c757d;"><?php echo $song->getSongLength()->format("i:s"); ?></p>
-								</div>
-							</div>
-						</div>
-					<?php endforeach; ?>
-				<?php else: ?>
-					<p class="text-center">No songs available in this playlist.</p>
-				<?php endif; ?>
+				<?php
+				$songListOptions = [
+						'layout' => 'list',
+						'showIndex' => true,
+						'showDuration' => true,
+						'showArtistLinks' => false,
+						'containerClass' => 'col-12',
+						'emptyMessage' => 'No songs available in this playlist.'
+				];
+
+				$songs = $playlistSongs;
+				$options = $songListOptions;
+				include('../components/song-list.php');
+				?>
 			</div>
 		</main>
 	</div>
