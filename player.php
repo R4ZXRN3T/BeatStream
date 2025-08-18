@@ -22,9 +22,11 @@
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="/BeatStream/mainStyle.css">
+<link rel="stylesheet" href="/BeatStream/playerStyle.css">
 
 <!-- Music Player -->
-<div id="musicPlayer" class="fixed-bottom bg-dark text-white p-2">
+<div id="musicPlayer" class="fixed-bottom bg-dark text-white p-2 d-none">
 	<div class="container-fluid">
 		<div class="row align-items-center">
 			<!-- Song Info -->
@@ -50,7 +52,7 @@
 							<button id="nextBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
 										class="bi bi-skip-forward-fill"></i></button>
 							<button id="queueBtn" class="btn btn-sm btn-outline-light"><i
-									class="bi bi-music-note-list"></i></button>
+										class="bi bi-music-note-list"></i></button>
 						</div>
 					</div>
 
@@ -89,12 +91,11 @@
 	document.addEventListener('DOMContentLoaded', function () {
 		class MusicPlayer {
 			constructor() {
-				// Base paths
 				this.basePath = '/BeatStream';
 				this.audioBasePath = `${this.basePath}/audio/`;
 				this.imageBasePath = `${this.basePath}/images/song/`;
 
-				// Player elements
+				// Core elements only
 				this.playerUI = document.getElementById('musicPlayer');
 				this.audio = document.getElementById('audioPlayer');
 				this.playPauseBtn = document.getElementById('playPauseBtn');
@@ -107,8 +108,6 @@
 				this.playerArtist = document.getElementById('playerArtist');
 				this.currentTimeEl = document.getElementById('currentTime');
 				this.totalTimeEl = document.getElementById('totalTime');
-
-				// Queue elements
 				this.prevBtn = document.getElementById('prevBtn');
 				this.nextBtn = document.getElementById('nextBtn');
 				this.queueBtn = document.getElementById('queueBtn');
@@ -116,48 +115,31 @@
 				this.queueList = document.getElementById('queueList');
 				this.clearQueueBtn = document.getElementById('clearQueueBtn');
 
-				// Queue state
 				this.queue = [];
 				this.currentIndex = -1;
 				this.history = [];
 
-				// Initialize the player
 				this.init();
 			}
 
 			init() {
-				// Set initial volume
 				this.audio.volume = this.volumeControl.value / 100;
-
-				// Hide player initially
 				this.playerUI.classList.add('d-none');
-
-				// Initialize all event listeners
 				this.setupEventListeners();
 				this.setupSongCardListeners();
-
-				// Listen for custom events
-				document.addEventListener('playSingleSong', (e) => {
-					this.loadSingleSong(e.detail.songId);
-				});
 			}
 
 			setupEventListeners() {
-				// Player controls
 				this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
 				this.nextBtn.addEventListener('click', () => this.playNext());
 				this.prevBtn.addEventListener('click', () => this.playPrevious());
-
-				// Queue controls
 				this.queueBtn.addEventListener('click', (e) => {
-					e.stopPropagation(); // Stop event from bubbling up to document
+					e.stopPropagation();
 					this.queuePanel.classList.toggle('d-none');
 					this.updateQueueDisplay();
 				});
-
 				this.clearQueueBtn.addEventListener('click', () => this.clearQueue());
 
-				// Audio events
 				this.audio.addEventListener('ended', () => this.playNext());
 				this.audio.addEventListener('timeupdate', () => this.updateProgress());
 				this.audio.addEventListener('loadedmetadata', () => this.updateTotalTime());
@@ -168,18 +150,13 @@
 					this.playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
 				});
 
-				// Progress bar
 				this.progressContainer.addEventListener('click', (e) => this.seekTo(e));
-
-				// Volume control
 				this.volumeControl.addEventListener('input', () => {
 					this.audio.volume = this.volumeControl.value / 100;
 					this.updateVolumeIcon();
 				});
-
 				this.volumeIcon.addEventListener('click', () => this.toggleMute());
 
-				// Close queue panel when clicking outside
 				document.addEventListener('click', (e) => {
 					if (!this.queuePanel.contains(e.target) && e.target !== this.queueBtn) {
 						this.queuePanel.classList.add('d-none');
@@ -188,20 +165,16 @@
 			}
 
 			setupSongCardListeners() {
-				const songCards = document.querySelectorAll('.card-body[data-song-id]');
-				songCards.forEach(card => {
+				document.querySelectorAll('.card-body[data-song-id]').forEach(card => {
 					card.addEventListener('click', () => {
 						const songId = card.dataset.songId;
-
 						try {
 							if (card.dataset.songQueue) {
-								const queueData = JSON.parse(card.dataset.songQueue);
-								this.loadQueueFromData(queueData, songId);
+								this.loadQueueFromData(JSON.parse(card.dataset.songQueue), songId);
 							} else {
 								this.loadSingleSong(songId);
 							}
 						} catch (error) {
-							console.error('Error processing song data:', error);
 							this.loadSingleSong(songId);
 						}
 					});
@@ -209,27 +182,18 @@
 			}
 
 			loadQueueFromData(queueData, clickedSongId) {
-				// Reset queue
-				this.queue = [];
-				this.currentIndex = -1;
+				this.queue = queueData.map(song => ({
+					songID: song.songID,
+					title: song.title,
+					artists: song.artists,
+					fileName: song.fileName,
+					imageName: song.imageName || ''
+				}));
 
-				// Process queue data
-				queueData.forEach(song => {
-					this.queue.push({
-						songID: song.songID,
-						title: song.title,
-						artists: song.artists,
-						fileName: song.fileName,
-						imageName: song.imageName || ''
-					});
+				this.currentIndex = this.queue.findIndex(song =>
+					String(song.songID) === String(clickedSongId)
+				);
 
-					// Convert both to strings for comparison
-					if (String(song.songID) === String(clickedSongId)) {
-						this.currentIndex = this.queue.length - 1;
-					}
-				});
-
-				// Play the selected song
 				if (this.currentIndex >= 0) {
 					this.playSong(this.queue[this.currentIndex]);
 					this.playerUI.classList.remove('d-none');
@@ -237,62 +201,18 @@
 				}
 			}
 
-			loadSingleSong(songId) {
-				fetch(`${this.basePath}/api/getSong.php?id=${songId}`)
-					.then(response => {
-						if (!response.ok) {
-							throw new Error(`Network response was not ok: ${response.status}`);
-						}
-						return response.json();
-					})
-					.then(data => {
-						this.queue = [data];
-						this.currentIndex = 0;
-						this.playSong(data);
-						this.playerUI.classList.remove('d-none');
-						this.updateQueueDisplay();
-					})
-					.catch(error => {
-						console.error('Error fetching song data:', error);
-						alert('Failed to load song. Please try again.');
-					});
-			}
-
 			playSong(song) {
 				if (!song) return;
 
-				// Update audio source
 				this.audio.src = `${this.audioBasePath}${song.fileName}`;
-
-				// Update player information
 				this.playerTitle.textContent = song.title;
 				this.playerArtist.textContent = song.artists;
+				this.playerCover.src = song.imageName ?
+					`${this.imageBasePath}${song.imageName}` :
+					'../images/defaultSong.webp';
 
-				// Update cover image
-				if (song.imageName) {
-					this.playerCover.src = `${this.imageBasePath}${song.imageName}`;
-				} else {
-					this.playerCover.src = '../images/defaultSong.webp';
-				}
+				this.audio.play().catch(error => console.error('Playback error:', error));
 
-				// Play the song
-				const playPromise = this.audio.play();
-
-				if (playPromise !== undefined) {
-					playPromise
-						.then(() => {
-							// Playback started successfully
-						})
-						.catch(error => {
-							console.error('Error playing audio:', error);
-							this.playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
-
-							// Handle autoplay policy
-							if (error.name === 'NotAllowedError') {
-								// User needs to interact first, so we'll wait for user to click play
-							}
-						});
-				}
 				document.dispatchEvent(new CustomEvent('songPlaying', {
 					detail: {songId: song.songID}
 				}));
@@ -304,18 +224,12 @@
 					this.playSong(this.queue[0]);
 					return;
 				}
-
-				if (this.audio.paused) {
-					this.audio.play();
-				} else {
-					this.audio.pause();
-				}
+				this.audio.paused ? this.audio.play() : this.audio.pause();
 			}
 
 			playNext() {
 				if (this.queue.length === 0) return;
 
-				// Add current song to history if one is playing
 				if (this.currentIndex >= 0) {
 					this.history.push(this.queue[this.currentIndex]);
 				}
@@ -324,89 +238,31 @@
 					this.currentIndex++;
 					this.playSong(this.queue[this.currentIndex]);
 				} else {
-					// End of queue
 					this.audio.pause();
 					this.currentIndex = -1;
 					this.playerTitle.textContent = 'End of queue';
 					this.playerArtist.textContent = 'Play again or add more songs';
 				}
-
 				this.updateQueueDisplay();
 			}
 
 			playPrevious() {
 				if (this.audio.currentTime > 3) {
-					// If current song has played more than 3 seconds, restart it
 					this.audio.currentTime = 0;
 					return;
 				}
 
 				if (this.history.length > 0) {
-					// Get previous song from history
 					const prevSong = this.history.pop();
-
-					// Add the previous song to the queue and update index
-					if (this.currentIndex >= 0) {
-						// Insert the previous song at the current position
-						this.queue.splice(this.currentIndex, 0, prevSong);
-						// No need to change currentIndex since the song was inserted at that position
-						this.playSong(prevSong);
-					} else {
-						// If no song is currently playing
-						this.queue.unshift(prevSong);
-						this.currentIndex = 0;
-						this.playSong(prevSong);
-					}
-
+					this.queue.splice(this.currentIndex >= 0 ? this.currentIndex : 0, 0, prevSong);
+					if (this.currentIndex < 0) this.currentIndex = 0;
+					this.playSong(prevSong);
 					this.updateQueueDisplay();
 				}
-			}
-
-			playFromQueue(index) {
-				if (index >= 0 && index < this.queue.length) {
-					// Add current song to history if one is playing
-					if (this.currentIndex >= 0) {
-						this.history.push(this.queue[this.currentIndex]);
-					}
-
-					this.currentIndex = index;
-					this.playSong(this.queue[index]);
-					this.updateQueueDisplay();
-				}
-			}
-
-			removeFromQueue(index) {
-				if (index === this.currentIndex) {
-					// If removing currently playing song
-					if (this.queue.length > 1) {
-						// Play next song if available
-						this.queue.splice(index, 1);
-						if (index >= this.queue.length) {
-							this.currentIndex = this.queue.length - 1;
-						}
-						this.playSong(this.queue[this.currentIndex]);
-					} else {
-						// No more songs
-						this.queue = [];
-						this.currentIndex = -1;
-						this.audio.pause();
-						this.playerTitle.textContent = 'No song selected';
-						this.playerArtist.textContent = 'Unknown artist';
-						this.playerCover.src = '../images/defaultSong.webp';
-					}
-				} else {
-					// Remove song and adjust current index if needed
-					this.queue.splice(index, 1);
-					if (index < this.currentIndex) {
-						this.currentIndex--;
-					}
-				}
-
-				this.updateQueueDisplay();
 			}
 
 			clearQueue() {
-				if (confirm('Are you sure you want to clear the queue?')) {
+				if (confirm('Clear queue?')) {
 					const currentSong = this.currentIndex >= 0 ? this.queue[this.currentIndex] : null;
 					this.queue = currentSong ? [currentSong] : [];
 					this.currentIndex = currentSong ? 0 : -1;
@@ -420,7 +276,7 @@
 
 				if (this.queue.length === 0) {
 					const emptyMessage = document.createElement('li');
-					emptyMessage.className = 'list-group-item bg-dark text-white border-secondary';
+					emptyMessage.className = 'list-group-item bg-dark text-white';
 					emptyMessage.textContent = 'Queue is empty';
 					this.queueList.appendChild(emptyMessage);
 					return;
@@ -428,52 +284,32 @@
 
 				this.queue.forEach((song, index) => {
 					const li = document.createElement('li');
-					li.className = 'list-group-item bg-dark text-white border-secondary d-flex align-items-center';
-					if (index === this.currentIndex) {
-						li.classList.add('active', 'bg-primary', 'bg-opacity-50');
-					}
+					li.className = `list-group-item bg-dark text-white d-flex align-items-center ${
+						index === this.currentIndex ? 'active' : ''
+					}`;
 
-					// Create song image
-					const img = document.createElement('img');
-					img.src = song.imageName ? `${this.imageBasePath}${song.imageName}` : '../images/defaultSong.webp';
-					img.alt = song.title;
-					img.className = 'me-2';
-					img.style = 'width: 50px; height: 50px; object-fit: cover; border-radius: 5px;';
+					li.innerHTML = `
+                    <img src="${song.imageName ? `${this.imageBasePath}${song.imageName}` : '../images/defaultSong.webp'}"
+                         class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                    <div class="flex-grow-1">
+                        <div class="text-truncate">${song.title}</div>
+                        <small style="color: rgb(200, 200, 200)">${song.artists}</small>
+                    </div>
+                    <button class="btn btn-sm text-danger" onclick="event.stopPropagation(); player.removeFromQueue(${index})">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
 
-					// Create song info
-					const songInfo = document.createElement('div');
-					songInfo.className = 'flex-grow-1';
-					songInfo.innerHTML = `<div class="text-truncate">${song.title}</div><small class="text" style="color: rgb(200, 200, 200)">${song.artists}</small>`;
-
-					// Create remove button
-					const removeBtn = document.createElement('button');
-					removeBtn.className = 'btn btn-sm text-danger';
-					removeBtn.innerHTML = '<i class="bi bi-x"></i>';
-					removeBtn.onclick = (e) => {
-						e.stopPropagation();
-						this.removeFromQueue(index);
-					};
-
-					// Add elements to list item
-					li.appendChild(img);
-					li.appendChild(songInfo);
-					li.appendChild(removeBtn);
-
-					// Add click event to play this song
 					li.onclick = () => this.playFromQueue(index);
-
-					// Add to queue list
 					this.queueList.appendChild(li);
 				});
 			}
 
 			updateProgress() {
 				if (isNaN(this.audio.duration)) return;
-
 				const progress = (this.audio.currentTime / this.audio.duration) * 100;
 				this.progressBar.style.width = `${progress}%`;
 
-				// Update current time display
 				const minutes = Math.floor(this.audio.currentTime / 60);
 				const seconds = Math.floor(this.audio.currentTime % 60).toString().padStart(2, '0');
 				this.currentTimeEl.textContent = `${minutes}:${seconds}`;
@@ -481,7 +317,6 @@
 
 			updateTotalTime() {
 				if (isNaN(this.audio.duration)) return;
-
 				const minutes = Math.floor(this.audio.duration / 60);
 				const seconds = Math.floor(this.audio.duration % 60).toString().padStart(2, '0');
 				this.totalTimeEl.textContent = `${minutes}:${seconds}`;
@@ -498,17 +333,12 @@
 			}
 
 			updateVolumeIcon() {
-				if (this.audio.muted || this.audio.volume === 0) {
-					this.volumeIcon.className = 'bi bi-volume-mute me-2';
-				} else if (this.audio.volume < 0.5) {
-					this.volumeIcon.className = 'bi bi-volume-down me-2';
-				} else {
-					this.volumeIcon.className = 'bi bi-volume-up me-2';
-				}
+				const iconClass = this.audio.muted || this.audio.volume === 0 ? 'volume-mute' :
+					this.audio.volume < 0.5 ? 'volume-down' : 'volume-up';
+				this.volumeIcon.className = `bi bi-${iconClass} me-2`;
 			}
 		}
 
-		// Initialize the music player
-		const player = new MusicPlayer();
+		window.player = new MusicPlayer();
 	});
 </script>

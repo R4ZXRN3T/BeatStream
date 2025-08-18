@@ -110,10 +110,10 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<tr>
 						<td><?php echo $albumList[$i]->getAlbumID() ?></td>
 						<td><?php echo $albumList[$i]->getName() ?></td>
-						<td><?php echo $albumList[$i]->getArtists() ?></td>
+						<td><?php echo implode(", ", $albumList[$i]->getArtists()) ?></td>
 						<td><?php echo $albumList[$i]->getimageName() ?></td>
 						<td><?php echo $albumList[$i]->getLength() ?></td>
-						<td><?php echo $albumList[$i]->getDuration()->format('i:s') ?></td>
+						<td><?php echo $albumList[$i]->getDuration()->format('H:i:s') ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove"

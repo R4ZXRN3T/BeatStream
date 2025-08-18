@@ -43,7 +43,7 @@ if (!empty($_GET['search'])) {
 	if ($searchCategory == 'all' || $searchCategory == 'songs') {
 		foreach ($allSongs as $song) {
 			if (stripos($song->getTitle(), $searchTerm) !== false ||
-				stripos($song->getArtists(), $searchTerm) !== false ||
+				stripos(implode(", ", $song->getArtists()), $searchTerm) !== false ||
 				stripos($song->getGenre(), $searchTerm) !== false) {
 				$songResults[] = $song;
 			}
@@ -63,7 +63,7 @@ if (!empty($_GET['search'])) {
 	if ($searchCategory == 'all' || $searchCategory == 'albums') {
 		foreach ($allAlbums as $album) {
 			if (stripos($album->getName(), $searchTerm) !== false ||
-				stripos($album->getArtists(), $searchTerm) !== false) {
+				stripos(implode(", ", $album->getArtists()), $searchTerm) !== false) {
 				$albumResults[] = $album;
 			}
 		}
@@ -83,7 +83,7 @@ if (!empty($_GET['search'])) {
 		return [
 			'songID' => $song->getSongID(),
 			'title' => $song->getTitle(),
-			'artists' => $song->getArtists(),
+			'artists' => implode(", ", $song->getArtists()),
 			'fileName' => $song->getFileName(),
 			'imageName' => $song->getImageName()
 		];
@@ -181,39 +181,20 @@ if (!empty($_GET['search'])) {
 							<div class="results-section">
 								<h3>Songs</h3>
 								<div class="result-count"><?php echo count($songResults); ?> results</div>
-								<div class="row g-4">
-									<?php foreach ($songResults as $song): ?>
-										<div class="col-12 col-md-6 col-lg-4">
-											<div class="card shadow-sm border-0"
-												 style="border-radius: 10px; cursor: pointer;">
-												<div class="card-body d-flex align-items-center p-3"
-													 data-song-id="<?php echo $song->getSongID(); ?>"
-													 data-song-queue='<?php echo htmlspecialchars(json_encode($songQueueData)); ?>'>
-													<?php if (!empty($song->getimageName())): ?>
-														<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
-															 class="me-3 rounded"
-															 alt="<?php echo htmlspecialchars($song->getTitle()); ?>"
-															 style="width: 50px; height: 50px; object-fit: cover;">
-													<?php else: ?>
-														<img src="../images/defaultSong.webp" class="me-3 rounded"
-															 alt="Default Song Cover"
-															 style="width: 50px; height: 50px; object-fit: cover;">
-													<?php endif; ?>
-													<div>
-														<h5 class="card-title mb-1"
-															style="font-size: 1.1rem; font-weight: bold;">
-															<?php echo htmlspecialchars($song->getTitle()); ?>
-														</h5>
-														<p class="card-text mb-0"
-														   style="font-size: 0.9rem; color: #6c757d;">
-															<?php echo htmlspecialchars($song->getArtists()); ?>
-														</p>
-													</div>
-												</div>
-											</div>
-										</div>
-									<?php endforeach; ?>
-								</div>
+								<?php
+								$songListOptions = [
+										'layout' => 'grid',
+										'showIndex' => false,
+										'showDuration' => true,
+										'showArtistLinks' => true,
+										'containerClass' => 'col-12 col-md-6 col-lg-4',
+										'emptyMessage' => 'No songs found.'
+								];
+
+								$songs = $songResults;
+								$options = $songListOptions;
+								include('../components/song-list.php');
+								?>
 							</div>
 						<?php endif; ?>
 
@@ -287,7 +268,7 @@ if (!empty($_GET['search'])) {
 															</h5>
 															<p class="card-text mb-0"
 															   style="font-size: 0.9rem; color: #6c757d;">
-																<?php echo htmlspecialchars($album->getArtists()); ?>
+																<?php echo htmlspecialchars(implode(", ", $album->getArtists())); ?>
 															</p>
 														</div>
 													</div>

@@ -144,12 +144,10 @@ include_once("../../../mp3file.class.php")
 				$mp3File = new MP3File($destPath);
 				$songLength = $mp3File->getDuration();
 
-
-				$artistString = implode(", ", $_POST["artistInput"]);
 				DataController::insertSong(new Song(
 					0,
 					$_POST["titleInput"],
-					$artistString,
+					$_POST["artistInput"],
 					$_POST["genreInput"],
 					$_POST["releaseDateInput"],
 					MP3File::formatTime($songLength),
