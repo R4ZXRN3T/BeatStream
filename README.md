@@ -78,6 +78,8 @@ This project is licensed under the MIT License.
 
 Thanks to all contributors and users who help make BeatStream better!
 
+(There's not one here yet. Make a contribution to improve this project!)
+
 ---
 
 **BeatStream**: Stream, discover, and create music your way.
