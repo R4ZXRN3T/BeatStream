@@ -34,7 +34,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <body>
 
-<?php include("../../../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">

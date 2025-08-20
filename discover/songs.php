@@ -29,7 +29,7 @@ $songQueueData = array_map(function ($song) {
 		'imageName' => $song->getImageName()
 	];
 }, $songList);
-include("../topBar.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 ?>
 <script>
 	if (window.history.replaceState) {
@@ -106,6 +106,6 @@ include("../topBar.php");
 	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include("../player.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
 </body>
 </html>

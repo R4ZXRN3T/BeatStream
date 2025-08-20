@@ -35,7 +35,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 <body>
 
 <?php
-include("../../../topBar.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 include_once("../../../mp3file.class.php")
 ?>
 
@@ -147,6 +147,7 @@ include_once("../../../mp3file.class.php")
 				DataController::insertSong(new Song(
 					0,
 					$_POST["titleInput"],
+					[],
 					$_POST["artistInput"],
 					$_POST["genreInput"],
 					$_POST["releaseDateInput"],
@@ -184,7 +185,7 @@ include_once("../../../mp3file.class.php")
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($artistList as $artist) {
-										echo "<option value='{$artist->getName()}'>{$artist->getName()}</option>";
+										echo "<option value='{$artist->getArtistID()}'>{$artist->getName()}</option>";
 									}
 									?>
 								</select>

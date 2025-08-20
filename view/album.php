@@ -22,17 +22,7 @@ while ($row = $result->fetch_assoc()) {
 	$artistIDs[] = $row['artistID'];
 }
 
-// Get album data
-$albumList = DataController::getAlbumList();
-$album = null;
-
-// Find the requested album
-foreach ($albumList as $a) {
-	if ($a->getAlbumID() == $albumId) {
-		$album = $a;
-		break;
-	}
-}
+$album = DataController::getAlbumById($albumId);
 
 // If album not found, redirect
 if ($album === null) {
@@ -41,18 +31,7 @@ if ($album === null) {
 }
 
 // Get songs in the album
-$songList = DataController::getSongList();
-$albumSongs = [];
-
-// Use the order from album->getSongIDs() to arrange songs
-foreach ($album->getSongIDs() as $songId) {
-	foreach ($songList as $song) {
-		if ($song->getSongID() == $songId) {
-			$albumSongs[] = $song;
-			break;
-		}
-	}
-}
+$albumSongs = DataController::getAlbumSongs($albumId);
 
 // Prepare song queue data for player
 $songQueueData = array_map(function ($song) use ($album, $artistIDs) {
@@ -79,7 +58,7 @@ $songQueueData = array_map(function ($song) use ($album, $artistIDs) {
 </head>
 
 <body>
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -150,7 +129,7 @@ $songQueueData = array_map(function ($song) use ($album, $artistIDs) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include("../player.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
 <script>
 	document.addEventListener('DOMContentLoaded', function() {
 		// Prevent song playback when clicking on artist links

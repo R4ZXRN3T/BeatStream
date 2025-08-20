@@ -21,28 +21,22 @@ $showArtistLinks = $options['showArtistLinks'] ?? true;
 $index = $options['index'] ?? 0;
 $containerClass = $options['containerClass'] ?? 'col-12 col-md-6';
 
-// Cache artist data to avoid repeated database calls
-static $allArtists = null;
-if ($allArtists === null && $showArtistLinks) {
-	$allArtists = DataController::getArtistList();
-}
-
-// Generate artist links more efficiently
 $artistDisplay = '';
 if ($showArtistLinks && !empty($song->getArtists())) {
-	$artistLinks = array_map(function($artistName) use ($allArtists) {
-		$artistID = null;
-		foreach ($allArtists as $artist) {
-			if ($artist->getName() === $artistName) {
-				$artistID = $artist->getArtistID();
-				break;
-			}
-		}
+	$artistLinks = [];
+	$artists = $song->getArtists();
+	$artistIDs = $song->getArtistIDs();
 
-		return $artistID
-				? "<a class='custom-link' href='../view/artist.php?id={$artistID}' onclick='event.stopPropagation();'>" . htmlspecialchars($artistName) . "</a>"
-				: htmlspecialchars($artistName);
-	}, $song->getArtists());
+	for ($i = 0; $i < count($artists); $i++) {
+		$artistName = htmlspecialchars($artists[$i]);
+		$artistID = $artistIDs[$i] ?? null;
+
+		if ($artistID) {
+			$artistLinks[] = '<a href="/BeatStream/view/artist.php?id=' . $artistID . '" class="custom-link">' . $artistName . '</a>';
+		} else {
+			$artistLinks[] = $artistName; // Fallback to plain text if no artist ID
+		}
+	}
 
 	$artistDisplay = implode(", ", $artistLinks);
 } else {

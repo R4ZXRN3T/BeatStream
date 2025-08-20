@@ -360,3 +360,48 @@ h2.recommended-header {
 		height: 42px !important;
 	}
 }
+
+/* ===== EDIT PLAYLIST ===== */
+.edit-playlist .song-list {
+	height: 400px;
+	overflow-y: auto;
+	border: 2px solid #e9ecef;
+	border-radius: 10px;
+	padding: 15px;
+	background: var(--light-bg);
+}
+
+.edit-playlist .song-image {
+	width: 50px;
+	height: 50px;
+	object-fit: cover;
+	border-radius: 5px;
+}
+
+.edit-playlist .search-box {
+	margin-bottom: 15px;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background: var(--light-bg);
+	padding: 10px 0;
+}
+
+.edit-playlist .search-box input {
+	border-radius: 25px;
+	padding: 10px 15px;
+	border: 2px solid #e9ecef;
+	transition: border-color var(--transition-fast);
+}
+
+.edit-playlist .search-box input:focus {
+	border-color: #667eea;
+	box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Dark mode search */
+body.dark-mode .edit-playlist .search-box input {
+	background: var(--card-bg);
+	color: #e0e0e0;
+	border-color: var(--border-color);
+}

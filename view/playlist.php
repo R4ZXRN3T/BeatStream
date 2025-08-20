@@ -74,7 +74,7 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 </head>
 
 <body>
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -149,6 +149,6 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include("../player.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
 </body>
 </html>
