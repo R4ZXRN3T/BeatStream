@@ -43,7 +43,7 @@ robust music player UI.
 - `/components/` — Reusable UI components (player, top bar, etc.)
 - `/create/` — Content creation (playlists, uploads for artists)
 - `/discover/`, `/search/`, `/view/` — Browse, discover, and search for music content
-- `/home/` — Main landing page after login
+- `/home/` — Main landing page (redirected from index)
 - `/images/`, `/audio/` — Static assets (cover art, audio files)
 
 ## Usage
