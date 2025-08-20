@@ -59,8 +59,8 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song">Add content</a></li>
+						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
 					</ul>
 				</div>
 			</nav>
@@ -68,10 +68,10 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
 					<li class="nav-item"><a class="nav-link active" href="">Song</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/artist">Artist</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/user">User</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/playlist">Playlist</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/album">Album</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/artist.php">Artist</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/user.php">User</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/playlist.php">Playlist</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/album.php">Album</a></li>
 				</ul>
 			</div>
 
@@ -98,7 +98,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 				$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
 				$fileName = $_FILES['songImageInput']['name'];
 				$extension = pathinfo($fileName, PATHINFO_EXTENSION);
-				$newimageName = uniqid() . '.' . $extension;
+				$newimageName = uniqid() . 'song' . $extension;
 				$destPath = $imageUploadDir . $newimageName;
 
 				if (!is_dir($imageUploadDir)) {
@@ -120,7 +120,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 					$fileTmpPath = $_FILES['fileInput']['tmp_name'];
 					$fileName = $_FILES['fileInput']['name'];
 					$extension = pathinfo($fileName, PATHINFO_EXTENSION);
-					$newFileName = uniqid() . '.' . $extension;
+					$newFileName = uniqid() . 'song' . $extension;
 					$destPath = $audioUploadDir . $newFileName;
 
 					if (!is_dir($audioUploadDir)) {
@@ -161,7 +161,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 			<div class="container mt-5">
 				<h1>Add song</h1>
 
-				<form action="index.php" method="post" id="addSongForm" enctype="multipart/form-data">
+				<form action="song.php" method="post" id="addSongForm" enctype="multipart/form-data">
 
 					<?php
 					if (!empty($errorMessage)) {

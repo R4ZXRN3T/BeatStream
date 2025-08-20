@@ -57,19 +57,19 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song">Add content</a></li>
+						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
 					</ul>
 				</div>
 			</nav>
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song">Song</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song.php">Song</a></li>
 					<li class="nav-item"><a class="nav-link active" href="">Artist</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/user">User</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/playlist">Playlist</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/album">Album</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/user.php">User</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/playlist.php">Playlist</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/album.php">Album</a></li>
 				</ul>
 			</div>
 
@@ -96,7 +96,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				}
 
 				$fileExtension = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
-				$imageName = uniqid() . '.' . $fileExtension;
+				$imageName = uniqid() . 'artist' . $fileExtension;
 				$targetFile = $uploadDir . $imageName;
 
 				// Check if file is an actual image
@@ -134,7 +134,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<div class="container mt-5">
 				<h1>Add Artist</h1>
 
-				<form action="index.php" method="post" id="addArtistForm" enctype="multipart/form-data">
+				<form action="artist.php" method="post" id="addArtistForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="name">Name:</label>
 						<input type="text" id="name" name="nameInput" class="form-control"

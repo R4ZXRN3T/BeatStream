@@ -115,7 +115,7 @@ if (!empty($_GET['search'])) {
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
 				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin" class="nav-link mb-2">Admin</a>
+					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
