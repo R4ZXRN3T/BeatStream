@@ -7,7 +7,7 @@ $artistID = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // If no ID provided, redirect to home
 if ($artistID <= 0) {
-	header("Location: ../index.php");
+	header("Location: ../album.php");
 	exit;
 }
 
@@ -23,7 +23,7 @@ foreach ($artistList as $a) {
 
 // If artist not found, redirect
 if (!$artist) {
-	header("Location: ../index.php");
+	header("Location: ../album.php");
 	exit;
 }
 
@@ -81,7 +81,7 @@ $songQueueData = array_map(function ($song) {
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
 				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin" class="nav-link mb-2">Admin</a>
+					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

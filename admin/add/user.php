@@ -57,19 +57,19 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song">Add content</a></li>
+						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
 					</ul>
 				</div>
 			</nav>
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song">Song</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/artist">Artist</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song.php">Song</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/artist.php">Artist</a></li>
 					<li class="nav-item"><a class="nav-link active" href="">User</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/playlist">Playlist</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/album">Album</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/playlist.php">Playlist</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/album.php">Album</a></li>
 				</ul>
 			</div>
 
@@ -96,7 +96,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				if (isset($_FILES["userImage"]) && $_FILES["userImage"]["error"] == UPLOAD_ERR_OK) {
 					$fileName = $_FILES["userImage"]["name"];
 					$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-					$newFileName = uniqid() . '.' . $extension;// Generate unique filename
+					$newFileName = uniqid() . 'user' . $extension;// Generate unique filename
 					$targetFilePath = $uploadDir . $newFileName;// Check file size (limit to 5MB)
 					if ($_FILES["userImage"]["size"] > 5000000) {
 						$isValid = false;
@@ -136,7 +136,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<div class="container mt-5">
 				<h1>User Einfügen</h1>
 
-				<form action="index.php" method="post" id="addUserForm" enctype="multipart/form-data">
+				<form action="user.php" method="post" id="addUserForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="username">Username:</label>
 						<input type="text" id="username" name="usernameInput" class="form-control"

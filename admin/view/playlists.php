@@ -27,7 +27,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>BeatStream - view artists</title>
+	<title>BeatStream - view playlists</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/BeatStream/mainStyle.css" rel="stylesheet">
 	<link href="/BeatStream/favicon.ico" rel="icon">
@@ -64,28 +64,28 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/view/songs">View</a></li>
-						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/view/songs.php">View</a></li>
+						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song.php">Add content</a></li>
 					</ul>
 				</div>
 			</nav>
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs">Songs</a></li>
-					<li class="nav-item"><a class="nav-link active" href="">Artists</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/users">Users</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/playlists">Playlists</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/albums">Albums</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">Songs</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/artists.php">Artists</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/users.php">Users</a></li>
+					<li class="nav-item"><a class="nav-link active" href="">Playlists</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/albums.php">Albums</a></li>
 				</ul>
 			</div>
 
 			<?php
 			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$artistList = DataController::getArtistList();
+			$playlistList = DataController::getPlaylistList();
 
 			if (array_key_exists('removeButton', $_POST)) {
-				DataController::deleteArtist($_POST['removeButton']);
+				DataController::deletePlaylist($_POST['removeButton']);
 				header("Refresh:0");
 			}
 			?>
@@ -96,27 +96,29 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<col span="9">
 				</colgroup>
 				<tr>
-					<th style="width:14.3%;">Artist ID</th>
-					<th style="width:14.3%;">Name</th>
+					<th style="width:14.3%;">Playlist ID</th>
 					<th style="width:14.3%;">Image Name</th>
-					<th style="width:14.3%;">Active Since</th>
-					<th style="width:14.3%;">User ID</th>
+					<th style="width:14.3%;">Name</th>
+					<th style="width:14.3%;">Duration</th>
+					<th style="width:14.3%;">Length</th>
+					<th style="width:14.3%;">Creator ID</th>
 					<th style="width:1%;"></th>
 				</tr>
 				<?php
-				for ($i = 0; $i < count($artistList); $i++) {
+				for ($i = 0; $i < count($playlistList); $i++) {
 					?>
 					<tr>
-						<td><?php echo $artistList[$i]->getArtistID() ?></td>
-						<td><?php echo $artistList[$i]->getName() ?></td>
-						<td><?php echo $artistList[$i]->getimageName() ?></td>
-						<td><?php echo $artistList[$i]->getActiveSince()->format('d.m.Y') ?></td>
-						<td><?php echo $artistList[$i]->getUserID() ?></td>
+						<td><?php echo $playlistList[$i]->getPlaylistID() ?></td>
+						<td><?php echo $playlistList[$i]->getimageName() ?></td>
+						<td><?php echo $playlistList[$i]->getName() ?></td>
+						<td><?php echo $playlistList[$i]->getDuration()->format('i:s') ?></td>
+						<td><?php echo $playlistList[$i]->getLength() ?></td>
+						<td><?php echo $playlistList[$i]->getCreatorID() ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove"
-										value="<?php echo $artistList[$i]->getArtistID() ?>"
-										class="btn btn-danger" type="submit" title="Remove Artist">🗑️
+										value="<?php echo $playlistList[$i]->getPlaylistID() ?>"
+										class="btn btn-danger" type="submit" title="Remove Playlist">🗑️
 								</button>
 							</form>
 						</td>
@@ -130,6 +132,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 		</main>
 	</div>
 </div>
-</body>
 <?php ob_end_flush(); ?>
+</body>
+
 </html>

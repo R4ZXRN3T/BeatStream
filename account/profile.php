@@ -52,7 +52,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 				<a href="/BeatStream/discover/" class="nav-link mb-2">Discover</a>
 				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin" class="nav-link mb-2">Admin</a>
+					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

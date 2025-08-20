@@ -64,19 +64,19 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/view/songs">View</a></li>
-						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/view/songs.php">View</a></li>
+						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song.php">Add content</a></li>
 					</ul>
 				</div>
 			</nav>
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs">Songs</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/artists">Artists</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">Songs</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/artists.php">Artists</a></li>
 					<li class="nav-item"><a class="nav-link active" href="">Users</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/playlists">Playlists</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/albums">Albums</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/playlists.php">Playlists</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/albums.php">Albums</a></li>
 				</ul>
 			</div>
 
