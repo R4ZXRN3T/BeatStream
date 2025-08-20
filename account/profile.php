@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../DataController.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
 
 // Fetch user info
 $userID = $_SESSION['userID'];
@@ -38,7 +38,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 	<meta charset="UTF-8">
 	<title>Profile - BeatStream</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="../mainStyle.css" rel="stylesheet">
+	<link href="/BeatStream/mainStyle.css" rel="stylesheet">
 </head>
 <body>
 <?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
@@ -47,9 +47,9 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 		<!-- Sidebar -->
 		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
 			<div class="nav flex-column py-4">
-				<a href="../" class="nav-link mb-2">Home</a>
-				<a href="../search/" class="nav-link mb-2">Search</a>
-				<a href="../discover/" class="nav-link mb-2">Discover</a>
+				<a href="/BeatStream/" class="nav-link mb-2">Home</a>
+				<a href="/BeatStream/search/" class="nav-link mb-2">Search</a>
+				<a href="/BeatStream/discover/" class="nav-link mb-2">Discover</a>
 				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
 					<a href="/BeatStream/admin" class="nav-link mb-2">Admin</a>
@@ -62,30 +62,28 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 					<!-- Profile Info -->
 					<div class="col-md-4">
 						<div class="card">
-							<img src="<?= htmlspecialchars("../images/user/" . $user->getimageName() ?: '../images/defaultUser.webp') ?>"
+							<img src="<?= htmlspecialchars("/BeatStream/images/user/" . $user->getimageName() ?: '/BeatStream/images/defaultUser.webp') ?>"
 								 class="card-img-top" alt="Profile Image"
 								 style="object-fit: cover; height: 100%; width: 100%;">
 							<div class="card-body">
 								<h4 class="card-title"><?= htmlspecialchars($user->getUsername()) ?></h4>
 								<p class="card-text"><?= htmlspecialchars($user->getEmail()) ?></p>
-								<a href="edit.php" class="btn btn-primary">Edit Profile</a>
+								<a href="/BeatStream/account/edit.php" class="btn btn-primary">Edit Profile</a>
 							</div>
 						</div>
 						<?php if ($artistID != -1): ?>
 							<div class="card">
 								<div class="card-body">
 									<h5 class="card-title">Your Artist profile:</h5>
-									<a href=../view/artist.php?id=<?php echo $artistID ?>" class="btn btn-primary">View
-										Artist Profile</a>
+									<a href="/BeatStream/view/artist.php?id=<?php echo $artistID ?>" class="btn btn-primary">View Artist Profile</a>
 								</div>
 							</div>
 						<?php else: ?>
 							<div class="card">
 								<div class="card-body">
 									<h5 class="card-title">Become an Artist</h5>
-									<p class="card-text">Create your artist profile to share your music with the
-										world.</p>
-									<a href="../create/artist.php" class="btn btn-primary">Create Artist Profile</a>
+									<p class="card-text">Create your artist profile to share your music with the world.</p>
+									<a href="/BeatStream/create/artist.php" class="btn btn-primary">Create Artist Profile</a>
 								</div>
 							</div>
 						<?php endif; ?>
@@ -97,14 +95,14 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 							<?php foreach ($userPlaylists as $playlist): ?>
 								<div class="col-md-4 mb-4" style="height: 100%;">
 									<div class="card h-auto">
-										<img src="<?= htmlspecialchars($playlist->getimageName() ? "../images/playlist/" . $playlist->getimageName() : "../images/defaultPlaylist.webp") ?>"
+										<img src="<?= htmlspecialchars($playlist->getimageName() ? "/BeatStream/images/playlist/" . $playlist->getimageName() : "/BeatStream/images/defaultPlaylist.webp") ?>"
 											 class="card-img-top" alt="Playlist Image"
 											 style="object-fit: cover; height: 100%;">
 										<div class="card-body d-flex flex-column">
 											<h5 class="card-title"><?= htmlspecialchars($playlist->getName()) ?></h5>
 											<p class="card-text"><?= $playlist->getLength() ?> songs
 												- <?= $playlist->getDuration()->format("i:s") ?></p>
-											<a href="../view/playlist.php?id=<?= $playlist->getPlaylistID() ?>"
+											<a href="/BeatStream/view/playlist.php?id=<?= $playlist->getPlaylistID() ?>"
 											   class="btn btn-outline-secondary btn-sm mt-auto">View</a>
 										</div>
 									</div>

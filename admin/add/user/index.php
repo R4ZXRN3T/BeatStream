@@ -1,5 +1,5 @@
 <?php
-include("../../../dbConnection.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php");
 session_start();
 $isAdmin = false;
 if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
@@ -10,12 +10,12 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	$stmt->close();
 	if (!$isAdmin) {
 		$_SESSION['isAdmin'] = $isAdmin;
-		header("Location: ../../blocked.php");
+		header("Location: /BeatStream/admin/blocked.php");
 		exit();
 	}
 	$_SESSION['isAdmin'] = $isAdmin;
 } else {
-	header("Location: ../../../account/login.php");
+	header("Location: /BeatStream/account/login.php");
 	exit();
 }
 ?>
@@ -28,8 +28,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>BeatStream - add a user</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="../../../mainStyle.css" rel="stylesheet">
-	<link href="../../../favicon.ico" rel="icon">
+	<link href="/BeatStream/mainStyle.css" rel="stylesheet">
+	<link href="/BeatStream/favicon.ico" rel="icon">
 </head>
 
 <body>
@@ -41,9 +41,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 		<!-- Sidebar -->
 		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
 			<div class="nav flex-column py-4">
-				<a href="../../../" class="nav-link mb-2">Home</a>
-				<a href="../../../search/" class="nav-link mb-2">Search</a>
-				<a href="../../../discover/" class="nav-link mb-2">Discover</a>
+				<a href="/BeatStream/" class="nav-link mb-2">Home</a>
+				<a href="/BeatStream/search/" class="nav-link mb-2">Search</a>
+				<a href="/BeatStream/discover/" class="nav-link mb-2">Discover</a>
 				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
 					<a href="/BeatStream/admin/" class="nav-link mb-2 active">Admin</a>
@@ -57,27 +57,26 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="../../view/songs">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="../../add/song">Add content</a></li>
+						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs">View</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song">Add content</a></li>
 					</ul>
 				</div>
 			</nav>
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="../song">Song</a></li>
-					<li class="nav-item"><a class="nav-link" href="../artist">Artist</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song">Song</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/artist">Artist</a></li>
 					<li class="nav-item"><a class="nav-link active" href="">User</a></li>
-					<li class="nav-item"><a class="nav-link" href="../playlist">Playlist</a></li>
-					<li class="nav-item"><a class="nav-link" href="../album">Album</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/playlist">Playlist</a></li>
+					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/album">Album</a></li>
 				</ul>
 			</div>
 
 			<?php
-			include("../../../DataController.php");
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
 
-			$isValid = true;
-			$uploadDir = "../../../images/user/"; // Define upload directory
+			$uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/user/"; // Define upload directory
 			$errorMessage = "";
 
 			// Create directory if it doesn't exist
