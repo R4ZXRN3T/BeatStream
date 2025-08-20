@@ -1,2 +1,2 @@
 <?php
-header('location: view/songs/');
+header('location: /BeatStream/admin/view/songs/');
