@@ -181,60 +181,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="../favicon.ico" rel="icon">
 	<link href="../mainStyle.css" rel="stylesheet">
-	<style>
-        .song-list {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
-            padding: 10px;
-        }
-
-        .song-item {
-            padding: 8px;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.2s;
-        }
-
-        .song-item:hover {
-            background-color: rgba(93, 93, 93, 0.2);
-        }
-
-        .song-item.selected {
-            background-color: rgba(13, 110, 253, 0.1);
-            border-left: 3px solid #0d6efd;
-        }
-
-        .song-item img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            margin-right: 10px;
-            border-radius: 4px;
-        }
-
-        .song-info {
-            flex-grow: 1;
-        }
-
-        .song-title {
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-
-        .song-artist {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-	</style>
 </head>
 
 <body>
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -302,32 +252,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 						</div>
 					</div>
 
-					<div class="row mt-4">
+					<div class="row mt-4 edit-playlist">
 						<div class="col-md-12">
 							<h4 class="mb-3">Manage Songs</h4>
 							<div class="row">
 								<div class="col-md-5">
 									<h5>Available Songs</h5>
+									<div class="search-box">
+										<input type="text" class="form-control" id="search_available"
+											   placeholder="Search available songs...">
+									</div>
 									<div class="song-list" id="available_songs">
 										<?php foreach ($availableSongs as $song): ?>
-											<div class="song-item" data-song-id="<?php echo $song->getSongID(); ?>">
+											<div class="song-item" data-song-id="<?php echo $song->getSongID(); ?>"
+												 data-title="<?php echo strtolower(htmlspecialchars($song->getTitle())); ?>"
+												 data-artist="<?php echo strtolower(htmlspecialchars(implode(', ', $song->getArtists()))); ?>">
 												<?php if (!empty($song->getimageName())): ?>
-													<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
+													<img class="song-image" src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 														 alt="<?php echo htmlspecialchars($song->getTitle()); ?>">
 												<?php else: ?>
-													<img src="../images/defaultSong.webp"
-														 alt="Default Song Cover">
+													<img class= "song-image" src="../images/defaultSong.webp" alt="Default Song Cover">
 												<?php endif; ?>
 												<div class="song-info">
 													<p class="song-title"><?php echo htmlspecialchars($song->getTitle()); ?></p>
-													<p class="song-artist"><?php echo htmlspecialchars($song->getArtists()); ?></p>
+													<p class="song-artist"><?php echo htmlspecialchars(implode(', ', $song->getArtists())); ?></p>
 												</div>
 												<span class="song-duration"><?php echo $song->getSongLength()->format("i:s"); ?></span>
 											</div>
 										<?php endforeach; ?>
 
 										<?php if (empty($availableSongs)): ?>
-											<p class="text-muted text-center mt-3">No more songs available</p>
+											<p class="text-muted text-center mt-3" id="no_available_songs">No more songs available</p>
 										<?php endif; ?>
 									</div>
 								</div>
@@ -339,29 +294,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 								<div class="col-md-5">
 									<h5>Selected Songs</h5>
+									<div class="search-box">
+										<input type="text" class="form-control" id="search_selected"
+											   placeholder="Search selected songs...">
+									</div>
 									<div class="song-list" id="selected_songs">
 										<?php foreach ($playlistSongs as $song): ?>
-											<div class="song-item" data-song-id="<?php echo $song->getSongID(); ?>">
-												<input type="hidden" name="selected_songs[]"
-													   value="<?php echo $song->getSongID(); ?>">
+											<div class="song-item" data-song-id="<?php echo $song->getSongID(); ?>"
+												 data-title="<?php echo strtolower(htmlspecialchars($song->getTitle())); ?>"
+												 data-artist="<?php echo strtolower(htmlspecialchars(implode(', ', $song->getArtists()))); ?>">
+												<input type="hidden" name="selected_songs[]" value="<?php echo $song->getSongID(); ?>">
 												<?php if (!empty($song->getimageName())): ?>
-													<img src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
+													<img class="song-image" src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 														 alt="<?php echo htmlspecialchars($song->getTitle()); ?>">
 												<?php else: ?>
-													<img src="../images/defaultSong.webp"
-														 alt="Default Song Cover">
+													<img class="song-image" src="../images/defaultSong.webp" alt="Default Song Cover">
 												<?php endif; ?>
 												<div class="song-info">
 													<p class="song-title"><?php echo htmlspecialchars($song->getTitle()); ?></p>
-													<p class="song-artist"><?php echo htmlspecialchars($song->getArtists()); ?></p>
+													<p class="song-artist"><?php echo htmlspecialchars(implode(', ', $song->getArtists())); ?></p>
 												</div>
 												<span class="song-duration"><?php echo $song->getSongLength()->format("i:s"); ?></span>
 											</div>
 										<?php endforeach; ?>
 
 										<?php if (empty($playlistSongs)): ?>
-											<p class="text-muted text-center mt-3" id="no_selected_songs">No songs
-												selected</p>
+											<p class="text-muted text-center mt-3" id="no_selected_songs">No songs selected</p>
 										<?php endif; ?>
 									</div>
 								</div>

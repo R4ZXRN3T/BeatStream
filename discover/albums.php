@@ -19,7 +19,7 @@ $sortBy = $_POST['sortInput'] ?? 'album.title ASC';
 
 include("../DataController.php");
 $albumList = DataController::getAlbumList($sortBy);
-include("../topBar.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 ?>
 
 <script>

@@ -61,7 +61,7 @@ if ($isValid) {
 	));
 }
 
-include("../topBar.php"); ?>
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -95,7 +95,7 @@ include("../topBar.php"); ?>
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($songList as $song) {
-										echo "<option value={$song->getSongID()}>{$song->getTitle()} - {$song->getArtists()}</option>";
+										echo "<option value={$song->getSongID()}>{$song->getTitle()} - " . implode(", ", $song->getArtists()) . "</option>";
 									}
 									?>
 								</select>

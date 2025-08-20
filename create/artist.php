@@ -79,7 +79,7 @@ if ($isValid) {
 }
 ?>
 
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">

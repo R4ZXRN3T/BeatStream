@@ -119,7 +119,7 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
 
-include("../topBar.php"); ?>
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">

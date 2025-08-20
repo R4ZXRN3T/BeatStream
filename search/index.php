@@ -103,7 +103,7 @@ if (!empty($_GET['search'])) {
 </head>
 <body>
 
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -332,7 +332,7 @@ if (!empty($_GET['search'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include("../player.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
 
 <script>
 	// Add event listeners for song playback

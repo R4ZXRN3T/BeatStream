@@ -29,7 +29,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $isArtist = $result->fetch_assoc()['isArtist'] ?? false;
 
-include("../topBar.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 ?>
 
 <div class="container-fluid">

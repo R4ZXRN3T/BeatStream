@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<link href="../favicon.ico" rel="icon">
 </head>
 <body>
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->

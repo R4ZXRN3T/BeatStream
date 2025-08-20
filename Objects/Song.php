@@ -5,6 +5,7 @@ class Song
 	private int $songID;
 	private string $title;
 	private array $artists;
+	private array $artistIDs;
 	private string $genre;
 	private DateTime $releaseDate;
 	private DateTime $songLength;
@@ -14,11 +15,12 @@ class Song
 	/**
 	 * @throws Exception
 	 */
-	function __construct(int $songID, string $title, array $artists, string $genre, string $releaseDate, string $songLength, string $fileName, string $imageName)
+	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, string $songLength, string $fileName, string $imageName)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
 		$this->artists = $artists;
+		$this->artistIDs = $artistIDs;
 		$this->genre = $genre;
 		$this->releaseDate = new DateTime($releaseDate);
 		$this->songLength = new DateTime($songLength);
@@ -46,6 +48,16 @@ class Song
 	public function setArtists(array $artists): void
 	{
 		$this->artists = $artists;
+	}
+
+	public function getArtistIDs(): array
+	{
+		return $this->artistIDs;
+	}
+
+	public function setArtistIDs(array $artistIDs): void
+	{
+		$this->artistIDs = $artistIDs;
 	}
 
 	public function getGenre(): string

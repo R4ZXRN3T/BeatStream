@@ -28,7 +28,6 @@ class DataController
 		);
 
 		$songList = DataController::getSongList();
-		$artistList = DataController::getArtistList();
 
 		$changeMade = false;
 		$newSongID = rand();
@@ -48,19 +47,12 @@ class DataController
 		$stmt->execute();
 		$stmt->close();
 
-		$artistsInSong = $song->getArtists();
+		$artistsInSong = $song->getArtistIDs();
 
-		for ($j = 0; $j < count($artistsInSong); $j++) {
-
-			for ($i = 0; $i < count($artistList); $i++) {
-
-				if ($artistsInSong[$j] == $artistList[$i]->getName()) {
-
-					$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (" . $artistList[$i]->getArtistID() . ", " . $newSongID . ", " . $j . ")");
-					$stmt->execute();
-					$stmt->close();
-				}
-			}
+		for ($i = 0; $i < count($artistsInSong); $i++) {
+			$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (" . $song->getArtistIDs()[$i] . ", " . $newSongID . ", " . $i . ")");
+			$stmt->execute();
+			$stmt->close();
 		}
 	}
 
@@ -69,7 +61,7 @@ class DataController
 	 */
 	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
   		FROM song, artist, releases_song
   		WHERE song.songID = releases_song.songID
   		AND artist.artistID = releases_song.artistID
@@ -80,13 +72,14 @@ class DataController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
 				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
 					$alreadyExists = true;
 					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
+					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
 				}
 			}
 			if (!$alreadyExists) $songList[] = $newSong;
@@ -94,6 +87,23 @@ class DataController
 		$stmt->close();
 
 		return $songList;
+	}
+
+	public static function getArtistList(string $sortBy = "artist.name ASC"): array
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM artist ORDER BY " . $sortBy . ";");
+
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$artistList = array();
+		while ($row = $result->fetch_assoc()) {
+			$artistList[] = new Artist($row["artistID"], $row["name"], $row["imageName"], $row["activeSince"], $row["userID"]);
+		}
+
+		$stmt->close();
+
+		return $artistList;
 	}
 
 	public static function getRandomSongs(int $limit = 20): array
@@ -116,7 +126,7 @@ class DataController
 
 		// Then get all data for those songs with proper artist ordering
 		$placeholders = str_repeat('?,', count($songIDs) - 1) . '?';
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
         FROM song, artist, releases_song
         WHERE song.songID = releases_song.songID
         AND artist.artistID = releases_song.artistID
@@ -129,7 +139,7 @@ class DataController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
@@ -147,21 +157,44 @@ class DataController
 		return $songList;
 	}
 
-	public static function getArtistList(string $sortBy = "artist.name ASC"): array
+	public static function getAlbumSongs(int $albumID): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT * FROM artist ORDER BY " . $sortBy . ";");
+		$stmt = DBConn::getConn()->prepare("
+        SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
+               song.releaseDate, song.imageName, song.songLength, song.fileName
+        FROM song, artist, releases_song, in_album
+        WHERE song.songID = releases_song.songID
+        AND artist.artistID = releases_song.artistID
+        AND song.songID = in_album.songID
+        AND in_album.albumID = ?
+        ORDER BY in_album.songIndex, releases_song.artistIndex
+        ");
 
+		$stmt->bind_param("i", $albumID);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$artistList = array();
+		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$artistList[] = new Artist($row["artistID"], $row["name"], $row["imageName"], $row["activeSince"], $row["userID"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+
+			$alreadyExists = false;
+			for ($i = 0; $i < count($songList); $i++) {
+				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
+					$alreadyExists = true;
+					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
+					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
+					break;
+				}
+			}
+
+			if (!$alreadyExists) {
+				$songList[] = $newSong;
+			}
 		}
 
 		$stmt->close();
-
-		return $artistList;
+		return $songList;
 	}
 
 	public static function insertArtist(Artist $artist): void
@@ -404,6 +437,58 @@ class DataController
 		$stmt->close();
 
 		return $albumList;
+	}
+
+	public static function getAlbumByID(int $albumID): ?Album
+	{
+		// Get album basic info and artists
+		$stmt = DBConn::getConn()->prepare("
+        SELECT album.albumID, title, name, album.imageName, length, duration
+        FROM album, artist, releases_album
+        WHERE releases_album.artistID = artist.artistID
+        AND album.albumID = releases_album.albumID
+        AND album.albumID = ?
+    ");
+
+		$stmt->bind_param("i", $albumID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		if ($result->num_rows === 0) {
+			$stmt->close();
+			return null;
+		}
+
+		$artists = array();
+		$albumData = null;
+
+		while ($row = $result->fetch_assoc()) {
+			if (!$albumData) {
+				$albumData = $row;
+			}
+			$artists[] = $row["name"];
+		}
+		$stmt->close();
+
+		// Get song IDs for this album
+		$stmt = DBConn::getConn()->prepare("
+        SELECT songID 
+        FROM in_album 
+        WHERE albumID = ? 
+        ORDER BY songIndex
+    ");
+
+		$stmt->bind_param("i", $albumID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$songIDs = array();
+		while ($row = $result->fetch_assoc()) {
+			$songIDs[] = $row['songID'];
+		}
+		$stmt->close();
+
+		return new Album($albumData["albumID"], $albumData["title"], $songIDs, $artists, $albumData["imageName"], $albumData["length"], $albumData["duration"]);
 	}
 
 	public static function getRandomAlbums(int $limit = 3): array
@@ -650,80 +735,3 @@ class DataController
 		}
 	}
 }
-
-/*INSERT INTO User VALUES (12345, "user1", "email1", "password1", "imageName1");
-INSERT INTO User VALUES (123456, "user2", "email2", "password2", "imageName2");
-
-INSERT INTO Artist VALUES (12345, "artist1", "imageName3", 1, '2025-05-10', 12345);
-INSERT INTO Artist VALUES (123456, "artist2", "imageName4", 1, '2025-05-10', 123456);
-
-INSERT INTO Song VALUES (0000, "song1", "genre1", '2025-05-09', "imageName5", 4.5, '00:50:50', "fileName");
-
-INSERT INTO ReleasesSong VALUES (12345, 0000);
-INSERT INTO ReleasesSong VALUES (123456, 0000);
-
-
-INSERT INTO song VALUES (0001, "Midnight Dreams", "Pop", '2025-05-09', "", '03:15:12', "song.mp3");
-INSERT INTO song VALUES (0002, "Echoes of Silence", "Rock", '2025-05-09', "", '04:05:45', "song.mp3");
-INSERT INTO song VALUES (0003, "Chasing Stars", "EDM", '2025-05-09', "", '02:45:25', "song.mp3");
-INSERT INTO song VALUES (0004, "Whispers in the Dark", "R&B", '2025-05-09', "", '03:30:35', "song.mp3");
-INSERT INTO song VALUES (0005, "Heartbreaker", "Pop", '2025-05-09', "", '03:20:10', "song.mp3");
-INSERT INTO song VALUES (0006, "Luminous Sky", "Indie", '2025-05-09', "", '03:10:50', "");
-INSERT INTO song VALUES (0007, "Violet Horizon", "Alternative", '2025-05-09', "", '02:55:30', "song.mp3");
-INSERT INTO song VALUES (0008, "On the Edge", "Rock", '2025-05-09', "", '03:50:20', "song.mp3");
-INSERT INTO song VALUES (0009, "Rising Sun", "Pop", '2025-05-09', "", '03:05:15', "song.mp3");
-INSERT INTO song VALUES (0010, "In the Silence", "Classical", '2025-05-09', "", '04:00:10', "song.mp3");
-INSERT INTO song VALUES (0011, "Fading Light", "Alternative", '2025-05-09', "", '03:35:40', "song.mp3");
-INSERT INTO song VALUES (0012, "Lost in Time", "EDM", '2025-05-09', "", '02:50:55', "song.mp3");
-INSERT INTO song VALUES (0013, "Serenity", "Jazz", '2025-05-09', "", '03:40:25', "song.mp3");
-INSERT INTO song VALUES (0014, "Cosmic Waves", "Pop", '2025-05-09', "", '03:00:05', "song.mp3");
-INSERT INTO song VALUES (0015, "Storm Inside", "Rock", '2025-05-09', "", '04:10:15', "song.mp3");
-INSERT INTO song VALUES (0016, "Silent Rain", "Indie", '2025-05-09', "", '02:35:45', "song.mp3");
-INSERT INTO song VALUES (0017, "Reckless Love", "R&B", '2025-05-09', "", '03:25:10', "song.mp3");
-INSERT INTO song VALUES (0018, "Golden Horizon", "Country", '2025-05-09', "", '03:15:20', "song.mp3");
-INSERT INTO song VALUES (0019, "Reflections", "Electronic", '2025-05-09', "", '03:45:05', "song.mp3");
-INSERT INTO song VALUES (0020, "Into the Wild", "Rock", '2025-05-09', "", '04:30:25', "song.mp3");
-
-INSERT INTO user VALUES (0001, "john_doe", "john.doe@example.com", "password123", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0002, "sara_smith", "sara.smith@example.com", "securePass456", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0003, "alex_lee", "alex.lee@example.com", "alexPass789", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0004, "emily_jones", "emily.jones@example.com", "emilySecret101", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0005, "michael_brown", "michael.brown@example.com", "mikePass202", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0006, "laura_wilson", "laura.wilson@example.com", "laura1234", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0007, "daniel_white", "daniel.white@example.com", "danielPass567", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0008, "lisa_clark", "lisa.clark@example.com", "lisaSecure890", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0009, "james_harris", "james.harris@example.com", "james2021", "salt", FALSE, TRUE, "");
-INSERT INTO user VALUES (0010, "olivia_martin", "olivia.martin@example.com", "oliviaPass345", "salt", FALSE, TRUE, "");
-
-INSERT INTO artist VALUES (12345, "The Midnight Echo", "", '2025-05-10', 0001);
-INSERT INTO artist VALUES (12346, "Nova Sparks", "", '2025-05-10', 0002);
-INSERT INTO artist VALUES (12347, "Luna Waves", "", '2025-05-10', 0003);
-INSERT INTO artist VALUES (12348, "Echo Runners", "", '2025-05-10', 0004);
-INSERT INTO artist VALUES (12349, "Skyline Dreams", "", '2025-05-10', 0005);
-INSERT INTO artist VALUES (12350, "Electric Vibe", "", '2025-05-10', 0006);
-INSERT INTO artist VALUES (12351, "Wanderlust Sounds", "", '2025-05-10', 0007);
-INSERT INTO artist VALUES (12352, "Silent Mirage", "", '2025-05-10', 0008);
-INSERT INTO artist VALUES (12353, "Stellar Bloom", "", '2025-05-10', 0009);
-INSERT INTO artist VALUES (12354, "Violet Horizon", "", '2025-05-10', 0010);
-
-INSERT INTO releases_song VALUES (12345, 0001);
-INSERT INTO releases_song VALUES (12345, 0002);
-INSERT INTO releases_song VALUES (12346, 0003);
-INSERT INTO releases_song VALUES (12346, 0004);
-INSERT INTO releases_song VALUES (12347, 0005);
-INSERT INTO releases_song VALUES (12347, 0006);
-INSERT INTO releases_song VALUES (12348, 0007);
-INSERT INTO releases_song VALUES (12348, 0008);
-INSERT INTO releases_song VALUES (12349, 0009);
-INSERT INTO releases_song VALUES (12349, 0010);
-INSERT INTO releases_song VALUES (12350, 0011);
-INSERT INTO releases_song VALUES (12350, 0012);
-INSERT INTO releases_song VALUES (12351, 0013);
-INSERT INTO releases_song VALUES (12351, 0014);
-INSERT INTO releases_song VALUES (12352, 0015);
-INSERT INTO releases_song VALUES (12352, 0016);
-INSERT INTO releases_song VALUES (12353, 0017);
-INSERT INTO releases_song VALUES (12353, 0018);
-INSERT INTO releases_song VALUES (12354, 0019);
-INSERT INTO releases_song VALUES (12354, 0020);
-*/

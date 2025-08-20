@@ -218,6 +218,14 @@
 				}));
 			}
 
+			playFromQueue(index) {
+				if (index >= 0 && index < this.queue.length) {
+					this.currentIndex = index;
+					this.playSong(this.queue[index]);
+					this.updateQueueDisplay();
+				}
+			}
+
 			togglePlayPause() {
 				if (this.currentIndex < 0 && this.queue.length > 0) {
 					this.currentIndex = 0;
@@ -230,35 +238,65 @@
 			playNext() {
 				if (this.queue.length === 0) return;
 
-				if (this.currentIndex >= 0) {
-					this.history.push(this.queue[this.currentIndex]);
-				}
-
 				if (this.currentIndex < this.queue.length - 1) {
 					this.currentIndex++;
 					this.playSong(this.queue[this.currentIndex]);
 				} else {
+					// End of queue
 					this.audio.pause();
-					this.currentIndex = -1;
 					this.playerTitle.textContent = 'End of queue';
 					this.playerArtist.textContent = 'Play again or add more songs';
+					this.playerCover.src = '/BeatStream/images/defaultSong.webp';
 				}
 				this.updateQueueDisplay();
 			}
 
 			playPrevious() {
+				if (this.queue.length === 0) return;
+
+				// If we're more than 3 seconds into the song, restart it
 				if (this.audio.currentTime > 3) {
 					this.audio.currentTime = 0;
 					return;
 				}
 
-				if (this.history.length > 0) {
-					const prevSong = this.history.pop();
-					this.queue.splice(this.currentIndex >= 0 ? this.currentIndex : 0, 0, prevSong);
-					if (this.currentIndex < 0) this.currentIndex = 0;
-					this.playSong(prevSong);
+				// Navigate to previous song in queue
+				if (this.currentIndex > 0) {
+					this.currentIndex--;
+					this.playSong(this.queue[this.currentIndex]);
 					this.updateQueueDisplay();
 				}
+			}
+
+			removeFromQueue(index) {
+				if (index < 0 || index >= this.queue.length) return;
+
+				// If removing currently playing song
+				if (index === this.currentIndex) {
+					this.audio.pause();
+					this.queue.splice(index, 1);
+
+					if (this.queue.length === 0) {
+						this.currentIndex = -1;
+						this.playerTitle.textContent = 'No song selected';
+						this.playerArtist.textContent = '';
+						this.playerCover.src = '/BeatStream/images/defaultSong.webp';
+					} else {
+						// Adjust current index and play next available song
+						if (this.currentIndex >= this.queue.length) {
+							this.currentIndex = 0;
+						}
+						this.playSong(this.queue[this.currentIndex]);
+					}
+				} else {
+					// Remove song and adjust current index if necessary
+					this.queue.splice(index, 1);
+					if (index < this.currentIndex) {
+						this.currentIndex--;
+					}
+				}
+
+				this.updateQueueDisplay();
 			}
 
 			clearQueue() {

@@ -41,7 +41,7 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 	<link href="../mainStyle.css" rel="stylesheet">
 </head>
 <body>
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->

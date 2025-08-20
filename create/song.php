@@ -93,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				DataController::insertSong(new Song(
 					0,
 					$_POST["titleInput"],
+					[],
 					$_POST["artistInput"],
 					$_POST["genreInput"],
 					$_POST["releaseDateInput"],
@@ -125,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<link href="../favicon.ico" rel="icon">
 </head>
 <body>
-<?php include("../topBar.php"); ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -168,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 							<div class="artist-field d-flex mb-2">
 								<select name="artistInput[]" class="form-control me-2" required>
 									<?php foreach ($artistList as $artist): ?>
-										<option value="<?php echo htmlspecialchars($artist->getName()); ?>"
+										<option value="<?php echo htmlspecialchars($artist->getArtistID()); ?>"
 											<?php echo ($currentArtist && $artist->getArtistID() == $currentArtist['artistID']) ? 'selected' : ''; ?>>
 											<?php echo htmlspecialchars($artist->getName()); ?>
 										</option>
