@@ -74,43 +74,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 	// Handle audio upload
 	if ($isValid) {
-		if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
-			$fileTmpPath = $_FILES['fileInput']['tmp_name'];
-			$fileName = $_FILES['fileInput']['name'];
-			$extension = pathinfo($fileName, PATHINFO_EXTENSION);
-			$newFileName = uniqid() . '.' . $extension;
-			$destPath = $audioUploadDir . $newFileName;
+		include_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+		$audioResult = Converter::uploadAudio($_FILES['fileInput']);
 
-			if (!is_dir($audioUploadDir)) {
-				mkdir($audioUploadDir, 0777, true);
-			}
-
-			if (move_uploaded_file($fileTmpPath, $destPath)) {
-				include_once("../mp3file.class.php");
-				$mp3File = new MP3File($destPath);
-				$songLength = $mp3File->getDuration();
-
-				DataController::insertSong(new Song(
-					0,
-					$_POST["titleInput"],
-					[],
-					$_POST["artistInput"],
-					$_POST["genreInput"],
-					$_POST["releaseDateInput"],
-					MP3File::formatTime($songLength),
-					$newFileName,
-					$newimageName
-				));
-
-				$successMessage = "Song uploaded successfully!";
-			} else {
-				$isValid = false;
-				$errorMessage = "Audio upload failed";
-			}
-		} else {
-			$isValid = false;
-			$errorMessage = "No audio file provided or upload error";
-		}
+		DataController::insertSong(new Song(
+				0,
+				$_POST["titleInput"],
+				[],
+				$_POST["artistInput"],
+				$_POST["genreInput"],
+				$_POST["releaseDateInput"],
+				$audioResult['duration'],
+				$audioResult['flacFileName'],
+				$audioResult['opusFileName'],
+				$newFileName,
+				$newimageName
+		));
 	}
 }
 ?>
