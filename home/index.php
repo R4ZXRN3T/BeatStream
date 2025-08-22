@@ -46,7 +46,7 @@ $songQueueData = array_map(function ($song) {
 		'songID' => $song->getSongID(),
 		'title' => $song->getTitle(),
 		'artists' => implode(", ", $song->getArtists()),
-		'fileName' => $song->getFileName(),
+		'fileName' => $song->getFlacFileName(),
 		'imageName' => $song->getImageName()
 	];
 }, $recommendedSongs);
