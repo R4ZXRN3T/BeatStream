@@ -107,8 +107,66 @@ class Converter
 		}
 	}
 
-	public static function uploadImage($image)
+	public static function uploadImage($image, ImageType $imageType): array
 	{
-		// Implementation here
+		if (!extension_loaded('imagick')) {
+			return ['success' => false, 'error' => 'ImageMagick extension not available'];
+		}
+
+		$imageUploadDir = $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/" . $imageType->value . "/";
+		$largeDir = $imageUploadDir . "large/";
+		$thumbnailDir = $imageUploadDir . "thumbnail/";
+
+		if (!isset($image) || $image['error'] !== UPLOAD_ERR_OK) {
+			return ['success' => false, 'error' => 'No image file provided or upload error'];
+		}
+
+		if (!is_dir($largeDir)) mkdir($largeDir, 0777, true);
+		if (!is_dir($thumbnailDir)) mkdir($thumbnailDir, 0777, true);
+
+		$uniqueId = uniqid();
+		$largeFileName = $uniqueId . '.webp';
+		$thumbnailFileName = $uniqueId . '.webp';
+
+		try {
+			$imagick = new Imagick($image['tmp_name']);
+			$imagick->stripImage(); // Remove metadata
+
+			// Create 640x640 version
+			$large = clone $imagick;
+			$large->resizeImage(640, 640, Imagick::FILTER_LANCZOS, 1, true);
+			$large->setImageFormat('webp');
+			$large->setImageCompressionQuality(60);
+			$large->writeImage($largeDir . $largeFileName);
+
+			// Create 64x64 version
+			$thumbnail = clone $imagick;
+			$thumbnail->resizeImage(64, 64, Imagick::FILTER_LANCZOS, 1, true);
+			$thumbnail->setImageFormat('webp');
+			$thumbnail->setImageCompressionQuality(60);
+			$thumbnail->writeImage($thumbnailDir . $thumbnailFileName);
+
+			$imagick->destroy();
+			$large->destroy();
+			$thumbnail->destroy();
+
+			return [
+				'success' => true,
+				'large_filename' => $largeFileName,
+				'thumbnail_filename' => $thumbnailFileName
+			];
+
+		} catch (Exception $e) {
+			return ['success' => false, 'error' => 'Image conversion failed: ' . $e->getMessage()];
+		}
 	}
+}
+
+enum ImageType: string
+{
+	case SONG = 'song';
+	case USER = 'user';
+	case PLAYLIST = 'playlist';
+	case ARTIST = 'artist';
+	case ALBUM = 'album';
 }
