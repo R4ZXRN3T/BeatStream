@@ -18,7 +18,7 @@ class Playlist
 		$this->songIDs = $songIDs;
 		try {
 			$this->duration = new DateTime($duration);
-		} catch (DateMalformedStringException) {
+		} catch (Exception) {
 		}
 		$this->length = $length;
 		$this->creatorID = $creatorID;

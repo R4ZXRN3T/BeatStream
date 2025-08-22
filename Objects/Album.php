@@ -20,7 +20,7 @@ class Album
 		$this->length = $length;
 		try {
 			$this->duration = new DateTime($duration);
-		} catch (DateMalformedStringException) {
+		} catch (Exception) {
 		}
 	}
 
