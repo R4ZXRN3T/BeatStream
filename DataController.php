@@ -16,17 +16,6 @@ class DataController
 	 */
 	public static function insertSong(Song $song): void
 	{
-		$song->setAll(
-			$song->getSongID(),
-			str_replace("'", "\'", $song->getTitle()),
-			str_replace("'", "\'", $song->getArtists()),
-			str_replace("'", "\'", $song->getGenre()),
-			$song->getReleaseDate(),
-			$song->getSongLength(),
-			str_replace("'", "\'", $song->getFileName()),
-			str_replace("'", "\'", $song->getImageName()),
-		);
-
 		$songList = DataController::getSongList();
 
 		$changeMade = false;
@@ -41,7 +30,7 @@ class DataController
 		} while ($changeMade == true);
 
 		$sqlSong = "INSERT INTO song
-		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getImageName() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getFileName() . "')";
+		VALUES (" . $newSongID . ", '" . $song->getTitle() . "', '" . $song->getGenre() . "', '" . $song->getReleaseDate()->format("Y-m-d") . "', '" . $song->getImageName() . "', '" . $song->getSongLength()->format("H:i:s") . "', '" . $song->getFlacFileName() . "')";
 
 		$stmt = DBConn::getConn()->prepare($sqlSong);
 		$stmt->execute();

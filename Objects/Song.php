@@ -9,13 +9,15 @@ class Song
 	private string $genre;
 	private DateTime $releaseDate;
 	private DateTime $songLength;
-	private string $fileName;
+	private string $flacFileName;
+	private string $opusFileName;
 	private string $imageName;
+	private string $thumbnailName;
 
 	/**
 	 * @throws Exception
 	 */
-	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, string $songLength, string $fileName, string $imageName)
+	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, string $songLength, string $flacFileName, $opusFileName, string $imageName, string $thumbnailName)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
@@ -24,8 +26,10 @@ class Song
 		$this->genre = $genre;
 		$this->releaseDate = new DateTime($releaseDate);
 		$this->songLength = new DateTime($songLength);
-		$this->fileName = $fileName;
+		$this->flacFileName = $flacFileName;
+		$this->opusFileName = $opusFileName;
 		$this->imageName = $imageName;
+		$this->thumbnailName = $thumbnailName;
 	}
 
 	// getter methods
@@ -75,9 +79,14 @@ class Song
 		return $this->songLength;
 	}
 
-	public function getFileName(): string
+	public function getFlacFileName(): string
 	{
-		return $this->fileName;
+		return $this->flacFileName;
+	}
+
+	public function getOpusFileName(): string
+	{
+		return $this->opusFileName;
 	}
 
 	public function getImageName(): string
@@ -85,15 +94,8 @@ class Song
 		return $this->imageName;
 	}
 
-	public function setAll($songID, $title, $artists, $genre, $releaseDate, $songLength, $fileName, $imageName): void
+	public function getThumbnailName(): string
 	{
-		$this->songID = $songID;
-		$this->title = $title;
-		$this->artists = $artists;
-		$this->genre = $genre;
-		$this->releaseDate = $releaseDate;
-		$this->songLength = $songLength;
-		$this->fileName = $fileName;
-		$this->imageName = $imageName;
+		return $this->thumbnailName;
 	}
 }

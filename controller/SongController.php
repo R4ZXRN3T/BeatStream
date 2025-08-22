@@ -15,7 +15,7 @@ class SongController
 		$releaseDate = $song->getReleaseDate()->format("Y-m-d");
 		$imageName = $song->getImageName();
 		$songLength = $song->getSongLength()->format("H:i:s");
-		$fileName = $song->getFileName();
+		$fileName = $song->getFlacFileName();
 
 		$stmt = DBConn::getConn()->prepare("INSERT INTO song VALUES (?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("issssss", $newSongID, $title, $genre, $releaseDate, $imageName, $songLength, $fileName);
