@@ -146,9 +146,9 @@ class Converter
 			$thumbnail->setImageCompressionQuality(60);
 			$thumbnail->writeImage($thumbnailDir . $thumbnailFileName);
 
-			$imagick->destroy();
-			$large->destroy();
-			$thumbnail->destroy();
+			$imagick->clear();
+			$large->clear();
+			$thumbnail->clear();
 
 			return [
 				'success' => true,
