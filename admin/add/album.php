@@ -1,5 +1,6 @@
 <?php
 include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php");
 session_start();
 $isAdmin = false;
 if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
@@ -78,10 +79,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$artistList = DataController::getArtistList();
 			$songList = DataController::getSongList();
 
-			$imageUploadDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/album/";
-			$songimageName = "";
 			$newimageName = "";
-
 			$isValid = true;
 
 			if (!(
@@ -91,21 +89,13 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			}
 
 			if ($isValid && isset($_FILES['albumImageInput']) && $_FILES['albumImageInput']['error'] === UPLOAD_ERR_OK) {
-				$fileTmpPath = $_FILES['albumImageInput']['tmp_name'];
-				$fileName = $_FILES['albumImageInput']['name'];
-				$newimageName = uniqid() . "album" . pathinfo($fileName, PATHINFO_EXTENSION);
-				$destPath = $imageUploadDir . $newimageName;
+				$imageResult = Converter::uploadImage($_FILES['albumImageInput'], ImageType::ALBUM);
 
-				if (!is_dir($imageUploadDir)) {
-					mkdir($imageUploadDir, 0777, true);
-				}
-
-				if (move_uploaded_file($fileTmpPath, $destPath)) {
-					$songimageName = $imageUploadDir . $newimageName;
-					$_FILES["imageFileInput"] = $songimageName;
+				if ($imageResult['success']) {
+					$newimageName = $imageResult['large_filename'];
 				} else {
 					$isValid = false;
-					$errorMessage = "Image upload failed";
+					$errorMessage = $imageResult['error'];
 				}
 			}
 

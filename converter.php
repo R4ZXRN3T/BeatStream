@@ -86,7 +86,7 @@ class Converter
 				'success' => true,
 				'flac_filename' => $flacFileName,
 				'opus_filename' => $opusFileName,
-				'duration' => (float)$duration
+				'duration' => (int)$duration * 1000 // Convert seconds to milliseconds
 			];
 
 			if ($warning) {

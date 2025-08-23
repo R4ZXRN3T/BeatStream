@@ -32,19 +32,6 @@ class Song
 		$this->thumbnailName = $thumbnailName;
 	}
 
-	/*function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, string $songLength, string $fileName, string $imageName)
-	{
-		$this->songID = $songID;
-		$this->title = $title;
-		$this->artists = $artists;
-		$this->artistIDs = $artistIDs;
-		$this->genre = $genre;
-		$this->releaseDate = new DateTime($releaseDate);
-		$this->songLength = new DateTime($songLength);
-		$this->flacFileName = $fileName;
-		$this->imageName = $imageName;
-	}*/
-
 	// getter methods
 
 	public function getSongID(): int

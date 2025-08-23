@@ -1,65 +1,71 @@
 CREATE TABLE song
 (
-	songID      INT PRIMARY KEY,
-	title       VARCHAR(255) NOT NULL,
-	genre       VARCHAR(255),
-	releaseDate DATE,
-	imageName   VARCHAR(255),
-	songLength  TIME,
+	songID        INT PRIMARY KEY,
+	title         VARCHAR(255) NOT NULL,
+	genre         VARCHAR(255),
+	releaseDate   DATE,
+	imageName     VARCHAR(255),
+	thumbnailName VARCHAR(255),
+	songLength    INT,
 
-	fileName    VARCHAR(255)
+	flacFileName  VARCHAR(255),
+	opusFileName  VARCHAR(255)
 );
 
 CREATE TABLE album
 (
-	albumID   INT PRIMARY KEY,
-	title     VARCHAR(255),
-	imageName VARCHAR(255),
-	length    INT,
-	duration  TIME
+	albumID       INT PRIMARY KEY,
+	title         VARCHAR(255),
+	imageName     VARCHAR(255),
+	thumbnailName VARCHAR(255),
+	length        INT,
+	duration      INT
 );
 
 CREATE TABLE user
 (
-	userID       INT PRIMARY KEY,
-	username     VARCHAR(255) NOT NULL UNIQUE,
-	email        VARCHAR(255) NOT NULL UNIQUE,
-	userPassword VARCHAR(255) NOT NULL,
-	salt         VARCHAR(255) NOT NULL,
-	isAdmin      BOOLEAN      NOT NULL DEFAULT FALSE,
-	isArtist     BOOLEAN      NOT NULL DEFAULT FALSE,
-	imageName    VARCHAR(255)
+	userID        INT PRIMARY KEY,
+	username      VARCHAR(255) NOT NULL UNIQUE,
+	email         VARCHAR(255) NOT NULL UNIQUE,
+	userPassword  VARCHAR(255) NOT NULL,
+	salt          VARCHAR(255) NOT NULL,
+	isAdmin       BOOLEAN      NOT NULL DEFAULT FALSE,
+	isArtist      BOOLEAN      NOT NULL DEFAULT FALSE,
+	imageName     VARCHAR(255),
+	thumbnailName VARCHAR(255)
 );
 
 CREATE TABLE playlist
 (
-	playlistID INT PRIMARY KEY,
-	imageName  VARCHAR(255),
-	name       VARCHAR(255),
-	length     INT,
-	duration   TIME,
+	playlistID    INT PRIMARY KEY,
+	imageName     VARCHAR(255),
+	thumbnailName VARCHAR(255),
+	name          VARCHAR(255),
+	length        INT,
+	duration      INT,
 
-	creatorID  INT,
+	creatorID     INT,
 
 	FOREIGN KEY (creatorID) REFERENCES user (userID)
 );
 
 CREATE TABLE artist
 (
-	artistID    INT PRIMARY KEY,
-	name        VARCHAR(255) NOT NULL UNIQUE,
-	imageName   VARCHAR(255),
-	activeSince DATE,
+	artistID      INT PRIMARY KEY,
+	name          VARCHAR(255) NOT NULL UNIQUE,
+	imageName     VARCHAR(255),
+	thumbnailName VARCHAR(255),
+	activeSince   DATE,
 
-	userID      INT,
+	userID        INT,
 
 	FOREIGN KEY (userID) REFERENCES user (userID)
 );
 
 CREATE TABLE releases_song
 (
-	artistID   INT,
-	songID     INT,
+	artistID    INT,
+	songID      INT,
 	artistIndex INT,
 
 	FOREIGN KEY (artistID) REFERENCES artist (artistID),
@@ -70,8 +76,9 @@ CREATE TABLE releases_song
 
 CREATE TABLE releases_album
 (
-	artistID INT,
-	albumID  INT,
+	artistID    INT,
+	albumID     INT,
+	artistIndex INT,
 
 	FOREIGN KEY (artistID) REFERENCES artist (artistID),
 	FOREIGN KEY (albumID) REFERENCES album (albumID),

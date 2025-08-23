@@ -8,12 +8,14 @@ class Playlist
 	private DateTime $duration;
 	private int $length;
 	private string $imageName;
+	private string $thumbnailName;
 	private int $creatorID;
 
-	public function __construct(int $playlistID, string $name, array $songIDs, string $duration, int $length, string $imageName, int $creatorID)
+	public function __construct(int $playlistID, string $name, array $songIDs, string $duration, int $length, string $imageName, string $thumbnailName, int $creatorID)
 	{
 		$this->playlistID = $playlistID;
 		$this->imageName = $imageName;
+		$this->thumbnailName = $thumbnailName;
 		$this->name = $name;
 		$this->songIDs = $songIDs;
 		try {
@@ -30,9 +32,14 @@ class Playlist
 		return $this->playlistID;
 	}
 
-	public function getimageName(): string
+	public function getImageName(): string
 	{
 		return $this->imageName;
+	}
+
+	public function getThumbnailName(): string
+	{
+		return $this->thumbnailName;
 	}
 
 	public function getName(): string

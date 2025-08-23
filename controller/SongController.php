@@ -14,11 +14,13 @@ class SongController
 		$genre = $song->getGenre();
 		$releaseDate = $song->getReleaseDate()->format("Y-m-d");
 		$imageName = $song->getImageName();
+		$thumbnailName = $song->getThumbnailName();
 		$songLength = $song->getSongLength()->format("H:i:s");
-		$fileName = $song->getFlacFileName();
+		$flacFileName = $song->getFlacFileName();
+		$opusFileName = $song->getOpusFileName();
 
-		$stmt = DBConn::getConn()->prepare("INSERT INTO song VALUES (?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("issssss", $newSongID, $title, $genre, $releaseDate, $imageName, $songLength, $fileName);
+		$stmt = DBConn::getConn()->prepare("INSERT INTO song VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("isssssiss", $newSongID, $title, $genre, $releaseDate, $imageName, $thumbnailName, $songLength, $flacFileName, $opusFileName);
 		$stmt->execute();
 		$stmt->close();
 
@@ -26,10 +28,20 @@ class SongController
 
 		for ($i = 0; $i < count($artistsInSong); $i++) {
 			$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (?, ?, ?)");
-			$stmt->bind_param("iii", $newSongID, $artistsInSong[$i], $i);
+			$stmt->bind_param("iii", $artistsInSong[$i], $newSongID, $i);
 			$stmt->execute();
 			$stmt->close();
 		}
+	}
+
+	public static function IdExists(int $songID): bool
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT songID FROM song WHERE songID = ? LIMIT 1");
+		$stmt->bind_param("i", $songID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		return $result->num_rows > 0;
 	}
 
 	/**
@@ -37,7 +49,7 @@ class SongController
 	 */
 	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFileName, song.opusFileName
   		FROM song, artist, releases_song
   		WHERE song.songID = releases_song.songID
   		AND artist.artistID = releases_song.artistID
@@ -48,7 +60,7 @@ class SongController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFileName"], $row["opusFileName"], $row["imageName"], $row["thumbnailName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
@@ -85,7 +97,7 @@ class SongController
 
 		// Then get all data for those songs with proper artist ordering
 		$placeholders = str_repeat('?,', count($songIDs) - 1) . '?';
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFileName, song.opusFileName
         FROM song, artist, releases_song
         WHERE song.songID = releases_song.songID
         AND artist.artistID = releases_song.artistID
@@ -98,7 +110,7 @@ class SongController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFileName"], $row["opusFileName"], $row["imageName"], $row["thumbnailName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
@@ -120,7 +132,7 @@ class SongController
 	{
 		$stmt = DBConn::getConn()->prepare("
         SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
-               song.releaseDate, song.imageName, song.songLength, song.fileName
+               song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFileName, song.opusFileName
         FROM song, artist, releases_song, in_album
         WHERE song.songID = releases_song.songID
         AND artist.artistID = releases_song.artistID
@@ -135,7 +147,7 @@ class SongController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["fileName"], $row["imageName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFileName"], $row["opusFileName"], $row["imageName"], $row["thumbnailName"]);
 
 			$alreadyExists = false;
 			for ($i = 0; $i < count($songList); $i++) {
@@ -154,14 +166,5 @@ class SongController
 
 		$stmt->close();
 		return $songList;
-	}
-
-	public static function IdExists(int $songID): bool {
-		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT songID FROM song WHERE songID = ? LIMIT 1");
-		$stmt->bind_param("i", $songID);
-		$stmt->execute();
-		$result = $stmt->get_result();
-
-		return $result->num_rows > 0;
 	}
 }

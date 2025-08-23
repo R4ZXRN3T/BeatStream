@@ -7,21 +7,20 @@ class Album
 	private array $songIDs;
 	private array $artists;
 	private string $imageName;
+	private string $thumbnailName;
 	private int $length;
-	private DateTime $duration;
+	private int $duration;
 
-	public function __construct(int $albumID, string $name, array $songIDs, array $artists, string $imageName, int $length, string $duration)
+	public function __construct(int $albumID, string $name, array $songIDs, array $artists, string $imageName, string $thumbnailName, int $length, int $duration)
 	{
 		$this->albumID = $albumID;
 		$this->name = $name;
 		$this->songIDs = $songIDs;
 		$this->artists = $artists;
 		$this->imageName = $imageName;
+		$this->thumbnailName = $thumbnailName;
 		$this->length = $length;
-		try {
-			$this->duration = new DateTime($duration);
-		} catch (Exception) {
-		}
+		$this->duration = $duration;
 	}
 
 	// Getter Methods
@@ -46,12 +45,17 @@ class Album
 		return $this->imageName;
 	}
 
+	public function getThumbnailName(): string
+	{
+		return $this->thumbnailName;
+	}
+
 	public function getLength(): int
 	{
 		return $this->length;
 	}
 
-	public function getDuration(): DateTime
+	public function getDuration(): int
 	{
 		return $this->duration;
 	}
