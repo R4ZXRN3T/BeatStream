@@ -10,8 +10,9 @@ class User
 	private bool $isAdmin;
 	private bool $isArtist;
 	private string $imageName;
+	private string $thumbnailName;
 
-	public function __construct($userID, $username, $email, $userPassword, $salt, $isAdmin, $isArtist, $imageName)
+	public function __construct(int $userID, string $username, string $email, string $userPassword, string $salt, bool $isAdmin, bool $isArtist, string $imageName, string $thumbnailName)
 	{
 		$this->userID = $userID;
 		$this->username = $username;
@@ -21,6 +22,7 @@ class User
 		$this->isAdmin = $isAdmin;
 		$this->isArtist = $isArtist;
 		$this->imageName = $imageName;
+		$this->thumbnailName = $thumbnailName;
 	}
 
 	// Getter methods
@@ -61,8 +63,13 @@ class User
 		return $this->isArtist;
 	}
 
-	public function getimageName(): string
+	public function getImageName(): string
 	{
 		return $this->imageName;
+	}
+
+	public function getThumbnailName(): string
+	{
+		return $this->thumbnailName;
 	}
 }
