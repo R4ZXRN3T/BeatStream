@@ -136,7 +136,7 @@ class Converter
 			$large = clone $imagick;
 			$large->resizeImage(640, 640, Imagick::FILTER_LANCZOS, 1, true);
 			$large->setImageFormat('webp');
-			$large->setImageCompressionQuality(60);
+			$large->setImageCompressionQuality(80);
 			$large->writeImage($largeDir . $largeFileName);
 
 			// Create 64x64 version

@@ -11,6 +11,10 @@
 		</a>
 
 		<div class="ms-auto d-flex align-items-center">
+			<button id="audioFormatToggle" class="btn btn-secondary me-2" title="Toggle Audio Format"
+					style="background-color: transparent; border: none;">
+				<img id="audioFormatImage" class="codec-image" src="/BeatStream/images/flac_logo.webp" alt="FLAC">
+			</button>
 			<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode"
 					style="background-color: transparent; border: none;">
 				<i class="bi bi-moon fs-4"></i>
@@ -23,7 +27,7 @@
 							<div class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
 							<div class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
 						</div>
-						<img src="<?php echo $_SESSION['imageName'] ? '/BeatStream/images/user/' . $_SESSION['imageName'] : '/BeatStream/images/defaultUser.webp'; ?>"
+						<img src="<?php echo $_SESSION['imageName'] ? '/BeatStream/images/user/thumbnail/' . $_SESSION['imageName'] : '/BeatStream/images/defaultUser.webp'; ?>"
 							 alt="Profile" class="rounded-circle me-2"
 							 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
 					</button>
@@ -58,5 +62,27 @@
 				localStorage.setItem('darkMode', 'disabled');
 			}
 		}
+
+		const audioToggle = document.getElementById('audioFormatToggle');
+		const audioFormatImage = document.getElementById('audioFormatImage');
+
+		// Load preference
+		const savedFormat = localStorage.getItem('audioFormat') || 'flac';
+		audioFormatImage.src = `/BeatStream/images/${savedFormat}_logo.webp`;
+		audioFormatImage.alt = savedFormat.toUpperCase();
+
+		audioToggle.onclick = function () {
+			const currentFormat = localStorage.getItem('audioFormat') || 'flac';
+			const newFormat = currentFormat === 'flac' ? 'opus' : 'flac';
+
+			localStorage.setItem('audioFormat', newFormat);
+			audioFormatImage.src = `/BeatStream/images/${newFormat}_logo.webp`;
+			audioFormatImage.alt = newFormat.toUpperCase();
+
+			// Trigger custom event for other parts of your app to listen to
+			document.dispatchEvent(new CustomEvent('audioFormatChanged', {
+				detail: { format: newFormat }
+			}));
+		};
 	</script>
 </nav>

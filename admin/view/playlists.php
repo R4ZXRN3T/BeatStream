@@ -81,11 +81,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$playlistList = DataController::getPlaylistList();
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
+			$playlistList = PlaylistController::getPlaylistList();
 
 			if (array_key_exists('removeButton', $_POST)) {
-				DataController::deletePlaylist($_POST['removeButton']);
+				PlaylistController::deletePlaylist($_POST['removeButton']);
 				header("Refresh:0");
 			}
 			?>
@@ -109,9 +109,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					?>
 					<tr>
 						<td><?php echo $playlistList[$i]->getPlaylistID() ?></td>
-						<td><?php echo $playlistList[$i]->getimageName() ?></td>
+						<td><?php echo $playlistList[$i]->getImageName() ?></td>
 						<td><?php echo $playlistList[$i]->getName() ?></td>
-						<td><?php echo $playlistList[$i]->getDuration()->format('i:s') ?></td>
+						<td><?php echo $playlistList[$i]->getFormattedDuration() ?></td>
 						<td><?php echo $playlistList[$i]->getLength() ?></td>
 						<td><?php echo $playlistList[$i]->getCreatorID() ?></td>
 						<td>

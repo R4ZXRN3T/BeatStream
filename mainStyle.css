@@ -405,3 +405,9 @@ body.dark-mode .edit-playlist .search-box input {
 	color: #e0e0e0;
 	border-color: var(--border-color);
 }
+
+.codec-image {
+	height: 30px;
+	object-fit: cover;
+	margin-right: 10px;
+}

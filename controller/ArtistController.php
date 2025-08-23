@@ -1,5 +1,7 @@
 <?php
 
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/Objects/Artist.php";
+
 class ArtistController
 {
 

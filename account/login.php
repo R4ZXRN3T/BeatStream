@@ -47,7 +47,7 @@ if (isset($_SESSION['account_loggedin'])) {
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
 
 			$isValid = true;
 			$credentialsCorrect = true;
@@ -59,7 +59,7 @@ if (isset($_SESSION['account_loggedin'])) {
 			}
 
 			if ($isValid) {
-				$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, imageName FROM user WHERE email = ?");
+				$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, thumbnailName FROM user WHERE email = ?");
 				$stmt->bind_param("s", $_POST['emailInput']);
 				$stmt->execute();
 				$result = $stmt->get_result()->fetch_assoc();
@@ -73,7 +73,7 @@ if (isset($_SESSION['account_loggedin'])) {
 						$_SESSION['username'] = $result['username'];
 						$_SESSION['userID'] = $result['userID'];
 						$_SESSION['isAdmin'] = $result['isAdmin'] == 1;
-						$_SESSION['imageName'] = $result['imageName'];
+						$_SESSION['imageName'] = $result['thumbnailName'];
 						header("location: /BeatStream/account/loginSuccess.php");
 					} else {
 						$credentialsCorrect = false;

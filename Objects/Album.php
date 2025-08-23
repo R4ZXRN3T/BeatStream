@@ -60,6 +60,15 @@ class Album
 		return $this->duration;
 	}
 
+	public function getFormattedDuration(): string
+	{
+		$seconds = intval($this->duration / 1000);
+		$minutes = intval($seconds / 60);
+		$remainingSeconds = $seconds % 60;
+
+		return sprintf("%d:%02d", $minutes, $remainingSeconds);
+	}
+
 	public function getAlbumID(): int
 	{
 		return $this->albumID;

@@ -58,7 +58,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				<div class="container-fluid">
 					<ul class="navbar-nav">
 						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add
+								content</a></li>
 					</ul>
 				</div>
 			</nav>
@@ -74,60 +75,110 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$userList = DataController::getUserList();
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+			$userList = UserController::getUserList();
+			$songList = SongController::getSongList();
 
 			$isValid = true;
 
-			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["lengthInput"]) && !empty($_POST["durationInput"]) && !empty($_POST["imageNameInput"]) && !empty($_POST["creatorInput"])
-			)) {
+			if (!(!empty($_POST["nameInput"]) && !empty($_FILES["imageInput"]) && !empty($_POST["creatorInput"]))) {
 				$isValid = false;
 			}
 
+			$imageName = "";
+			$thumbnailName = "";
+
 			if ($isValid) {
-				DataController::insertPlaylist(new Playlist(
-					0,
-					$_POST["nameInput"],
-					$_POST["songIDInput"],
-					$_POST["durationInput"],
-					$_POST["lengthInput"],
-					$_POST["imageNameInput"],
-					$_POST["creatorIDInput"]
+				if (isset($_FILES['imageInput']) && $_FILES['imageInput']['error'] == UPLOAD_ERR_OK) {
+					$result = Converter::uploadImage($_FILES['imageInput'], ImageType::PLAYLIST);
+					if ($result['success']) {
+						$imageName = $result['large_filename'];
+						$thumbnailName = $result['thumbnail_filename'];
+					} else {
+						echo "<div class='alert alert-danger'>Image upload failed: " . htmlspecialchars($result['error']) . "</div>";
+						$isValid = false;
+					}
+				}
+
+				$totalMilliSeconds = 0;
+				foreach ($_POST['songInput'] as $selectedSongID) {
+					foreach ($songList as $song) {
+						if ($song->getSongID() == $selectedSongID) {
+							$totalMilliSeconds += $song->getSongLength();
+							break;
+						}
+					}
+				}
+
+				PlaylistController::insertPlaylist(new Playlist(
+						0,
+						$_POST["nameInput"],
+						$_POST["songInput"],
+						$totalMilliSeconds,
+						count($_POST['songInput']),
+						$imageName,
+						$thumbnailName,
+						$_POST["creatorInput"]
 				));
+
 			}
 			?>
 
 			<div class="container mt-5">
 				<h1>Playlist Einfügen</h1>
 
-				<form action="playlist.php" method="post" id="addPlaylistForm">
+				<form action="playlist.php" method="post" id="addPlaylistForm" enctype="multipart/form-data">
 					<div class="form-group">
-						<label for="name">Playlist title:</label>
-						<input type="text" id="name" name="nameInput" class="form-control"
+						<label for="nameInput">Playlist title:</label>
+						<input type="text" id="nameInput" name="nameInput" class="form-control"
 							   placeholder="Enter playlist name"
 							   required>
 					</div>
 
 					<div class="form-group">
-						<label for="imageName">Image Name:</label>
-						<input type="text" id="imageName" name="imageNameInput" class="form-control"
-							   placeholder="Enter Image Name"
-							   required>
+						<label for="songFields">Add Songs:</label>
+						<div id="songFields">
+							<div class="song-field d-flex mb-2">
+								<select name="songInput[]" class="form-control me-2" required>
+									<option value="">--Please Select--</option>
+									<?php
+									foreach ($songList as $song) {
+										echo "<option value={$song->getSongID()}>{$song->getTitle()} - " . implode(", ", $song->getArtists()) . "</option>";
+									}
+									?>
+								</select>
+								<button type="button" class="btn btn-danger remove-song" style="display:none;"
+										onclick="removeSong(this)">-
+								</button>
+							</div>
+						</div>
+						<button type="button" onclick="addSong()" class="btn btn-info mt-2">+</button>
+					</div>
+
+					<div class="form-group">
+						<label for="imageName">Image:</label>
+						<input type="file" id="imageInput" name="imageInput" class="form-control" accept="image/*"
+							   placeholder="Enter Image Name">
 					</div>
 					<div class="form-group">
-						<label for="creator">Ersteller:</label>
-						<select name="creatorInput" id="creator" style="width: 175px;" class="form-control"
-								style="width: 100%" required>
-							<option value=none>--Please Select--</option>
-							<?php
-							for ($i = 0; $i < count($userList); $i++) {
-								?>
-								<option value="<?php echo $userList[$i]->getUserID() ?>"><?php echo $userList[$i]->getUsername() ?></option>
-								<?php
-							}
-							?>
-						</select>
+						<label for="creatorField">Creator:</label>
+						<div id="creatorField">
+							<div class="d-flex mb-2">
+								<select name="creatorInput" id="creatorInput" style="width: 100%;" class="form-control" required>
+									<option value=none>--Please Select--</option>
+									<?php
+									for ($i = 0; $i < count($userList); $i++) {
+										?>
+										<option value="<?php echo $userList[$i]->getUserID() ?>"><?php echo $userList[$i]->getUsername() ?></option>
+										<?php
+									}
+									?>
+								</select>
+							</div>
+						</div>
 					</div>
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
 				</form>
@@ -138,6 +189,33 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 		</main>
 	</div>
 </div>
+
+<script>
+	function updateRemoveButtons() {
+		const fields = document.querySelectorAll('#songFields .song-field');
+		fields.forEach((field, idx) => {
+			const btn = field.querySelector('.remove-song');
+			btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
+		});
+	}
+
+	function addSong() {
+		const artistFields = document.getElementById('songFields');
+		const firstField = artistFields.querySelector('.song-field');
+		const newField = firstField.cloneNode(true);
+		newField.querySelector('select').value = '';
+		artistFields.appendChild(newField);
+		updateRemoveButtons();
+	}
+
+	function removeSong(btn) {
+		btn.closest('.song-field').remove();
+		updateRemoveButtons();
+	}
+
+	document.addEventListener('DOMContentLoaded', updateRemoveButtons);
+</script>
+
 </body>
 
 </html>

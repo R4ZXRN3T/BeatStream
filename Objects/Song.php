@@ -8,7 +8,7 @@ class Song
 	private array $artistIDs;
 	private string $genre;
 	private DateTime $releaseDate;
-	private DateTime $songLength;
+	private int $songLength;
 	private string $flacFileName;
 	private string $opusFileName;
 	private string $imageName;
@@ -17,7 +17,7 @@ class Song
 	/**
 	 * @throws Exception
 	 */
-	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, string $songLength, string $flacFileName, $opusFileName, string $imageName, string $thumbnailName)
+	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, int $songLength, string $flacFileName, $opusFileName, string $imageName, string $thumbnailName)
 	{
 		$this->songID = $songID;
 		$this->title = $title;
@@ -25,7 +25,7 @@ class Song
 		$this->artistIDs = $artistIDs;
 		$this->genre = $genre;
 		$this->releaseDate = new DateTime($releaseDate);
-		$this->songLength = new DateTime($songLength);
+		$this->songLength = $songLength;
 		$this->flacFileName = $flacFileName;
 		$this->opusFileName = $opusFileName;
 		$this->imageName = $imageName;
@@ -74,9 +74,18 @@ class Song
 		return $this->releaseDate;
 	}
 
-	public function getSongLength(): DateTime
+	public function getSongLength(): int
 	{
 		return $this->songLength;
+	}
+
+	public function getFormattedDuration(): string
+	{
+		$seconds = intval($this->songLength / 1000);
+		$minutes = intval($seconds / 60);
+		$remainingSeconds = $seconds % 60;
+
+		return sprintf("%d:%02d", $minutes, $remainingSeconds);
 	}
 
 	public function getFlacFileName(): string

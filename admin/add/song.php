@@ -60,7 +60,8 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 				<div class="container-fluid">
 					<ul class="navbar-nav">
 						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add
+								content</a></li>
 					</ul>
 				</div>
 			</nav>
@@ -76,8 +77,9 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$artistList = DataController::getArtistList();
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
+			$artistList = ArtistController::getArtistList();
 			$isValid = true;
 			$errorMessage = "";
 
@@ -85,74 +87,49 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 				$isValid = false;
 			}
 
-			// After $isValid = true; and before DataController::insertSong(...)
-			$imageUploadDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/song/";
-			$songimageName = "";
-			$newimageName = "";
-
-			$audioUploadDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/audio/";
-			$songfileName = "";
-			$newFileName = "";
-
-			if ($isValid && isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
-				$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
-				$fileName = $_FILES['songImageInput']['name'];
-				$extension = pathinfo($fileName, PATHINFO_EXTENSION);
-				$newimageName = uniqid() . 'song' . $extension;
-				$destPath = $imageUploadDir . $newimageName;
-
-				if (!is_dir($imageUploadDir)) {
-					mkdir($imageUploadDir, 0777, true);
-				}
-
-				if (move_uploaded_file($fileTmpPath, $destPath)) {
-					$songimageName = $imageUploadDir . $newimageName;
-					$_FILES["imageFileInput"] = $songimageName;
-				} else {
-					$isValid = false;
-					$errorMessage = "Image upload failed";
-				}
-			}
+			$flacFilename = "";
+			$opusFilename = "";
+			$imageName = "";
+			$thumbnailName = "";
+			$songLength = 0;
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
 
 			if ($isValid) {
-				$destPath = "";
-				if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
-					$fileTmpPath = $_FILES['fileInput']['tmp_name'];
-					$fileName = $_FILES['fileInput']['name'];
-					$extension = pathinfo($fileName, PATHINFO_EXTENSION);
-					$newFileName = uniqid() . 'song' . $extension;
-					$destPath = $audioUploadDir . $newFileName;
-
-					if (!is_dir($audioUploadDir)) {
-						mkdir($audioUploadDir, 0777, true);
-					}
-
-					if (move_uploaded_file($fileTmpPath, $destPath)) {
-						$songfileName = "/BeatStream/audio/" . $newFileName;
-						$_FILES["fileNameInput"] = $songfileName;
-
+				if (isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
+					$result = Converter::uploadImage($_FILES['songImageInput'], ImageType::SONG);
+					if ($result['success']) {
+						$imageName = $result['large_filename'];
+						$thumbnailName = $result['thumbnail_filename'];
 					} else {
 						$isValid = false;
-						$errorMessage = "Audio upload failed";
+						$errorMessage = $result['error'];
 					}
-				} else {
-					$isValid = false;
-					$errorMessage = "no file provided or upload error";
 				}
 
-				$mp3File = new MP3File($destPath);
-				$songLength = $mp3File->getDuration();
+				if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
+					$result = Converter::uploadAudio($_FILES['fileInput']);
+					if ($result['success']) {
+						$flacFilename = $result['flac_filename'];
+						$opusFilename = $result['opus_filename'];
+						$songLength = $result['duration'];
+					} else {
+						$isValid = false;
+						$errorMessage = $result['error'];
+					}
+				}
 
-				DataController::insertSong(new Song(
-					0,
-					$_POST["titleInput"],
-					[],
-					$_POST["artistInput"],
-					$_POST["genreInput"],
-					$_POST["releaseDateInput"],
-					MP3File::formatTime($songLength),
-					$newFileName,
-					$newimageName
+				SongController::insertSong(new Song(
+						0,
+						$_POST["titleInput"],
+						[],
+						$_POST["artistInput"],
+						$_POST["genreInput"],
+						$_POST["releaseDateInput"],
+						$songLength,
+						$flacFilename,
+						$opusFilename,
+						$imageName,
+						$thumbnailName
 				));
 			}
 			?>
@@ -211,7 +188,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 
 					<div class="form-group">
 						<label for="songFile">File:</label>
-						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/mpeg"
+						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/*"
 							   placeholder="Upload song file"
 							   required>
 					</div>

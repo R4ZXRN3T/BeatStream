@@ -92,8 +92,8 @@
 		class MusicPlayer {
 			constructor() {
 				this.basePath = '/BeatStream';
-				this.audioBasePath = `${this.basePath}/audio/`;
-				this.imageBasePath = `${this.basePath}/images/song/`;
+				this.audioBasePath = `${this.basePath}/audio/${localStorage.getItem('audioFormat')}/`;
+				this.imageBasePath = `${this.basePath}/images/song/thumbnail/`;
 
 				// Core elements only
 				this.playerUI = document.getElementById('musicPlayer');
@@ -182,12 +182,13 @@
 			}
 
 			loadQueueFromData(queueData, clickedSongId) {
+				this.audioBasePath = `${this.basePath}/audio/${localStorage.getItem('audioFormat')}/`;
 				this.queue = queueData.map(song => ({
 					songID: song.songID,
 					title: song.title,
 					artists: song.artists,
-					fileName: song.fileName,
-					imageName: song.imageName || ''
+					fileName: (localStorage.getItem('audioFormat') === 'flac' ? song.flacFilename : song.opusFilename),
+					imageName: song.thumbnailName || ''
 				}));
 
 				this.currentIndex = this.queue.findIndex(song =>

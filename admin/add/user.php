@@ -58,7 +58,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				<div class="container-fluid">
 					<ul class="navbar-nav">
 						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add
+								content</a></li>
 					</ul>
 				</div>
 			</nav>
@@ -74,51 +75,43 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-
-			$uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/user/"; // Define upload directory
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php";
 			$errorMessage = "";
+			$isValid = true;
 
-			// Create directory if it doesn't exist
-			if (!file_exists($uploadDir)) {
-				mkdir($uploadDir, 0777, true);
-			}
-
-			if (!(
-				!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])
-			)) {
+			if (!(!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"]))) {
 				$isValid = false;
 			}
 
 			if ($isValid) {
 				// Handle file upload
-				$newFileName = "";
+				$imageName = "";
+				$thumbnailName = "";
+
+				require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
 				if (isset($_FILES["userImage"]) && $_FILES["userImage"]["error"] == UPLOAD_ERR_OK) {
-					$fileName = $_FILES["userImage"]["name"];
-					$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-					$newFileName = uniqid() . 'user' . $extension;// Generate unique filename
-					$targetFilePath = $uploadDir . $newFileName;// Check file size (limit to 5MB)
-					if ($_FILES["userImage"]["size"] > 5000000) {
-						$isValid = false;
-						$errorMessage = "File is too large. Maximum size is 2MB.";
+					$result = Converter::uploadImage($_FILES["userImage"], ImageType::USER);
+					if ($result['success']) {
+						$imageName = $result['large_filename'];
+						$thumbnailName = $result['thumbnail_filename'];
 					} else {
-						move_uploaded_file($_FILES["userImage"]["tmp_name"], $targetFilePath);
+						$isValid = false;
+						$errorMessage = $result['error'];
 					}
 				}
 
 				if ($isValid) {
-					// Upload file
-					// Insert user with the new file path
 					$isAdmin = isset($_POST["isAdminInput"]);
-					DataController::insertUser(new User(
-						0,
-						$_POST["usernameInput"],
-						$_POST["emailInput"],
-						$_POST["userPasswordInput"],
-						"",
-						$isAdmin, // Use the correctly processed boolean value
-						FALSE,
-						$newFileName
+					UserController::insertUser(new User(
+							0,
+							$_POST["usernameInput"],
+							$_POST["emailInput"],
+							$_POST["userPasswordInput"],
+							"",
+							$isAdmin, // Use the correctly processed boolean value
+							FALSE,
+							$imageName,
+							$thumbnailName
 					));
 				} else {
 					echo "<h1 class='text-center mt-4 text-danger'>Error uploading file!</h1>";
@@ -172,5 +165,4 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	</div>
 </div>
 </body>
-
 </html>
