@@ -1,5 +1,8 @@
 <?php
 
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/Objects/Playlist.php";
+
 class PlaylistController
 {
 	public static function insertPlaylist(Playlist $playlist): void
@@ -9,7 +12,15 @@ class PlaylistController
 		} while (PlaylistController::IdExists($newPlaylistID));
 
 		$stmt = DBConn::getConn()->prepare("INSERT INTO playlist VALUES (?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("isssiis", $newPlaylistID, $playlist->getImageName(), $playlist->getThumbnailName(), $playlist->getName(), $playlist->getLength(), $playlist->getDuration()->format("H:i:s"), $playlist->getCreatorID());
+
+		$imageName = $playlist->getImageName();
+		$thumbnailName = $playlist->getThumbnailName();
+		$name = $playlist->getName();
+		$length = $playlist->getLength();
+		$duration = $playlist->getDuration();
+		$creatorID = $playlist->getCreatorID();
+
+		$stmt->bind_param("isssiis", $newPlaylistID, $imageName, $thumbnailName, $name, $length, $duration, $creatorID);
 		$stmt->execute();
 		$stmt->close();
 

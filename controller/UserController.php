@@ -1,10 +1,14 @@
 <?php
 
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/Objects/User.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/Utils.php");
+
 class UserController
 {
 	public static function insertUser(User $user): void
 	{
-		$salt = htmlspecialchars(DataController::generateRandomString(16));
+		$salt = htmlspecialchars(Utils::generateRandomString(16));
 		$password = hash("sha256", $user->getUserPassword() . $salt);
 
 		// Generate unique user ID
@@ -31,6 +35,26 @@ class UserController
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT userID FROM user WHERE userID = ? LIMIT 1");
 		$stmt->bind_param("i", $userID);
+		$stmt->execute();
+		$result = $stmt->get_result()->num_rows > 0;
+		$stmt->close();
+		return $result;
+	}
+
+	public static function usernameExists(string $username): bool
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT username FROM user WHERE username = ? LIMIT 1");
+		$stmt->bind_param("s", $username);
+		$stmt->execute();
+		$result = $stmt->get_result()->num_rows > 0;
+		$stmt->close();
+		return $result;
+	}
+
+	public static function emailExists(string $email): bool
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT email FROM user WHERE email = ? LIMIT 1");
+		$stmt->bind_param("s", $email);
 		$stmt->execute();
 		$result = $stmt->get_result()->num_rows > 0;
 		$stmt->close();

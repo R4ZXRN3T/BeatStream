@@ -81,11 +81,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$artistList = DataController::getArtistList();
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
+			$artistList = ArtistController::getArtistList();
 
 			if (array_key_exists('removeButton', $_POST)) {
-				DataController::deleteArtist($_POST['removeButton']);
+				ArtistController::deleteArtist($_POST['removeButton']);
 				header("Refresh:0");
 			}
 			?>
@@ -109,7 +109,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<tr>
 						<td><?php echo $artistList[$i]->getArtistID() ?></td>
 						<td><?php echo $artistList[$i]->getName() ?></td>
-						<td><?php echo $artistList[$i]->getimageName() ?></td>
+						<td><?php echo $artistList[$i]->getImageName() ?></td>
 						<td><?php echo $artistList[$i]->getActiveSince()->format('d.m.Y') ?></td>
 						<td><?php echo $artistList[$i]->getUserID() ?></td>
 						<td>

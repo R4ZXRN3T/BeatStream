@@ -45,7 +45,7 @@ if ($showArtistLinks && !empty($song->getArtists())) {
 
 // Optimize image source
 $imageSrc = $song->getImageName()
-		? "/BeatStream/images/song/" . htmlspecialchars($song->getImageName())
+		? "/BeatStream/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
 		: "../images/defaultSong.webp";
 
 $songData = htmlspecialchars(json_encode($songQueueData));
@@ -82,7 +82,7 @@ $songData = htmlspecialchars(json_encode($songQueueData));
 			<?php if ($showDuration): ?>
 				<div class="ms-auto">
 					<p class="card-text mb-0 song-duration">
-						<?= $song->getSongLength()->format("i:s") ?>
+						<?= $song->getFormattedDuration() ?>
 					</p>
 				</div>
 			<?php endif; ?>

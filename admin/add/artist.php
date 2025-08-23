@@ -58,7 +58,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				<div class="container-fluid">
 					<ul class="navbar-nav">
 						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add
+								content</a></li>
 					</ul>
 				</div>
 			</nav>
@@ -74,53 +75,39 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$userList = DataController::getUserList();
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php";
+			$userList = UserController::getUserList();
 
 			$isValid = true;
 			$imageName = '';
+			$thumbnailName = '';
 
-			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"])
-			)) {
+			if (!(!empty($_POST["nameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"]))) {
 				$isValid = false;
 			}
 
 			// Process file upload if form fields are valid
 			if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
-				$uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/artist/";
-
-				// Create directory if it doesn't exist
-				if (!file_exists($uploadDir)) {
-					mkdir($uploadDir, 0777, true);
-				}
-
-				$fileExtension = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
-				$imageName = uniqid() . 'artist' . $fileExtension;
-				$targetFile = $uploadDir . $imageName;
-
-				// Check if file is an actual image
-				$validImage = getimagesize($_FILES['imageFile']['tmp_name']) !== false;
-
-				if (!$validImage) {
+				require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+				$result = Converter::uploadImage($_FILES["imageFile"], ImageType::ARTIST);
+				if ($result['success']) {
+					$imageName = $result['large_filename'];
+					$thumbnailName = $result['thumbnail_filename'];
+				} else {
 					$isValid = false;
-					echo "<div class='alert alert-danger'>Uploaded file is not a valid image.</div>";
-				} else if ($_FILES['imageFile']['size'] > 5000000) { // 5MB limit
-					$isValid = false;
-					echo "<div class='alert alert-danger'>File is too large. Maximum size is 5MB.</div>";
-				} else if (!move_uploaded_file($_FILES['imageFile']['tmp_name'], $targetFile)) {
-					$isValid = false;
-					echo "<div class='alert alert-danger'>Failed to upload the image.</div>";
+					echo '<div class="alert alert-danger"><h3>Error!</h3><p>' . htmlspecialchars($result['error']) . '</p></div>';
 				}
 			}
 
 			if ($isValid) {
-				DataController::insertArtist(new Artist(
-					12345,
-					$_POST["nameInput"],
-					$imageName, // Use the new uploaded image name
-					$_POST["activeSinceInput"],
-					$_POST["userIDInput"]
+				ArtistController::insertArtist(new Artist(
+						12345,
+						$_POST["nameInput"],
+						$imageName,
+						$thumbnailName,
+						$_POST["activeSinceInput"],
+						$_POST["userIDInput"]
 				));
 				?>
 				<div class="alert alert-success">

@@ -59,7 +59,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				<div class="container-fluid">
 					<ul class="navbar-nav">
 						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/add/song.php">Add
+								content</a></li>
 					</ul>
 				</div>
 			</nav>
@@ -75,16 +76,17 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$artistList = DataController::getArtistList();
-			$songList = DataController::getSongList();
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+			$artistList = ArtistController::getArtistList();
+			$songList = SongController::getSongList();
 
-			$newimageName = "";
+			$imageName = "";
+			$thumbnailName = "";
 			$isValid = true;
 
-			if (!(
-				!empty($_POST["nameInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["songInput"])
-			)) {
+			if (!(!empty($_POST["nameInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["songInput"]))) {
 				$isValid = false;
 			}
 
@@ -92,7 +94,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				$imageResult = Converter::uploadImage($_FILES['albumImageInput'], ImageType::ALBUM);
 
 				if ($imageResult['success']) {
-					$newimageName = $imageResult['large_filename'];
+					$imageName = $imageResult['large_filename'];
+					$thumbnailName = $imageResult['thumb_filename'];
 				} else {
 					$isValid = false;
 					$errorMessage = $imageResult['error'];
@@ -100,37 +103,30 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			}
 
 			if ($isValid) {
-				$totalSeconds = 0;
+				$totalMilliSeconds = 0;
 
 				foreach ($_POST['songInput'] as $selectedSongID) {
 					foreach ($songList as $song) {
 						if ($song->getSongID() == $selectedSongID) {
-							$timeparts = explode(':', $song->getSongLength()->format('i:s'));
-							$seconds = $timeparts[0] * 60 + $timeparts[1];
-							$totalSeconds += $seconds;
+							$totalMilliSeconds += $song->getDuration();
 							break;
 						}
 					}
 				}
 
-				// Format total duration
-				$hours = floor($totalSeconds / 3600);
-				$minutes = floor(($totalSeconds % 3600) / 60);
-				$seconds = $totalSeconds % 60;
-				$formattedDuration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
-
 				// Set album length to number of songs
 				$albumLength = count($_POST["songInput"]);
 
 				try {
-					DataController::insertAlbum(new Album(
-						0, // Random ID will be generated in DataController
-						$_POST["nameInput"],
-						$_POST["songInput"],
-						$_POST["artistInput"],
-						$newimageName,
-						$albumLength,
-						$formattedDuration
+					AlbumController::insertAlbum(new Album(
+							0,
+							$_POST["nameInput"],
+							$_POST["songInput"],
+							$_POST["artistInput"],
+							$imageName,
+							$thumbnailName,
+							$albumLength,
+							$totalMilliSeconds
 					));
 					$successMessage = "Album successfully added!";
 				} catch (Exception $e) {

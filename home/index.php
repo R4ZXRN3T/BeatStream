@@ -25,29 +25,32 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 <body>
 
 <?php
-$songList = [];
-include("../DataController.php");
-$songList = DataController::getSongList();
-$albumList = DataController::getAlbumList();
-$playlistList = DataController::getPlaylistList();
-$userList = DataController::getUserList();
 
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+
+$userList = UserController::getUserList();
 $usernames = [];
 foreach ($userList as $user) {
 	$usernames[$user->getUserID()] = $user->getUsername();
 }
 
-$recommendedSongs = DataController::getRandomSongs();
-$recommendedAlbums = DataController::getRandomAlbums();
-$recommendedPlaylists = DataController::getPlaylistList();
+$recommendedSongs = SongController::getRandomSongs();
+$recommendedAlbums = AlbumController::getRandomAlbums();
+$recommendedPlaylists = PlaylistController::getPlaylistList();
 
 $songQueueData = array_map(function ($song) {
 	return [
 		'songID' => $song->getSongID(),
 		'title' => $song->getTitle(),
 		'artists' => implode(", ", $song->getArtists()),
-		'fileName' => $song->getFlacFileName(),
-		'imageName' => $song->getImageName()
+		'artistIDs' => $song->getArtistIDs(),
+		'flacFilename' => $song->getFlacFileName(),
+		'opusFilename' => $song->getOpusFileName(),
+		'imageName' => $song->getImageName(),
+		'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $recommendedSongs);
 
@@ -132,9 +135,9 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 												<div class="card-body d-flex align-items-center p-2"
 													 data-song-id="album-<?php echo $album->getAlbumID(); ?>">
 													<?php if (!empty($album->getimageName())): ?>
-														<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getimageName()); ?>"
+														<img src="<?php echo "/BeatStream/images/album/thumnail/" . htmlspecialchars($album->getThumbnailName()); ?>"
 															 class="me-3 rounded"
-															 alt="<?php echo htmlspecialchars($album->getimageName()); ?>"
+															 alt="<?php echo htmlspecialchars($album->getThumbnailName()); ?>"
 															 style="width: 80px; height: 80px; object-fit: cover;">
 													<?php else: ?>
 														<img src="../images/defaultAlbum.webp" class="me-3 rounded"
@@ -166,11 +169,11 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 										   href="../view/playlist.php?id=<?php echo $playlist->getPlaylistID() ?>">
 											<div class="card shadow-sm border-0" style="border-radius: 10px;">
 												<div class="card-body d-flex align-items-center p-2">
-													<?php if (!empty($playlist->getimageName())): ?>
-														<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
+													<?php if (!empty($playlist->getThumbnailName())): ?>
+														<img src="<?php echo "/BeatStream/images/playlist/thumbnail/" . htmlspecialchars($playlist->getThumbnailName()); ?>"
 															 class="me-3 rounded"
-															 alt="<?php echo htmlspecialchars($playlist->getimageName()); ?>"
-															 style="width: 80px; height: 80px; object-fit: cover;">
+															 alt="<?php echo htmlspecialchars($playlist->getThumbnailName()); ?>"
+															 style="width: 64px; height: 64px; object-fit: cover;">
 													<?php else: ?>
 														<img src="../images/defaultPlaylist.webp" class="me-3 rounded"
 															 alt="Default Playlist Cover"

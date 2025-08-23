@@ -15,7 +15,7 @@ class SongController
 		$releaseDate = $song->getReleaseDate()->format("Y-m-d");
 		$imageName = $song->getImageName();
 		$thumbnailName = $song->getThumbnailName();
-		$songLength = $song->getSongLength()->format("H:i:s");
+		$songLength = $song->getSongLength();
 		$flacFileName = $song->getFlacFileName();
 		$opusFileName = $song->getOpusFileName();
 
@@ -49,7 +49,7 @@ class SongController
 	 */
 	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFileName, song.opusFileName
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
   		FROM song, artist, releases_song
   		WHERE song.songID = releases_song.songID
   		AND artist.artistID = releases_song.artistID
@@ -60,7 +60,7 @@ class SongController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFileName"], $row["opusFileName"], $row["imageName"], $row["thumbnailName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
@@ -97,7 +97,7 @@ class SongController
 
 		// Then get all data for those songs with proper artist ordering
 		$placeholders = str_repeat('?,', count($songIDs) - 1) . '?';
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFileName, song.opusFileName
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
         FROM song, artist, releases_song
         WHERE song.songID = releases_song.songID
         AND artist.artistID = releases_song.artistID
@@ -110,7 +110,7 @@ class SongController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFileName"], $row["opusFileName"], $row["imageName"], $row["thumbnailName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($songList); $i++) {
@@ -132,7 +132,7 @@ class SongController
 	{
 		$stmt = DBConn::getConn()->prepare("
         SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
-               song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFileName, song.opusFileName
+               song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
         FROM song, artist, releases_song, in_album
         WHERE song.songID = releases_song.songID
         AND artist.artistID = releases_song.artistID
@@ -147,7 +147,7 @@ class SongController
 
 		$songList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFileName"], $row["opusFileName"], $row["imageName"], $row["thumbnailName"]);
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
 
 			$alreadyExists = false;
 			for ($i = 0; $i < count($songList); $i++) {
@@ -166,5 +166,40 @@ class SongController
 
 		$stmt->close();
 		return $songList;
+	}
+
+	public static function deleteSong(int $songID): void
+	{
+		$conn = DBConn::getConn();
+
+		// Get image and audio file names for deletion
+		$stmt = $conn->prepare("SELECT imageName, flacFilename, opusFilename FROM song WHERE songID = ?");
+		$stmt->bind_param("i", $songID);
+		$stmt->execute();
+		$result = $stmt->get_result()->fetch_assoc();
+		if ($result) {
+			try {
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/" . $result['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/flac/" . $result['flacFilename']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/opus/" . $result['opusFilename']);
+			} catch (Exception) {
+			}
+		}
+		$stmt->close();
+
+		// Delete from related tables
+		$queries = [
+			"DELETE FROM in_playlist WHERE songID = ?",
+			"DELETE FROM in_album WHERE songID = ?",
+			"DELETE FROM releases_song WHERE songID = ?",
+			"DELETE FROM song WHERE songID = ?"
+		];
+
+		foreach ($queries as $sql) {
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param("i", $songID);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 }

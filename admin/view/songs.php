@@ -81,13 +81,13 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$songList = DataController::getSongList();
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
+			$songList = SongController::getSongList();
 			?>
 
 			<?php
 			if (array_key_exists('removeButton', $_POST)) {
-				DataController::deleteSong($_POST['removeButton']);
+				SongController::deleteSong($_POST['removeButton']);
 				header("Refresh:0");
 			}
 			?>
@@ -117,9 +117,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo implode(", ", $songList[$i]->getArtists()) ?></td>
 						<td><?php echo $songList[$i]->getGenre() ?></td>
 						<td><?php echo $songList[$i]->getReleaseDate()->format('d.m.Y') ?></td>
-						<td><?php echo $songList[$i]->getSongLength()->format('i:s') ?></td>
-						<td><?php echo $songList[$i]->getfileName() ?></td>
-						<td><?php echo $songList[$i]->getimageName() ?></td>
+						<td><?php echo $songList[$i]->getFormattedDuration() ?></td>
+						<td><?php echo $songList[$i]->getFlacFileName() ?></td>
+						<td><?php echo $songList[$i]->getImageName() ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove" value="<?php echo $songList[$i]->getSongID() ?>"

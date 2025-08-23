@@ -42,19 +42,20 @@ if (isset($_SESSION['account_loggedin'])) {
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
 					<li class="nav-item"><a class="nav-link" href="/BeatStream/account/login.php">login</a></li>
-					<li class="nav-item"><a class="nav-link active" href="/BeatStream/account/signup.php">sign up</a></li>
+					<li class="nav-item"><a class="nav-link active" href="/BeatStream/account/signup.php">sign up</a>
+					</li>
 				</ul>
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
 
 			$isValid = true;
 			$loginOk = true;
 			$errorMessage = "";
 
 			if (!(
-				!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])
+					!empty($_POST["usernameInput"]) && !empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])
 			)) {
 				$isValid = false;
 			}
@@ -62,72 +63,47 @@ if (isset($_SESSION['account_loggedin'])) {
 			if ($isValid) {
 				$uploadOk = true;
 				$targetFile = null;
-				$fileName = "";
+				$largeFileName = "";
+				$thumbnailFileName = "";
 
-				$usernameList = array();
-				$emailList = array();
-
-				for ($i = 0; $i < count(DataController::getUserList()); $i++) {
-					$usernameList[] = DataController::getUserList()[$i]->getUsername();
-					$emailList[] = DataController::getUserList()[$i]->getEmail();
-				}
-
-				if (in_array($_POST['usernameInput'], $usernameList)) {
+				if (UserController::usernameExists($_POST['usernameInput'])) {
 					$errorMessage = "Username already exists.";
 					$loginOk = false;
 					$uploadOk = false;
-				} elseif (in_array($_POST['emailInput'], $emailList)) {
+				} elseif (UserController::emailExists($_POST['emailInput'])) {
 					$errorMessage = "Email already exists.";
 					$loginOk = false;
 					$uploadOk = false;
 				}
 
 				if (!empty($_FILES["imageToUpload"]["name"]) && $_FILES["imageToUpload"]["error"] == UPLOAD_ERR_OK && $uploadOk) {
-
-					$targetDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/user/";
-					$fileExtension = pathinfo($_FILES["imageToUpload"]["name"], PATHINFO_EXTENSION);
-					$fileName = uniqid() . "." . $fileExtension;
-					$targetFile = $targetDir . $fileName;
-					$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));// Check if image file is an actual image or fake image
-					if (isset($_POST["submit"])) {
-						$check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
-						if ($check !== false) {
-							$uploadOk = true;
-						} else {
-							echo "File is not an image.";
-							$uploadOk = false;
-						}
-					}
-					echo $targetFile;
-					if (file_exists($targetFile)) {
-						$errorMessage = "Sorry, file already exists.";
-						$uploadOk = false;
-					}
-					if ($_FILES["imageToUpload"]["size"] > 500000) {
-						$errorMessage = "Sorry, your file is too large.";
-						$uploadOk = false;
-					}
-
-					if ($uploadOk) {
-						move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $targetFile);
+					require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+					$uploadResult = Converter::uploadImage($_FILES["imageToUpload"], ImageType::USER);
+					if ($uploadResult['success']) {
+						$largeFileName = $uploadResult['large_filename'];
+						$thumbnailFileName = $uploadResult['thumbnail_filename'];
+					} else {
+						$errorMessage = $uploadResult['error'];
+						$loginOk = false;
 					}
 				}
 
 				if ($loginOk) {
-					DataController::insertUser(new User(
-						0,
-						$_POST["usernameInput"],
-						$_POST["emailInput"],
-						$_POST["userPasswordInput"],
-						"",
-						FALSE,
-						FALSE,
-						$fileName
+					UserController::insertUser(new User(
+							0,
+							$_POST["usernameInput"],
+							$_POST["emailInput"],
+							$_POST["userPasswordInput"],
+							"",
+							FALSE,
+							FALSE,
+							$largeFileName,
+							$thumbnailFileName
 					));
 					$_SESSION['account_loggedin'] = true;// Set session variable to indicate user is logged in
 					$_SESSION['email'] = $_POST['emailInput'];
 					$_SESSION['username'] = $_POST['usernameInput'];
-					$_SESSION['imageName'] = pathinfo($targetFile, PATHINFO_BASENAME);
+					$_SESSION['imageName'] = $thumbnailFileName;
 					$_SESSION['isAdmin'] = false;// Default to false for new users
 					$stmt = DBConn::getConn()->prepare("SELECT userID FROM user WHERE email = ?");
 					$stmt->bind_param("s", $_POST['emailInput']);

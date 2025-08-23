@@ -81,11 +81,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$albumList = DataController::getAlbumList();
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php");
+			$albumList = AlbumController::getAlbumList();
 
 			if (array_key_exists('removeButton', $_POST)) {
-				DataController::deleteAlbum($_POST['removeButton']);
+				AlbumController::deleteAlbum($_POST['removeButton']);
 				header("Refresh:0");
 			}
 			?>
@@ -111,9 +111,9 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $albumList[$i]->getAlbumID() ?></td>
 						<td><?php echo $albumList[$i]->getName() ?></td>
 						<td><?php echo implode(", ", $albumList[$i]->getArtists()) ?></td>
-						<td><?php echo $albumList[$i]->getimageName() ?></td>
+						<td><?php echo $albumList[$i]->getImageName() ?></td>
 						<td><?php echo $albumList[$i]->getLength() ?></td>
-						<td><?php echo $albumList[$i]->getDuration()->format('H:i:s') ?></td>
+						<td><?php echo $albumList[$i]->getFormattedDuration() ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove"

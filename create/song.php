@@ -85,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				$_POST["genreInput"],
 				$_POST["releaseDateInput"],
 				$audioResult['duration'],
-				$audioResult['flacFileName'],
-				$audioResult['opusFileName'],
+				$audioResult['flacFilename'],
+				$audioResult['opusFilename'],
 				$newFileName,
 				$newimageName
 		));

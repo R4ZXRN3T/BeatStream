@@ -81,11 +81,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
-			$userList = DataController::getUserList();
+			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+			$userList = UserController::getUserList();
 
 			if (array_key_exists('removeButton', $_POST)) {
-				DataController::deleteUser(intval($_POST['removeButton']));
+				UserController::deleteUser(intval($_POST['removeButton']));
 				$_POST['removeButton'] = null;
 				header("Refresh:0");
 			}
@@ -137,7 +137,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $userList[$i]->getSalt() ?></td>
 						<td><?php echo $userList[$i]->isAdmin() ? 'Yes' : 'No' ?></td>
 						<td><?php echo $userList[$i]->isArtist() ? 'Yes' : 'No' ?></td>
-						<td><?php echo $userList[$i]->getimageName() ?></td>
+						<td><?php echo $userList[$i]->getImageName() ?></td>
 						<?php
 						if (!$userList[$i]->isAdmin()) {
 							?>
