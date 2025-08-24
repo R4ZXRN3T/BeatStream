@@ -1,6 +1,8 @@
 <?php
 session_start();
-include_once("../DataController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php");
 
 // Get artist ID from URL parameter
 $artistID = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -12,46 +14,30 @@ if ($artistID <= 0) {
 }
 
 // Get artist details
-$artistList = DataController::getArtistList();
-$artist = null;
-foreach ($artistList as $a) {
-	if ($a->getArtistID() == $artistID) {
-		$artist = $a;
-		break;
-	}
-}
+$artist = ArtistController::getArtistByID($artistID);
 
 // If artist not found, redirect
 if (!$artist) {
-	header("Location: ../album.php");
+	header("Location: /BeatStream/");
 	exit;
 }
 
-// Get all songs by this artist
-$allSongs = DataController::getSongList();
-$artistSongs = [];
-foreach ($allSongs as $song) {
-	if (in_array($artist->getName(), $song->getArtists())) {
-		$artistSongs[] = $song;
-	}
-}
+// Get all songs by this artist (filter by artistID)
+$artistSongs = SongController::getArtistSongs($artistID);
 
-// Get all albums by this artist
-$allAlbums = DataController::getAlbumList();
-$artistAlbums = [];
-foreach ($allAlbums as $album) {
-	if (in_array($artist->getName(), $album->getArtists())) {
-		$artistAlbums[] = $album;
-	}
-}
+// Get all albums by this artist (filter by artistID)
+$artistAlbums = AlbumController::getArtistAlbums($artistID);
 
 $songQueueData = array_map(function ($song) {
 	return [
-		'songID' => $song->getSongID(),
-		'title' => $song->getTitle(),
-		'artists' => implode(", ", $song->getArtists()),
-		'fileName' => $song->getFileName(),
-		'imageName' => $song->getImageName()
+			'songID' => $song->getSongID(),
+			'title' => $song->getTitle(),
+			'artists' => implode(", ", $song->getArtists()),
+			'artistIDs' => $song->getArtistIDs(),
+			'flacFilename' => $song->getFlacFileName(),
+			'opusFilename' => $song->getOpusFileName(),
+			'imageName' => $song->getImageName(),
+			'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $artistSongs);
 ?>
@@ -66,7 +52,6 @@ $songQueueData = array_map(function ($song) {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 	<link href="../mainStyle.css" rel="stylesheet">
 	<link href="../favicon.ico" rel="icon">
-
 </head>
 <body>
 
@@ -92,7 +77,7 @@ $songQueueData = array_map(function ($song) {
 					<div class="container">
 						<div class="row align-items-center">
 							<div class="col-md-4 text-center">
-								<img src="<?php echo $artist->getimageName() ? '../images/artist/' . $artist->getimageName() : '../images/defaultArtist.webp'; ?>"
+								<img src="<?php echo $artist->getImageName() ? '../images/artist/large/' . $artist->getImageName() : '../images/defaultArtist.webp'; ?>"
 									 alt="<?php echo $artist->getName(); ?>"
 									 class="artist-image mb-3">
 							</div>
@@ -122,7 +107,7 @@ $songQueueData = array_map(function ($song) {
 
 					$songs = $artistSongs;
 					$options = $songListOptions;
-					include('../components/song-list.php');
+					include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/song-list.php");
 					?>
 				</div>
 
@@ -134,30 +119,13 @@ $songQueueData = array_map(function ($song) {
 					<?php else: ?>
 						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
 							<?php foreach ($artistAlbums as $album): ?>
-								<div class="col-md-3 mb-3">
-									<a class="on-card-link" href="album.php?id=<?php echo $album->getAlbumID(); ?>">
-										<div class="card shadow-sm border-0"
-											 style="border-radius: 10px; width: 100%; height: auto;">
-											<div class="d-flex flex-column">
-												<img src="<?php echo $album->getImageName() ? '../images/album/' . $album->getImageName() : '../images/defaultAlbum.webp'; ?>"
-													 class="mb-2 rounded"
-													 alt="<?php echo $album->getName(); ?>"
-													 style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px 10px 0 0;">
-												<div class="card-body p-3">
-													<h5 class="card-title mb-1"
-														style="font-size: 1.1rem; font-weight: bold;"><?php echo $album->getName(); ?></h5>
-													<p class="card-text mb-0"
-													   style="font-size: 0.9rem; color: #6c757d;"><?php echo implode(", ", $album->getArtists()); ?></p>
-													<p class="card-text mb-0"
-													   style="font-size: 0.8rem; text-align: left; color: #6c757d;">
-														<?php echo $album->getLength(); ?> songs •
-														<?php echo $album->getDuration()->format("H") > 0 ? $album->getDuration()->format("H\h i\m s\s") : $album->getDuration()->format("i\m s\s"); ?>
-													</p>
-												</div>
-											</div>
-										</div>
-									</a>
-								</div>
+								<?php
+								$options = [
+										'containerClass' => 'col-md-3 mb-3',
+										'large' => true
+								];
+								include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-card.php");
+								?>
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>

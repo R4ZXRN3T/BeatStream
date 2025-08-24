@@ -46,6 +46,7 @@ class PlaylistController
 		FROM playlist, in_playlist, song, user
 		WHERE song.songID = in_playlist.songID
   		AND playlist.playlistID = in_playlist.playlistID
+		AND playlist.creatorID = user.userID
 		ORDER BY " . $sortBy . ", in_playlist.songIndex;");
 
 		$stmt->execute();
@@ -75,13 +76,14 @@ class PlaylistController
 	public static function deletePlaylist(int $playlistID): void
 	{
 		$conn = DBConn::getConn();
-		$deleteImage = $conn->prepare("SELECT imageName FROM playlist WHERE playlistID = ?");
+		$deleteImage = $conn->prepare("SELECT imageName, thumbnailName FROM playlist WHERE playlistID = ?");
 		$deleteImage->bind_param("i", $playlistID);
 		$deleteImage->execute();
 		$result = $deleteImage->get_result()->fetch_assoc();
 		if ($result) {
 			try {
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/playlist/" . $result['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/playlist/large/" . $result['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/playlist/thumbnail/" . $result['thumbnailName']);
 			} catch (Exception) {
 			}
 		}
@@ -98,5 +100,35 @@ class PlaylistController
 			$stmt->execute();
 			$stmt->close();
 		}
+	}
+
+	public static function getPlaylistById(int $playlistID): ?Playlist
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, length, duration, creatorID, user.username, song.songID, songIndex
+		FROM playlist 
+		LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID
+		LEFT JOIN song ON song.songID = in_playlist.songID
+		LEFT JOIN user ON playlist.creatorID = user.userID
+		WHERE playlist.playlistID = ?
+		ORDER BY in_playlist.songIndex;");
+
+		$stmt->bind_param("i", $playlistID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$playlist = null;
+		while ($row = $result->fetch_assoc()) {
+			if ($playlist === null) {
+				$playlist = new Playlist($row["playlistID"], $row["name"], $row["songID"] ? array($row["songID"]) : array(), $row["duration"], $row["length"], $row['imageName'], $row["thumbnailName"], $row["creatorID"], $row["username"] ?? "Unknown");
+			} else {
+				if ($row["songID"]) {
+					$playlist->setSongIDs(array_merge($playlist->getSongIDs(), array($row["songID"])));
+				}
+			}
+		}
+
+		$stmt->close();
+
+		return $playlist;
 	}
 }

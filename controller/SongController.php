@@ -169,18 +169,128 @@ class SongController
 		return $songList;
 	}
 
+	public static function getArtistSongs(int $artistID): array
+	{
+		$stmt = DBConn::getConn()->prepare("
+		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
+			   song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+		FROM song, artist, releases_song
+		WHERE song.songID = releases_song.songID
+		AND artist.artistID = releases_song.artistID
+		AND releases_song.artistID = ?
+		ORDER BY song.title, releases_song.artistIndex
+		");
+
+		$stmt->bind_param("i", $artistID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$songList = array();
+		while ($row = $result->fetch_assoc()) {
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
+
+			$alreadyExists = false;
+			for ($i = 0; $i < count($songList); $i++) {
+				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
+					$alreadyExists = true;
+					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
+					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
+					break;
+				}
+			}
+
+			if (!$alreadyExists) {
+				$songList[] = $newSong;
+			}
+		}
+
+		$stmt->close();
+		return $songList;
+	}
+
+	public static function getSongByID(int $songID): ?Song
+	{
+		$stmt = DBConn::getConn()->prepare("
+		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
+			   song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+		FROM song, artist, releases_song
+		WHERE song.songID = releases_song.songID
+		AND artist.artistID = releases_song.artistID
+		AND song.songID = ?
+		ORDER BY releases_song.artistIndex
+		");
+
+		$stmt->bind_param("i", $songID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$song = null;
+		while ($row = $result->fetch_assoc()) {
+			if ($song === null) {
+				$song = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
+			} else {
+				$song->setArtists(array_merge($song->getArtists(), array($row["name"])));
+				$song->setArtistIDs(array_merge($song->getArtistIDs(), array($row["artistID"])));
+			}
+		}
+
+		$stmt->close();
+		return $song;
+	}
+
+	public static function getPlaylistSongs(int $playlistID): array
+	{
+		$stmt = DBConn::getConn()->prepare("
+		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
+			   song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+		FROM song, artist, releases_song, in_playlist
+		WHERE song.songID = releases_song.songID
+		AND artist.artistID = releases_song.artistID
+		AND song.songID = in_playlist.songID
+		AND in_playlist.playlistID = ?
+		ORDER BY in_playlist.songIndex, releases_song.artistIndex
+		");
+
+		$stmt->bind_param("i", $playlistID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$songList = array();
+		while ($row = $result->fetch_assoc()) {
+			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
+
+			$alreadyExists = false;
+			for ($i = 0; $i < count($songList); $i++) {
+				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
+					$alreadyExists = true;
+					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
+					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
+					break;
+				}
+			}
+
+			if (!$alreadyExists) {
+				$songList[] = $newSong;
+			}
+		}
+
+		$stmt->close();
+		return $songList;
+	}
+
 	public static function deleteSong(int $songID): void
 	{
 		$conn = DBConn::getConn();
 
 		// Get image and audio file names for deletion
-		$stmt = $conn->prepare("SELECT imageName, flacFilename, opusFilename FROM song WHERE songID = ?");
+		$stmt = $conn->prepare("SELECT imageName, song.thumbnailName, flacFilename, opusFilename FROM song WHERE songID = ?");
 		$stmt->bind_param("i", $songID);
 		$stmt->execute();
 		$result = $stmt->get_result()->fetch_assoc();
 		if ($result) {
 			try {
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/" . $result['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/large/" . $result['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/thumbnail/" . $result['thumbnailName']);
 				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/flac/" . $result['flacFilename']);
 				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/opus/" . $result['opusFilename']);
 			} catch (Exception) {

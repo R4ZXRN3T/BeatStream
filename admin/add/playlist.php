@@ -121,7 +121,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						count($_POST['songInput']),
 						$imageName,
 						$thumbnailName,
-						$_POST["creatorInput"]
+						$_POST["creatorInput"],
+						UserController::getUserById($_POST["creatorInput"])->getUsername()
 				));
 
 			}

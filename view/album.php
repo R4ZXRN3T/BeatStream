@@ -9,20 +9,11 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $albumId = (int)$_GET['id'];
 
-// Include data controller
-include_once("../DataController.php");
+// Include controllers
+include_once("../controller/AlbumController.php");
+include_once("../controller/SongController.php");
 
-// get artists
-$artistIDs = array();
-$stmt = DBConn::getConn()->prepare("SELECT artistID FROM releases_album WHERE albumID = ?");
-$stmt->bind_param("i", $albumId);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) {
-	$artistIDs[] = $row['artistID'];
-}
-
-$album = DataController::getAlbumById($albumId);
+$album = AlbumController::getAlbumByID($albumId);
 
 // If album not found, redirect
 if ($album === null) {
@@ -31,17 +22,18 @@ if ($album === null) {
 }
 
 // Get songs in the album
-$albumSongs = DataController::getAlbumSongs($albumId);
+$albumSongs = SongController::getAlbumSongs($albumId);
 
 // Prepare song queue data for player
-$songQueueData = array_map(function ($song) use ($album, $artistIDs) {
+$songQueueData = array_map(function ($song) use ($album) {
 	return [
 			'songID' => $song->getSongID(),
 			'title' => $song->getTitle(),
 			'artists' => implode(", ", $song->getArtists()),
-			'artistIDs' => $artistIDs, // Add artist IDs
-			'fileName' => $song->getFileName(),
-			'imageName' => "../album/" . $album->getImageName()
+			'artistIDs' => $song->getArtistIDs(),
+			'flacFilename' => $song->getFlacFileName(),
+			'opusFilename' => $song->getOpusFileName(),
+			'thumbnailName' => $song->getThumbnailName()
 	];
 }, $albumSongs);
 ?>
@@ -81,7 +73,7 @@ $songQueueData = array_map(function ($song) use ($album, $artistIDs) {
 				<div class="row">
 					<div class="col-md-4 text-center">
 						<?php if (!empty($album->getImageName())): ?>
-							<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getImageName()); ?>"
+							<img src="<?php echo "/BeatStream/images/album/large/" . htmlspecialchars($album->getImageName()); ?>"
 								 class="img-fluid rounded shadow"
 								 alt="<?php echo htmlspecialchars($album->getName()); ?>"
 								 style="max-width: 300px;">
@@ -95,14 +87,16 @@ $songQueueData = array_map(function ($song) use ($album, $artistIDs) {
 						<h1 class="mb-2"><?php echo htmlspecialchars($album->getName()); ?></h1>
 						<p class="text mb-2" style="color: #6c757d"><?php
 							$artistLinks = [];
+							$artists = $album->getArtists();
+							$artistIDs = $album->getArtistIDs();
 							for ($i = 0; $i < count($artistIDs); $i++) {
-								$artistLinks[$i] = "<a class='custom-link' href='artist.php?id=" . $artistIDs[$i] . "'>" . $album->getArtists()[$i] . "</a>";
+								$artistLinks[$i] = "<a class='custom-link' href='artist.php?id=" . $artistIDs[$i] . "'>" . htmlspecialchars($artists[$i]) . "</a>";
 							}
 							echo implode(", ", $artistLinks);
 							?>
 						</p>
 						<p><?php echo count($albumSongs); ?> songs ·
-							<?php echo $album->getDuration()->format("H") > 0 ? $album->getDuration()->format("H\h i\m s\s") : $album->getDuration()->format("i\m s\s"); ?></p>
+							<?php echo $album->getFormattedDuration(); ?></p>
 					</div>
 				</div>
 			</div>

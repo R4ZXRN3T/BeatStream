@@ -95,7 +95,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 				if ($imageResult['success']) {
 					$imageName = $imageResult['large_filename'];
-					$thumbnailName = $imageResult['thumb_filename'];
+					$thumbnailName = $imageResult['thumbnail_filename'];
 				} else {
 					$isValid = false;
 					$errorMessage = $imageResult['error'];
@@ -106,22 +106,23 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				$totalMilliSeconds = 0;
 
 				foreach ($_POST['songInput'] as $selectedSongID) {
-					foreach ($songList as $song) {
-						if ($song->getSongID() == $selectedSongID) {
-							$totalMilliSeconds += $song->getDuration();
-							break;
-						}
-					}
+					$totalMilliSeconds += SongController::getSongByID($selectedSongID)->getSongLength();
 				}
 
 				// Set album length to number of songs
 				$albumLength = count($_POST["songInput"]);
+
+				$artistNames = [];
+				foreach ($_POST['artistInput'] as $selectedArtistID) {
+					$artistNames[] = ArtistController::getArtistByID($selectedArtistID)->getName();
+				}
 
 				try {
 					AlbumController::insertAlbum(new Album(
 							0,
 							$_POST["nameInput"],
 							$_POST["songInput"],
+							$artistNames,
 							$_POST["artistInput"],
 							$imageName,
 							$thumbnailName,
@@ -153,7 +154,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($artistList as $artist) {
-										echo "<option value='{$artist->getName()}'>{$artist->getName()}</option>";
+										echo "<option value='{$artist->getArtistID()}'>{$artist->getName()}</option>";
 									}
 									?>
 								</select>

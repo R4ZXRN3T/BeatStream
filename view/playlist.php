@@ -10,26 +10,10 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $playlistId = (int)$_GET['id'];
 
 // Include data controller
-include_once("../DataController.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
 
-// Get playlist data
-$playlistList = DataController::getPlaylistList();
-$playlist = null;
-
-$userList = DataController::getUserList();
-
-$usernames = [];
-foreach ($userList as $user) {
-	$usernames[$user->getUserID()] = $user->getUsername();
-}
-
-// Find the requested playlist
-foreach ($playlistList as $p) {
-	if ($p->getPlaylistID() == $playlistId) {
-		$playlist = $p;
-		break;
-	}
-}
+$playlist = PlaylistController::getPlaylistById($playlistId);
 
 // If playlist not found, redirect
 if ($playlist === null) {
@@ -38,26 +22,18 @@ if ($playlist === null) {
 }
 
 // Get songs in the playlist
-$songList = DataController::getSongList();
-$playlistSongs = [];
-
-foreach ($playlist->getSongIDs() as $songId) {
-	foreach ($songList as $song) {
-		if ($song->getSongID() == $songId) {
-			$playlistSongs[] = $song;
-			break;
-		}
-	}
-}
+$playlistSongs = SongController::getPlaylistSongs($playlistId);
 
 // Prepare song queue data for player
 $songQueueData = array_map(function ($song) use ($playlist) {
 	return [
-		'songID' => $song->getSongID(),
-		'title' => $song->getTitle(),
-		'artists' => $song->getArtists(),
-		'fileName' => $song->getFileName(),
-		'imageName' => $song->getImageName()
+			'songID' => $song->getSongID(),
+			'title' => $song->getTitle(),
+			'artists' => $song->getArtists(),
+			'flacFilename' => $song->getFlacFileName(),
+			'opusFilename' => $song->getOpusFileName(),
+			'imageName' => $song->getImageName(),
+			'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $playlistSongs);
 ?>
@@ -96,8 +72,8 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 			<div class="container mt-4">
 				<div class="row">
 					<div class="col-md-4 text-center">
-						<?php if (!empty($playlist->getimageName())): ?>
-							<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
+						<?php if (!empty($playlist->getImageName())): ?>
+							<img src="<?php echo "/BeatStream/images/playlist/large/" . htmlspecialchars($playlist->getImageName()); ?>"
 								 class="img-fluid rounded shadow"
 								 alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
 								 style="max-width: 300px;">
@@ -110,7 +86,7 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 					<div class="col-md-8">
 						<h1 class="mb-2"><?php echo htmlspecialchars($playlist->getName()); ?></h1>
 						<p><?php echo count($playlistSongs); ?> songs ·
-							<?php echo $playlist->getDuration()->format("H") > 0 ? $playlist->getDuration()->format("H:i:s") : $playlist->getDuration()->format("i:s"); ?></p>
+							<?php echo $playlist->getFormattedDuration() ?></p>
 
 						<?php if (isset($_SESSION['userID']) && $_SESSION['userID'] == $playlist->getCreatorID()): ?>
 							<a href="../create/editPlaylist.php?id=<?php echo $playlistId; ?>"
@@ -119,8 +95,7 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 							</a>
 						<?php else: ?>
 							<p class="text-start mb-3" style="color: #96a3af">Created by: <?php
-								$creatorID = $playlist->getCreatorID();
-								echo isset($usernames[$creatorID]) ? htmlspecialchars($usernames[$creatorID]) : 'Unknown User';
+								echo htmlspecialchars($playlist->getCreatorName());
 								?></p>
 						<?php endif; ?>
 					</div>
