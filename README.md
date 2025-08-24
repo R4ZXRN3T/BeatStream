@@ -21,6 +21,7 @@ profiles, admin management, and rich search and discovery features.
 
 - `account/`: User authentication, profile management, login, and signup pages.
 - `admin/`: Admin-specific pages for adding/viewing albums and playlists.
+- `controller`: Backend logic for handling requests and database interactions.
 - `discover/`: Discover music by albums, artists, or songs.
 - `search/`: Search functionality across all music entities.
 - `Objects/`: PHP classes representing core entities like `Album`, `Artist`, `User`, and `Playlist`.
@@ -42,10 +43,12 @@ profiles, admin management, and rich search and discovery features.
    ```
 
 2. **Set up your web server:**  
-   Ensure PHP and a MySQL database are available. Configure database credentials in `dbConnection.php`.
+   Ensure PHP and a MySQL database are available. Configure database credentials in `dbConnection.php`. Make sure you
+   have ffmpeg installed on your server for converting uploaded audio. Please update the paths in `converter.php`. You
+   will also need the ImageMagick extension for PHP to process the images for content upload.
 
 3. **Configure file permissions:**  
-   Ensure the `images/` and relevant upload directories are writable by the web server.
+   Ensure the `images/` and `audio/` upload directories are writable by the web server.
 
 4. **Import database schema:**  
    Import any provided SQL files to create the necessary tables for users, songs, albums, artists, and playlists.
@@ -55,8 +58,11 @@ profiles, admin management, and rich search and discovery features.
 
 ## Dependencies
 
-- PHP 7.4+
-- MySQL/MariaDB
+- PHP 8.2.12+
+- MySQL/MariaDB (MariaDB recommended, as development is done on MariaDB)
+- Web server (Apache, Nginx, etc.)
+- ffmpeg (for audio file conversion)
+- ImageMagick (for image processing)
 - Composer (if any dependencies are added for future development)
 
 ## Customization
@@ -76,7 +82,3 @@ This project is licensed under the MIT License.
 ## Authors
 
 Created by [R4ZXRN3T](https://github.com/R4ZXRN3T).
-
----
-
-*BeatStream: Listen, Discover, and Stream Your Music Collection!*
