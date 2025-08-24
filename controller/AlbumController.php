@@ -1,5 +1,8 @@
 <?php
 
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/Objects/Album.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/dbConnection.php";
+
 class AlbumController
 {
 	public static function insertAlbum(Album $album): void
@@ -13,7 +16,14 @@ class AlbumController
 
 		$sqlAlbum = "INSERT INTO album VALUES (?, ?, ?, ?, ?, ?)";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
-		$stmt->bind_param("issssii", $newAlbumID, $album->getName(), $album->getImageName(), $album->getThumbnailName(), $album->getLength(), $album->getDuration());
+
+		$name = $album->getName();
+		$imageName = $album->getImageName();
+		$thumbnailName = $album->getThumbnailName();
+		$length = $album->getLength();
+		$duration = $album->getDuration();
+
+		$stmt->bind_param("issssii", $newAlbumID, $name, $imageName, $thumbnailName, $length, $duration);
 		$stmt->execute();
 		$stmt->close();
 

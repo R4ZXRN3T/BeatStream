@@ -42,8 +42,8 @@ class PlaylistController
 
 	public static function getPlaylistList(string $sortBy = "playlist.name ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, name, length, duration, creatorID, song.songID, songIndex
-		FROM playlist, in_playlist, song
+		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, length, duration, creatorID, user.username, song.songID, songIndex
+		FROM playlist, in_playlist, song, user
 		WHERE song.songID = in_playlist.songID
   		AND playlist.playlistID = in_playlist.playlistID
 		ORDER BY " . $sortBy . ", in_playlist.songIndex;");
@@ -54,7 +54,7 @@ class PlaylistController
 		$playlistList = array();
 		while ($row = $result->fetch_assoc()) {
 			$alreadyExists = false;
-			$newPlaylist = new Playlist($row["playlistID"], $row["name"], array($row["songID"]), $row["duration"], $row["length"], $row['imageName'], $row["thumbnailName"], $row["creatorID"]);
+			$newPlaylist = new Playlist($row["playlistID"], $row["name"], array($row["songID"]), $row["duration"], $row["length"], $row['imageName'], $row["thumbnailName"], $row["creatorID"], $row["username"]);
 
 			for ($i = 0; $i < count($playlistList); $i++) {
 				if ($playlistList[$i]->getPlaylistID() == $newPlaylist->getPlaylistID()) {
