@@ -17,16 +17,19 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'song.title ASC';
 
-include("../DataController.php");
-$songList = DataController::getSongList($sortBy);
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+$songList = SongController::getSongList($sortBy);
 
 $songQueueData = array_map(function ($song) {
 	return [
-		'songID' => $song->getSongID(),
-		'title' => $song->getTitle(),
-		'artists' => implode(", ", $song->getArtists()),
-		'fileName' => $song->getFileName(),
-		'imageName' => $song->getImageName()
+			'songID' => $song->getSongID(),
+			'title' => $song->getTitle(),
+			'artists' => implode(", ", $song->getArtists()),
+			'artistIDs' => $song->getArtistIDs(),
+			'flacFilename' => $song->getFlacFileName(),
+			'opusFilename' => $song->getOpusFileName(),
+			'imageName' => $song->getImageName(),
+			'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $songList);
 include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");

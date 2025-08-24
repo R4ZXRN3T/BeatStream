@@ -17,9 +17,9 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'artist.name ASC';
 
-include("../DataController.php");
-$artistList = DataController::getArtistList($sortBy);
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
+$artistList = ArtistController::getArtistList($sortBy);
+include $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php";
 ?>
 
 <script>
@@ -78,18 +78,16 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 			<div class="container mt-4">
 				<div class="row" style="justify-content: center; width: 100%; margin: auto;">
 					<?php if (!empty($artistList)): ?>
-						<?php foreach ($artistList
-
-									   as $artist): ?>
+						<?php foreach ($artistList as $artist): ?>
 							<div class="col-md-4 mb-4">
 								<a href="../view/artist.php?id=<?php echo $artist->getArtistID(); ?>"
 								   class="text-decoration-none">
 									<div class="card shadow-sm border-0" style="border-radius: 10px;">
 										<div class="card-body d-flex align-items-center p-3">
-											<?php if (!empty($artist->getimageName())): ?>
-												<img src="<?php echo "/BeatStream/images/artist/" . htmlspecialchars($artist->getimageName()); ?>"
+											<?php if (!empty($artist->getImageName())): ?>
+												<img src="<?php echo "/BeatStream/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
 													 class="me-3 rounded"
-													 alt="<?php echo htmlspecialchars($artist->getimageName()); ?>"
+													 alt="<?php echo htmlspecialchars($artist->getName()); ?>"
 													 style="width: 60px; height: 60px; object-fit: cover;">
 											<?php else: ?>
 												<img src="../images/defaultArtist.webp" class="me-3 rounded"
