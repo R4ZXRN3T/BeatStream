@@ -17,8 +17,8 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'playlist.name ASC';
 
-include("../DataController.php");
-$playlistList = DataController::getPlaylistList($sortBy);
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php";
+$playlistList = PlaylistController::getPlaylistList($sortBy);
 include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 ?>
 
@@ -76,34 +76,14 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 
 			<!-- Song List -->
 			<div class="container mt-4">
-				<div class="row" style="justify-content: center; width: 100%; margin: auto;">
-					<?php if (!empty($playlistList)): ?>
-						<?php foreach ($playlistList as $playlist): ?>
-							<div class="col-md-4 mb-4">
-								<div class="card shadow-sm border-0" style="border-radius: 10px;">
-									<div class="card-body d-flex align-items-center p-3">
-										<?php if (!empty($playlist->getimageName())): ?>
-											<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
-												 class="me-3 rounded"
-												 alt="<?php echo htmlspecialchars($playlist->getimageName()); ?>"
-												 style="width: 60px; height: 60px; object-fit: cover;">
-										<?php else: ?>
-											<img src="../images/defaultSong.webp" class="me-3"
-												 alt="Default Album Cover"
-												 style="width: 50px; height: 50px; object-fit: cover;">
-										<?php endif; ?>
-										<div>
-											<h5 class="card-title mb-1"
-												style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($playlist->getName()); ?></h5>
-										</div>
-									</div>
-								</div>
-							</div>
-						<?php endforeach; ?>
-					<?php else: ?>
-						<p class="text-center">No playlists available at the moment.</p>
-					<?php endif; ?>
-				</div>
+				<?php
+				$options = [
+						'containerClass' => 'col-md-4 mb',
+						'showCreator' => true,
+						'emptyMessage' => 'No playlists available at the moment.'
+				];
+				include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/playlist-list.php");
+				?>
 			</div>
 		</main>
 	</div>

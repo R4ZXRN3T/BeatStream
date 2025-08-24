@@ -102,6 +102,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<th style="width:14.3%;">Duration</th>
 					<th style="width:14.3%;">Length</th>
 					<th style="width:14.3%;">Creator ID</th>
+					<th style="width:14.3%;">Creator Name</th>
 					<th style="width:1%;"></th>
 				</tr>
 				<?php
@@ -114,6 +115,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $playlistList[$i]->getFormattedDuration() ?></td>
 						<td><?php echo $playlistList[$i]->getLength() ?></td>
 						<td><?php echo $playlistList[$i]->getCreatorID() ?></td>
+						<td><?php echo $playlistList[$i]->getCreatorName() ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove"

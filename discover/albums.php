@@ -17,8 +17,8 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'album.title ASC';
 
-include("../DataController.php");
-$albumList = DataController::getAlbumList($sortBy);
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php";
+$albumList = AlbumController::getAlbumList($sortBy);
 include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 ?>
 
@@ -85,15 +85,15 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 								<a href="../view/album.php?id=<?php echo $album->getAlbumID() ?>" class="custom-link">
 									<div class="card shadow-sm border-0" style="border-radius: 10px;">
 										<div class="card-body d-flex align-items-center p-3">
-											<?php if (!empty($album->getimageName())): ?>
-												<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getimageName()); ?>"
+											<?php if (!empty($album->getImageName())): ?>
+												<img src="<?php echo "/BeatStream/images/album/thumbnail/" . htmlspecialchars($album->getThumbnailName()); ?>"
 													 class="me-3 rounded"
-													 alt="<?php echo htmlspecialchars($album->getimageName()); ?>"
+													 alt="<?php echo htmlspecialchars($album->getName()); ?>"
 													 style="width: 60px; height: 60px; object-fit: cover;">
 											<?php else: ?>
-												<img src="../images/defaultSong.webp" class="me-3"
+												<img src="../images/defaultSong.webp" class="me-3 rounded"
 													 alt="Default Album Cover"
-													 style="width: 50px; height: 50px; object-fit: cover;">
+													 style="width: 60px; height: 60px; object-fit: cover;">
 											<?php endif; ?>
 											<div>
 												<h5 class="card-title mb-1"
