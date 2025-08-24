@@ -82,3 +82,5 @@ This project is licensed under the MIT License.
 ## Authors
 
 Created by [R4ZXRN3T](https://github.com/R4ZXRN3T).
+
+Font used for logo: [Venite Adoremus](https://www.fontspace.com/venite-adoremus-font-f108412).
