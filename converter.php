@@ -82,11 +82,13 @@ class Converter
 				throw new Exception('Opus conversion failed: ' . implode("\n", $opusOutput));
 			}
 
+			$duration *= 1000;
+
 			$result = [
 				'success' => true,
 				'flac_filename' => $flacFileName,
 				'opus_filename' => $opusFileName,
-				'duration' => (int)$duration * 1000 // Convert seconds to milliseconds
+				'duration' => (int)$duration // Convert seconds to milliseconds
 			];
 
 			if ($warning) {
@@ -141,9 +143,9 @@ class Converter
 
 			// Create 64x64 version
 			$thumbnail = clone $imagick;
-			$thumbnail->resizeImage(64, 64, Imagick::FILTER_LANCZOS, 1, true);
+			$thumbnail->resizeImage(80, 80, Imagick::FILTER_LANCZOS, 1, true);
 			$thumbnail->setImageFormat('webp');
-			$thumbnail->setImageCompressionQuality(60);
+			$thumbnail->setImageCompressionQuality(80);
 			$thumbnail->writeImage($thumbnailDir . $thumbnailFileName);
 
 			$imagick->clear();

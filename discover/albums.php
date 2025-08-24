@@ -78,39 +78,19 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 
 			<!-- Song List -->
 			<div class="container mt-4">
-				<div class="row" style="justify-content: center; width: 100%; margin: auto;">
-					<?php if (!empty($albumList)): ?>
-						<?php foreach ($albumList as $album): ?>
-							<div class="col-md-4 mb-4">
-								<a href="../view/album.php?id=<?php echo $album->getAlbumID() ?>" class="custom-link">
-									<div class="card shadow-sm border-0" style="border-radius: 10px;">
-										<div class="card-body d-flex align-items-center p-3">
-											<?php if (!empty($album->getImageName())): ?>
-												<img src="<?php echo "/BeatStream/images/album/thumbnail/" . htmlspecialchars($album->getThumbnailName()); ?>"
-													 class="me-3 rounded"
-													 alt="<?php echo htmlspecialchars($album->getName()); ?>"
-													 style="width: 60px; height: 60px; object-fit: cover;">
-											<?php else: ?>
-												<img src="../images/defaultSong.webp" class="me-3 rounded"
-													 alt="Default Album Cover"
-													 style="width: 60px; height: 60px; object-fit: cover;">
-											<?php endif; ?>
-											<div>
-												<h5 class="card-title mb-1"
-													style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($album->getName()); ?></h5>
-											</div>
-										</div>
-									</div>
-								</a>
-							</div>
-						<?php endforeach; ?>
-					<?php else: ?>
-						<p class="text-center">No albums available at the moment.</p>
-					<?php endif; ?>
-				</div>
+				<?php
+				$options = [
+						'containerClass' => 'col-md-4 mb-4',
+						'emptyMessage' => 'No albums available at the moment.',
+						'compact' => true
+				];
+				$albumListVar = $albumList; // To avoid variable name conflict
+				include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-list.php");
+				?>
 			</div>
-		</main>
 	</div>
+	</main>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

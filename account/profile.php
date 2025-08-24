@@ -1,20 +1,20 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
 
 // Fetch user info
 $userID = $_SESSION['userID'];
-$userList = DataController::getUserList();
-$artistList = DataController::getArtistList();
-$user = null;
-foreach ($userList as $u) {
-	if ($u->getUserID() == $userID) {
-		$user = $u;
-		break;
-	}
+$user = UserController::getUserById($userID);
+
+if (!$user) {
+	header("Location: /BeatStream/auth/login.php");
+	exit();
 }
 
 $artistID = -1;
+$artistList = ArtistController::getArtistList();
 
 foreach ($artistList as $a) {
 	if ($a->getUserID() == $userID) {
@@ -24,13 +24,12 @@ foreach ($artistList as $a) {
 }
 
 // Fetch playlists created by user
-$allPlaylists = DataController::getPlaylistList();
+$allPlaylists = PlaylistController::getPlaylistList();
 $userPlaylists = array_filter($allPlaylists, fn($p) => $p->getCreatorID() == $userID);
 
 // Fetch favorite songs (example: store favorite song IDs in session or DB)
 $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
-$allSongs = DataController::getSongList();
-$favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSongIDs));
+// Note: You'll need to implement SongController::getSongList() if you want to display favorite songs
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,9 +61,9 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 					<!-- Profile Info -->
 					<div class="col-md-4">
 						<div class="card">
-							<img src="<?= htmlspecialchars("/BeatStream/images/user/" . $user->getimageName() ?: '/BeatStream/images/defaultUser.webp') ?>"
+							<img src="<?= htmlspecialchars("/BeatStream/images/user/large/" . ($user->getImageName() ?: 'defaultUser.webp')) ?>"
 								 class="card-img-top" alt="Profile Image"
-								 style="object-fit: cover; height: 100%; width: 100%;">
+								 style="object-fit: cover; height: 300px; width: 100%;">
 							<div class="card-body">
 								<h4 class="card-title"><?= htmlspecialchars($user->getUsername()) ?></h4>
 								<p class="card-text"><?= htmlspecialchars($user->getEmail()) ?></p>
@@ -72,14 +71,14 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 							</div>
 						</div>
 						<?php if ($artistID != -1): ?>
-							<div class="card">
+							<div class="card mt-3">
 								<div class="card-body">
 									<h5 class="card-title">Your Artist profile:</h5>
 									<a href="/BeatStream/view/artist.php?id=<?php echo $artistID ?>" class="btn btn-primary">View Artist Profile</a>
 								</div>
 							</div>
 						<?php else: ?>
-							<div class="card">
+							<div class="card mt-3">
 								<div class="card-body">
 									<h5 class="card-title">Become an Artist</h5>
 									<p class="card-text">Create your artist profile to share your music with the world.</p>
@@ -90,28 +89,27 @@ $favSongs = array_filter($allSongs, fn($s) => in_array($s->getSongID(), $favSong
 					</div>
 					<!-- Playlists and Favorites -->
 					<div class="col-md-8">
-						<h3>Your Playlists:</h3>
-						<div class="row">
-							<?php foreach ($userPlaylists as $playlist): ?>
-								<div class="col-md-4 mb-4" style="height: 100%;">
-									<div class="card h-auto">
-										<img src="<?= htmlspecialchars($playlist->getimageName() ? "/BeatStream/images/playlist/" . $playlist->getimageName() : "/BeatStream/images/defaultPlaylist.webp") ?>"
-											 class="card-img-top" alt="Playlist Image"
-											 style="object-fit: cover; height: 100%;">
-										<div class="card-body d-flex flex-column">
-											<h5 class="card-title"><?= htmlspecialchars($playlist->getName()) ?></h5>
-											<p class="card-text"><?= $playlist->getLength() ?> songs
-												- <?= $playlist->getDuration()->format("i:s") ?></p>
-											<a href="/BeatStream/view/playlist.php?id=<?= $playlist->getPlaylistID() ?>"
-											   class="btn btn-outline-secondary btn-sm mt-auto">View</a>
-										</div>
-									</div>
-								</div>
-							<?php endforeach; ?>
-							<?php if (empty($userPlaylists)): ?>
-								<p class="text">No playlists created yet.</p>
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<h3>Your Playlists</h3>
+							<?php if (!empty($userPlaylists)): ?>
+								<a href="/BeatStream/create/playlist.php" class="btn btn-primary">Create New Playlist</a>
 							<?php endif; ?>
 						</div>
+						<?php
+						// Set up options for playlist list component
+						$playlistList = $userPlaylists;
+						$options = [
+								'containerClass' => 'col-md-6 col-lg-4',
+								'showCreator' => false, // Don't show creator since it's the user's own playlists
+								'emptyMessage' => 'No playlists created yet.'
+						];
+						include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/playlist-list.php");
+						?>
+						<?php if (empty($userPlaylists)): ?>
+							<div class="text-center mt-3">
+								<a href="/BeatStream/create/playlist.php" class="btn btn-primary">Create Your First Playlist</a>
+							</div>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>

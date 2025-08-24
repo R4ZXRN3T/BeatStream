@@ -15,22 +15,11 @@
 	--shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-body.dark-mode {
-	--card-bg: #23272b;
-	--light-bg: #181818;
-	--text-muted: #b0b8c1;
-}
-
 /* ===== BASE STYLES ===== */
 body {
 	background-color: var(--light-bg);
 	margin-left: var(--sidebar-width);
 	margin-top: var(--navbar-height);
-}
-
-body.dark-mode {
-	background-color: var(--light-bg) !important;
-	color: #e0e0e0;
 }
 
 /* ===== LAYOUT ===== */
@@ -74,23 +63,6 @@ body.dark-mode {
 	font-weight: bold;
 }
 
-/* Dark mode sidebar */
-body.dark-mode .sidebar {
-	background: linear-gradient(180deg, #23272b, #181a1b);
-	border-right: 2px solid var(--primary-dark);
-	color: #e0e0e0;
-}
-
-body.dark-mode .sidebar a {
-	color: var(--text-muted);
-}
-
-body.dark-mode .sidebar a:hover,
-body.dark-mode .sidebar a.active {
-	background-color: var(--primary-dark);
-	color: #fff;
-}
-
 /* ===== NAVIGATION ===== */
 .myNavbar {
 	margin-bottom: 20px;
@@ -103,16 +75,6 @@ body.dark-mode .sidebar a.active {
 .nav-tabs .nav-link.active {
 	background-color: var(--primary-dark);
 	color: white;
-}
-
-/* Dark mode navigation */
-body.dark-mode .nav-tabs .nav-link.active {
-	background-color: #23272b;
-	color: #fff;
-}
-
-body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
-	color: #646464;
 }
 
 /* ===== TABLES ===== */
@@ -138,17 +100,7 @@ tr:nth-child(even) {
 	background-color: #c7c7c7;
 }
 
-/* Dark mode tables */
-body.dark-mode th {
-	background-color: #23272b;
-	color: #e0e0e0;
-}
-
-body.dark-mode tr:nth-child(even) {
-	background-color: #23272b;
-}
-
-/* ===== CARDS ===== */
+/* ===== CARD COMPONENTS ===== */
 .card-img-top {
 	height: 180px;
 	object-fit: cover;
@@ -164,9 +116,11 @@ body.dark-mode tr:nth-child(even) {
 	max-width: 100%;
 }
 
-.card-body[data-song-id]:hover {
+.card-body[data-song-id]:hover,
+.card:hover {
 	background-color: rgba(93, 93, 93, 0.5);
 	border-radius: 10px;
+	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
 }
 
 .card-body:after {
@@ -188,9 +142,10 @@ body.dark-mode tr:nth-child(even) {
 	border-radius: 10px;
 }
 
+/* ===== SONG ELEMENTS ===== */
 .song-image {
-	width: 60px;
-	height: 60px;
+	width: 64px;
+	height: 64px;
 	object-fit: cover;
 }
 
@@ -224,22 +179,104 @@ body.dark-mode tr:nth-child(even) {
 	color: #6c757d;
 }
 
-/* Dark mode cards */
-body.dark-mode .card {
-	background-color: #23272b;
-	color: #e0e0e0;
+/* ===== ALBUM COMPONENTS ===== */
+.album-card {
+	border-radius: 10px;
+	cursor: pointer;
+	transition: background-color var(--transition-fast), transform var(--transition-fast);
 }
 
-body.dark-mode .card-title,
-body.dark-mode .card-text {
-	color: #e0e0e0;
+.album-card:hover {
+	background-color: rgba(93, 93, 93, 0.5);
+	border-radius: 10px;
+	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
 }
 
-body.dark-mode .card-body:after {
-	background: linear-gradient(to right, rgba(35, 39, 43, 0), var(--card-bg));
+.album-card-large {
+	width: 100%;
 }
 
-/* ===== ARTIST STYLES ===== */
+.album-card-large .album-image {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 10px 10px 0 0;
+}
+
+.album-card-standard .album-image {
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
+}
+
+.album-title {
+	font-size: 1.1rem;
+	font-weight: bold;
+	margin-bottom: 0.25rem;
+}
+
+.album-artist {
+	font-size: 0.9rem;
+	color: var(--text-muted);
+	margin-bottom: 0;
+}
+
+.album-info {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	text-align: left;
+	margin-bottom: 0;
+}
+
+/* ===== PLAYLIST COMPONENTS ===== */
+.playlist-card {
+	border-radius: 10px;
+	cursor: pointer;
+	transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.playlist-card:hover {
+	background-color: rgba(93, 93, 93, 0.5);
+	border-radius: 10px;
+	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
+}
+
+.playlist-card-large {
+	width: 100%;
+}
+
+.playlist-card-large .playlist-image {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 10px 10px 0 0;
+}
+
+.playlist-card-standard .playlist-image {
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
+}
+
+.playlist-image {
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
+}
+
+.playlist-title {
+	font-size: 1.1rem;
+	font-weight: bold;
+	margin-bottom: 0.25rem;
+}
+
+.playlist-creator {
+	font-size: 0.9rem;
+	color: var(--text-muted);
+	margin-bottom: 0;
+}
+
+/* ===== ARTIST COMPONENTS ===== */
 .artist-header {
 	background-color: #ffffff;
 	margin-bottom: 2rem;
@@ -254,21 +291,12 @@ body.dark-mode .card-body:after {
 	width: 200px;
 }
 
-/* Dark mode artist */
-body.dark-mode .artist-header {
-	background-color: #23272b;
-}
-
 /* ===== FORMS ===== */
 .form-control {
 	border: 1px solid #ced4da;
 	border-radius: 5px;
 	font-size: 1rem;
 	padding: 10px;
-}
-
-.form-control.dark-mode {
-	background-color: var(--primary-dark);
 }
 
 /* ===== SEARCH ===== */
@@ -291,74 +319,6 @@ body.dark-mode .artist-header {
 	text-align: center;
 	padding: 2rem;
 	color: var(--text-muted);
-}
-
-/* ===== TYPOGRAPHY & SONG ELEMENTS ===== */
-h2.recommended-header {
-	font-size: 23px !important;
-}
-
-/* ===== UTILITY CLASSES ===== */
-.rcorners1 {
-	border-radius: 10px;
-	height: 40px;
-	padding: 0;
-	width: 40px;
-}
-
-.ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-
-.text-start {
-	text-align: left;
-}
-
-.on-card-link,
-.custom-link {
-	text-decoration: none;
-	color: inherit;
-}
-
-.custom-link:hover {
-	text-decoration: underline;
-	color: inherit;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes pulse {
-	0% {
-		transform: scale(1);
-	}
-	50% {
-		transform: scale(1.05);
-	}
-	100% {
-		transform: scale(1);
-	}
-}
-
-.controls .btn:active {
-	animation: pulse 0.2s ease;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-	.controls {
-		gap: 0.5rem !important;
-	}
-
-	.controls .btn {
-		width: 32px !important;
-		height: 32px !important;
-	}
-
-	#playPauseBtn {
-		width: 42px !important;
-		height: 42px !important;
-	}
 }
 
 /* ===== EDIT PLAYLIST ===== */
@@ -399,15 +359,218 @@ h2.recommended-header {
 	box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
-/* Dark mode search */
-body.dark-mode .edit-playlist .search-box input {
-	background: var(--card-bg);
-	color: #e0e0e0;
-	border-color: var(--border-color);
+/* ===== UTILITY CLASSES ===== */
+.rcorners1 {
+	border-radius: 10px;
+	height: 40px;
+	padding: 0;
+	width: 40px;
+}
+
+.ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.text-start {
+	text-align: left;
+}
+
+.on-card-link,
+.custom-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.custom-link:hover {
+	text-decoration: underline;
+	color: inherit;
 }
 
 .codec-image {
 	height: 30px;
 	object-fit: cover;
 	margin-right: 10px;
+}
+
+h2.recommended-header {
+	font-size: 23px !important;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.05);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.controls .btn:active {
+	animation: pulse 0.2s ease;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+	.controls {
+		gap: 0.5rem !important;
+	}
+
+	.controls .btn {
+		width: 32px !important;
+		height: 32px !important;
+	}
+
+	#playPauseBtn {
+		width: 42px !important;
+		height: 42px !important;
+	}
+}
+
+/* ===== DARK MODE STYLES ===== */
+body.dark-mode {
+	--card-bg: #23272b;
+	--light-bg: #181818;
+	--text-muted: #b0b8c1;
+	background-color: var(--light-bg) !important;
+	color: #e0e0e0;
+}
+
+/* Dark mode sidebar */
+body.dark-mode .sidebar {
+	background: linear-gradient(180deg, #23272b, #181a1b);
+	border-right: 2px solid var(--primary-dark);
+	color: #e0e0e0;
+}
+
+body.dark-mode .sidebar a {
+	color: var(--text-muted);
+}
+
+body.dark-mode .sidebar a:hover,
+body.dark-mode .sidebar a.active {
+	background-color: var(--primary-dark);
+	color: #fff;
+}
+
+/* Dark mode navigation */
+body.dark-mode .nav-tabs .nav-link.active {
+	background-color: #23272b;
+	color: #fff;
+}
+
+body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
+	color: #646464;
+}
+
+/* Dark mode tables */
+body.dark-mode th {
+	background-color: #23272b;
+	color: #e0e0e0;
+}
+
+body.dark-mode tr:nth-child(even) {
+	background-color: #23272b;
+}
+
+/* Dark mode cards */
+body.dark-mode .card {
+	background-color: #23272b;
+	color: #e0e0e0;
+}
+
+body.dark-mode .card-title,
+body.dark-mode .card-text {
+	color: #e0e0e0;
+}
+
+body.dark-mode .card-body:after {
+	background: linear-gradient(to right, rgba(35, 39, 43, 0), var(--card-bg));
+}
+
+body.dark-mode .card:hover {
+	background-color: #23272b;
+}
+
+/* Dark mode albums */
+body.dark-mode .album-card {
+	background-color: #23272b;
+	color: #e0e0e0;
+}
+
+body.dark-mode .album-card:hover {
+	background-color: rgba(93, 93, 93, 0.5);
+	border-radius: 10px;
+	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
+}
+
+body.dark-mode .album-title,
+body.dark-mode .album-artist,
+body.dark-mode .album-info {
+	color: #e0e0e0;
+}
+
+body.dark-mode .album-artist,
+body.dark-mode .album-info {
+	color: var(--text-muted) !important;
+}
+
+/* Dark mode playlists */
+body.dark-mode .playlist-card {
+	background-color: #23272b;
+	color: #e0e0e0;
+}
+
+body.dark-mode .playlist-card:hover {
+	background-color: rgba(93, 93, 93, 0.5);
+	border-radius: 10px;
+	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
+}
+
+body.dark-mode .playlist-title,
+body.dark-mode .playlist-creator {
+	color: #e0e0e0;
+}
+
+body.dark-mode .playlist-creator {
+	color: var(--text-muted) !important;
+}
+
+/* Dark mode artist */
+body.dark-mode .artist-header {
+	background-color: #23272b;
+}
+
+/* Dark mode forms */
+body.dark-mode .form-control {
+	background-color: var(--primary-dark);
+	color: #e0e0e0;
+}
+
+/* Dark mode placeholder */
+body.dark-mode .form-control::placeholder {
+	color: #e0e0e0; /* Dark mode placeholder color */
+}
+
+body.dark-mode .form-control::file-selector-button {
+	background-color: var(--primary-dark);
+	color: #e0e0e0;
+	border: 1px solid var(--border-color);
+}
+
+body.dark-mode .form-control::file-selector-button:hover {
+	background-color: var(--border-color) !important;
+	color: #e0e0e0 !important;
+}
+
+/* Dark mode edit playlist */
+body.dark-mode .edit-playlist .search-box input {
+	background: var(--card-bg);
+	color: #e0e0e0;
+	border-color: var(--border-color);
 }

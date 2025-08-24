@@ -63,8 +63,10 @@ class UserController
 
 	public static function deleteUser(int $userID): void
 	{
+		require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/ArtistController.php";
+
 		$conn = DBConn::getConn();
-		$stmt = $conn->prepare("SELECT imageName FROM user WHERE userID = ?");
+		$stmt = $conn->prepare("SELECT imageName, thumbnailName FROM user WHERE userID = ?");
 		$stmt->bind_param("i", $userID);
 		$stmt->execute();
 		$result = $stmt->get_result()->fetch_assoc();
@@ -72,7 +74,8 @@ class UserController
 
 		if ($result && $result['imageName']) {
 			try {
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/user/" . $result['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/user/large/" . $result['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/user/thumbnail/" . $result['thumbnailName']);
 			} catch (Exception) {
 			}
 		}
@@ -99,7 +102,7 @@ class UserController
 
 		// Delete all relations and the songs themselves
 		if ($artistID !== null) {
-			DataController::deleteArtist($artistID);
+			ArtistController::deleteArtist($artistID);
 		}
 
 		$stmt = $conn->prepare("DELETE FROM user WHERE userID = ?;");
@@ -123,5 +126,22 @@ class UserController
 		$stmt->close();
 
 		return $userList;
+	}
+
+	public static function getUserById(int $userID): ?User
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM user WHERE userID = ? LIMIT 1");
+		$stmt->bind_param("i", $userID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$user = null;
+		if ($row = $result->fetch_assoc()) {
+			$user = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["isAdmin"], $row["isArtist"], $row["imageName"], $row["thumbnailName"]);
+		}
+
+		$stmt->close();
+
+		return $user;
 	}
 }

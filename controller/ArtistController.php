@@ -61,16 +61,19 @@ class ArtistController
 
 	public static function deleteArtist(int $artistID): void
 	{
+		require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/SongController.php";
+
 		$conn = DBConn::getConn();
 
 		// Get image name for deletion
-		$deleteImage = $conn->prepare("SELECT imageName FROM artist WHERE artistID = ?");
+		$deleteImage = $conn->prepare("SELECT imageName, thumbnailName FROM artist WHERE artistID = ?");
 		$deleteImage->bind_param("i", $artistID);
 		$deleteImage->execute();
 		$result = $deleteImage->get_result();
 		if ($row = $result->fetch_assoc()) {
 			try {
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/artist/" . $row['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/artist/large/" . $row['imageName']);
+				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/artist/thumbnail/" . $row['thumbnailName']);
 			} catch (Exception) {
 			}
 		}
@@ -99,6 +102,23 @@ class ArtistController
 			$stmt->bind_param("i", $artistID);
 			$stmt->execute();
 			$stmt->close();
+		}
+	}
+
+	public static function getArtistByID(int $artistID): ?Artist
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT * FROM artist WHERE artistID = ? LIMIT 1");
+		$stmt->bind_param("i", $artistID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		if ($row = $result->fetch_assoc()) {
+			$artist = new Artist($row["artistID"], $row["name"], $row["imageName"], $row["thumbnailName"], $row["activeSince"], $row["userID"]);
+			$stmt->close();
+			return $artist;
+		} else {
+			$stmt->close();
+			return null;
 		}
 	}
 }

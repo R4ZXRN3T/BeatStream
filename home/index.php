@@ -43,14 +43,14 @@ $recommendedPlaylists = PlaylistController::getPlaylistList();
 
 $songQueueData = array_map(function ($song) {
 	return [
-		'songID' => $song->getSongID(),
-		'title' => $song->getTitle(),
-		'artists' => implode(", ", $song->getArtists()),
-		'artistIDs' => $song->getArtistIDs(),
-		'flacFilename' => $song->getFlacFileName(),
-		'opusFilename' => $song->getOpusFileName(),
-		'imageName' => $song->getImageName(),
-		'thumbnailName' => $song->getThumbnailName(),
+			'songID' => $song->getSongID(),
+			'title' => $song->getTitle(),
+			'artists' => implode(", ", $song->getArtists()),
+			'artistIDs' => $song->getArtistIDs(),
+			'flacFilename' => $song->getFlacFileName(),
+			'opusFilename' => $song->getOpusFileName(),
+			'imageName' => $song->getImageName(),
+			'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $recommendedSongs);
 
@@ -126,75 +126,29 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 					<div class="col-md-4">
 						<section class="mb-5 g-4 a-p-column">
 							<h2 class="text-start mb-4 recommended-header">Recommended Albums:</h2>
-							<div class="row g-4">
-								<?php foreach ($recommendedAlbums as $album): ?>
-									<div class="col-12">
-										<div class="card shadow-sm border-0" style="border-radius: 10px;">
-											<a class="on-card-link"
-											   href="../view/album.php?id=<?php echo $album->getAlbumID() ?>">
-												<div class="card-body d-flex align-items-center p-2"
-													 data-song-id="album-<?php echo $album->getAlbumID(); ?>">
-													<?php if (!empty($album->getimageName())): ?>
-														<img src="<?php echo "/BeatStream/images/album/thumnail/" . htmlspecialchars($album->getThumbnailName()); ?>"
-															 class="me-3 rounded"
-															 alt="<?php echo htmlspecialchars($album->getThumbnailName()); ?>"
-															 style="width: 80px; height: 80px; object-fit: cover;">
-													<?php else: ?>
-														<img src="../images/defaultAlbum.webp" class="me-3 rounded"
-															 alt="Default Album Cover"
-															 style="width: 80px; height: 80px; object-fit: cover;">
-													<?php endif; ?>
-													<div class="card-body">
-														<h5 class="card-title" style="font-weight: bold;">
-															<?php echo htmlspecialchars($album->getName()); ?>
-														</h5>
-														<p class="card-text" style="color: #6c757d;">
-															<?php echo htmlspecialchars(implode(", ", $album->getArtists())); ?>
-														</p>
-													</div>
-												</div>
-											</a>
-										</div>
-									</div>
-								<?php endforeach; ?>
-							</div>
+							<?php
+							$albumList = $recommendedAlbums;
+							$options = [
+									'containerClass' => 'col-12',
+									'emptyMessage' => 'No recommended albums available.',
+									'compact' => false
+							];
+							include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-list.php");
+							?>
 						</section>
 
 						<section class="mb-5 g-4 a-p-column">
 							<h2 class="text-start mb-4 recommended-header">Recommended Playlists:</h2>
-							<div class="row g-4">
-								<?php foreach ($recommendedPlaylists as $playlist): ?>
-									<div class="col-12">
-										<a class="on-card-link"
-										   href="../view/playlist.php?id=<?php echo $playlist->getPlaylistID() ?>">
-											<div class="card shadow-sm border-0" style="border-radius: 10px;">
-												<div class="card-body d-flex align-items-center p-2">
-													<?php if (!empty($playlist->getThumbnailName())): ?>
-														<img src="<?php echo "/BeatStream/images/playlist/thumbnail/" . htmlspecialchars($playlist->getThumbnailName()); ?>"
-															 class="me-3 rounded"
-															 alt="<?php echo htmlspecialchars($playlist->getThumbnailName()); ?>"
-															 style="width: 64px; height: 64px; object-fit: cover;">
-													<?php else: ?>
-														<img src="../images/defaultPlaylist.webp" class="me-3 rounded"
-															 alt="Default Playlist Cover"
-															 style="width: 80px; height: 80px; object-fit: cover;">
-													<?php endif; ?>
-													<div class="card-body">
-														<h5 class="card-title"
-															style="font-weight: bold;"><?php echo htmlspecialchars($playlist->getName()); ?></h5>
-														<p class="card-text" style="color: #6c757d;">
-															<?php
-															$creatorID = $playlist->getCreatorID();
-															echo isset($usernames[$creatorID]) ? htmlspecialchars($usernames[$creatorID]) : 'Unknown User';
-															?>
-														</p>
-													</div>
-												</div>
-											</div>
-										</a>
-									</div>
-								<?php endforeach; ?>
-							</div>
+							<?php
+							$playlistList = $recommendedPlaylists;
+							$options = [
+									'containerClass' => 'col-12',
+									'showCreator' => true,
+									'emptyMessage' => 'No recommended playlists available.',
+									'compact' => false,
+							];
+							include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/playlist-list.php");
+							?>
 						</section>
 					</div>
 				</div>

@@ -26,12 +26,18 @@ if (!empty($_GET['search'])) {
 	$searchTerm = trim($_GET['search']);
 	$searchCategory = $_GET['category'] ?? 'all';
 
+	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
+	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
+	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php");
+	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
+	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+
 	// Get all data lists
-	$allSongs = DataController::getSongList();
-	$allArtists = DataController::getArtistList();
-	$allAlbums = DataController::getAlbumList();
-	$allPlaylists = DataController::getPlaylistList();
-	$allUsers = DataController::getUserList();
+	$allSongs = SongController::getSongList();
+	$allArtists = ArtistController::getArtistList();
+	$allAlbums = AlbumController::getAlbumList();
+	$allPlaylists = PlaylistController::getPlaylistList();
+	$allUsers = UserController::getUserList();
 
 	// Create user lookup array for playlist creators
 	$usernames = [];
@@ -43,8 +49,8 @@ if (!empty($_GET['search'])) {
 	if ($searchCategory == 'all' || $searchCategory == 'songs') {
 		foreach ($allSongs as $song) {
 			if (stripos($song->getTitle(), $searchTerm) !== false ||
-				stripos(implode(", ", $song->getArtists()), $searchTerm) !== false ||
-				stripos($song->getGenre(), $searchTerm) !== false) {
+					stripos(implode(", ", $song->getArtists()), $searchTerm) !== false ||
+					stripos($song->getGenre(), $searchTerm) !== false) {
 				$songResults[] = $song;
 			}
 		}
@@ -63,7 +69,7 @@ if (!empty($_GET['search'])) {
 	if ($searchCategory == 'all' || $searchCategory == 'albums') {
 		foreach ($allAlbums as $album) {
 			if (stripos($album->getName(), $searchTerm) !== false ||
-				stripos(implode(", ", $album->getArtists()), $searchTerm) !== false) {
+					stripos(implode(", ", $album->getArtists()), $searchTerm) !== false) {
 				$albumResults[] = $album;
 			}
 		}
@@ -81,11 +87,13 @@ if (!empty($_GET['search'])) {
 	// Create song queue data for player
 	$songQueueData = array_map(function ($song) {
 		return [
-			'songID' => $song->getSongID(),
-			'title' => $song->getTitle(),
-			'artists' => implode(", ", $song->getArtists()),
-			'fileName' => $song->getFileName(),
-			'imageName' => $song->getImageName()
+				'songID' => $song->getSongID(),
+				'title' => $song->getTitle(),
+				'artists' => implode(", ", $song->getArtists()),
+				'flacFileName' => $song->getFlacFileName(),
+				'opusFileName' => $song->getOpusFileName(),
+				'imageName' => $song->getImageName(),
+				'thumbnailName' => $song->getThumbnailName(),
 		];
 	}, $songResults);
 }
@@ -138,29 +146,29 @@ if (!empty($_GET['search'])) {
 							<label class="mb-2">Filter by:</label>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="category" id="all" value="all"
-									<?php echo ($searchCategory == 'all') ? 'checked' : ''; ?>>
+										<?php echo ($searchCategory == 'all') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="all">All</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="category" id="songs" value="songs"
-									<?php echo ($searchCategory == 'songs') ? 'checked' : ''; ?>>
+										<?php echo ($searchCategory == 'songs') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="songs">Songs</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="category" id="artists"
 									   value="artists"
-									<?php echo ($searchCategory == 'artists') ? 'checked' : ''; ?>>
+										<?php echo ($searchCategory == 'artists') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="artists">Artists</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="category" id="albums" value="albums"
-									<?php echo ($searchCategory == 'albums') ? 'checked' : ''; ?>>
+										<?php echo ($searchCategory == 'albums') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="albums">Albums</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="category" id="playlists"
 									   value="playlists"
-									<?php echo ($searchCategory == 'playlists') ? 'checked' : ''; ?>>
+										<?php echo ($searchCategory == 'playlists') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="playlists">Playlists</label>
 							</div>
 						</div>
@@ -285,43 +293,16 @@ if (!empty($_GET['search'])) {
 							<div class="results-section">
 								<h3>Playlists</h3>
 								<div class="result-count"><?php echo count($playlistResults); ?> results</div>
-								<div class="row g-4">
-									<?php foreach ($playlistResults as $playlist): ?>
-										<div class="col-12 col-md-6 col-lg-4">
-											<a class="custom-link"
-											   href="../view/playlist.php?id=<?php echo $playlist->getPlaylistID(); ?>">
-												<div class="card shadow-sm border-0" style="border-radius: 10px;">
-													<div class="card-body d-flex align-items-center p-3">
-														<?php if (!empty($playlist->getimageName())): ?>
-															<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
-																 class="me-3 rounded"
-																 alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
-																 style="width: 50px; height: 50px; object-fit: cover;">
-														<?php else: ?>
-															<img src="../images/defaultPlaylist.webp"
-																 class="me-3 rounded"
-																 alt="Default Playlist Cover"
-																 style="width: 50px; height: 50px; object-fit: cover;">
-														<?php endif; ?>
-														<div>
-															<h5 class="card-title mb-1"
-																style="font-size: 1.1rem; font-weight: bold;">
-																<?php echo htmlspecialchars($playlist->getName()); ?>
-															</h5>
-															<p class="card-text mb-0"
-															   style="font-size: 0.9rem; color: #6c757d;">
-																<?php
-																$creatorID = $playlist->getCreatorID();
-																echo isset($usernames[$creatorID]) ? htmlspecialchars($usernames[$creatorID]) : 'Unknown User';
-																?>
-															</p>
-														</div>
-													</div>
-												</div>
-											</a>
-										</div>
-									<?php endforeach; ?>
-								</div>
+								<?php
+								$options = [
+										'containerClass' => 'col-12 col-md-6 col-lg-4',
+										'showCreator' => true,
+										'emptyMessage' => 'No playlists found.',
+										'homepageStyle' => false
+								];
+								$playlistList = $playlistResults;
+								include('/BeatStream/components/playlist-list.php');
+								?>
 							</div>
 						<?php endif; ?>
 					<?php endif; ?>

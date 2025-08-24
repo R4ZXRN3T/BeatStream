@@ -27,7 +27,7 @@ $emptyMessage = $options['emptyMessage'] ?? 'No songs available.';
 					'containerClass' => $containerClass
 			];
 			// Pass required variables to song-card.php
-			include('../components/song-card.php');
+			include('song-card.php');
 			?>
 		<?php endforeach; ?>
     <?php else: ?>
