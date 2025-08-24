@@ -1,6 +1,7 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/Objects/Song.php";
+include_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/Objects/Song.php";#
+include_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php";
 
 class SongController
 {

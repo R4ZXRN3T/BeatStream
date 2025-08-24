@@ -110,20 +110,6 @@ class UserController
 
 	public static function getUserList(string $sortBy = "user.username ASC"): array
 	{
-		// Whitelist allowed sort options to prevent SQL injection
-		$allowedSortOptions = [
-			"user.username ASC",
-			"user.username DESC",
-			"user.email ASC",
-			"user.email DESC",
-			"user.userID ASC",
-			"user.userID DESC"
-		];
-
-		if (!in_array($sortBy, $allowedSortOptions)) {
-			$sortBy = "user.username ASC"; // Default fallback
-		}
-
 		$stmt = DBConn::getConn()->prepare("SELECT * FROM user ORDER BY " . $sortBy);
 
 		$stmt->execute();
