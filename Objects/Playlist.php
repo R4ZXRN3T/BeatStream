@@ -10,8 +10,9 @@ class Playlist
 	private string $imageName;
 	private string $thumbnailName;
 	private int $creatorID;
+	private string $creatorName;
 
-	public function __construct(int $playlistID, string $name, array $songIDs, int $duration, int $length, string $imageName, string $thumbnailName, int $creatorID)
+	public function __construct(int $playlistID, string $name, array $songIDs, int $duration, int $length, string $imageName, string $thumbnailName, int $creatorID, string $creatorName)
 	{
 		$this->playlistID = $playlistID;
 		$this->imageName = $imageName;
@@ -21,6 +22,7 @@ class Playlist
 		$this->duration = $duration;
 		$this->length = $length;
 		$this->creatorID = $creatorID;
+		$this->creatorName = $creatorName;
 	}
 
 	// Getter methods
@@ -76,6 +78,11 @@ class Playlist
 	public function getCreatorID(): int
 	{
 		return $this->creatorID;
+	}
+
+	public function getCreatorName(): string
+	{
+		return $this->creatorName;
 	}
 
 	public function addSongID($songID): void
