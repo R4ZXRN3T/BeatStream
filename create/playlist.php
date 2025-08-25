@@ -15,8 +15,9 @@ session_start();
 
 <body>
 <?php
-include("../DataController.php");
-$songList = DataController::getSongList();
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php";
+$songList = SongController::getSongList();
 
 $isValid = true;
 
@@ -25,39 +26,36 @@ if (!isset($_POST['playlistName']) && !isset($_POST['songInput'])) {
 }
 
 if ($isValid) {
-	$uploadDir = "../images/playlist/";
-	$finalFileName = "";
+	$imageName = "";
+	$thumbnailName = "";
+
+	// Handle image upload using converter
 	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] == UPLOAD_ERR_OK) {
-		$imageFile = $_FILES['imageFileInput'];
-		$extension = pathinfo($imageFile['name'], PATHINFO_EXTENSION);
-		$finalFileName = uniqid() . '.' . $extension;
-		$imageName = $uploadDir . $finalFileName;
-		if (!move_uploaded_file($imageFile['tmp_name'], $imageName)) {
-			echo "<div class='alert alert-danger'>Failed to upload image.</div>";
-			$isValid = false;
-		}
-	} else {
-		$imageName = ""; // No image uploaded
-	}
-	$totalDuration = new DateTime("00:00:00");
-	foreach ($_POST['songInput'] as $selectedSongID) {
-		foreach ($songList as $song) {
-			if ($song->getSongID() == $selectedSongID) {
-				$duration = $song->getSongLength(); // Assuming this returns a DateInterval or DateTime
-				$totalDuration->add(new DateInterval('PT' . $duration->format('s') . 'S'));
-				break;
-			}
+		require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+		$imageResult = Converter::uploadImage($_FILES['imageFileInput'], ImageType::PLAYLIST);
+		if ($imageResult['success']) {
+			$imageName = $imageResult['large_filename'];
+			$thumbnailName = $imageResult['thumbnail_filename'];
+		} else {
+			echo "<div class='alert alert-danger'>Failed to upload image: " . $imageResult['error'] . "</div>";
 		}
 	}
 
-	DataController::insertPlaylist(new Playlist(
-		0,
-		$_POST['playlistName'],
-		$_POST['songInput'],
-		$totalDuration->format('H:i:s'),
-		count($_POST['songInput']),
-		$finalFileName,
-		$_SESSION['userID']
+	$totalDuration = 0; // Duration in milliseconds
+	foreach ($_POST['songInput'] as $selectedSongID) {
+		$totalDuration += SongController::getSongByID($selectedSongID)->getSongLength();
+	}
+
+	PlaylistController::insertPlaylist(new Playlist(
+			0,
+			$_POST['playlistName'],
+			$_POST['songInput'],
+			$totalDuration,
+			count($_POST['songInput']),
+			$imageName,
+			$thumbnailName,
+			$_SESSION['userID'],
+			""
 	));
 }
 

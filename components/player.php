@@ -78,13 +78,14 @@
 		</div>
 	</div>
 	<audio id="audioPlayer"></audio>
-	<div id="queuePanel" class="position-absolute end-0 bottom-100 bg-dark p-3 d-none"
-		 style="width: 600px; max-height: 400px; overflow-y: auto;">
-		<h6 class="mb-3">Queue
-			<button id="clearQueueBtn" class="btn btn-sm btn-outline-danger float-end">Clear</button>
-		</h6>
-		<ul id="queueList" class="list-group list-group-flush"></ul>
-	</div>
+</div>
+
+<!-- Queue Panel (separate from music player) -->
+<div id="queuePanel" class="position-fixed bg-dark p-3 d-none">
+	<h6 class="mb-3">Queue
+		<button id="clearQueueBtn" class="btn btn-sm btn-outline-danger float-end">Clear</button>
+	</h6>
+	<ul id="queueList" class="list-group list-group-flush"></ul>
 </div>
 
 <script>

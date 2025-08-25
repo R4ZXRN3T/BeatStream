@@ -27,53 +27,39 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 <body>
 
 <?php
-include("../DataController.php");
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/ArtistController.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/UserController.php";
 
 $isValid = true;
 $imageName = '';
+$thumbnailName = '';
 
-if (!(
-	!empty($_POST["albumName"]) && !empty($_POST["activeSince"])
-)) {
+if (!(!empty($_POST["artistName"]) && !empty($_POST["activeSince"]))) {
 	$isValid = false;
 }
 
 // Process file upload if form fields are valid
 if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
-	$uploadDir = "../images/artist/";
-
-	// Create directory if it doesn't exist
-	if (!file_exists($uploadDir)) {
-		mkdir($uploadDir, 0777, true);
-	}
-
-	$fileExtension = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
-	$imageName = uniqid() . '.' . $fileExtension;
-	$targetFile = $uploadDir . $imageName;
-
-	// Check if file is an actual image
-	$validImage = getimagesize($_FILES['imageFile']['tmp_name']) !== false;
-
-	if (!$validImage) {
+	require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";#
+	$result = Converter::uploadImage($_FILES['imageFile'], ImageType::ARTIST);
+	if ($result['success']) {
+		$imageName = $result['large_filename'];
+		$thumbnailName = $result['thumbnail_filename'];
+	} else {
 		$isValid = false;
-		echo "<div class='alert alert-danger'>Uploaded file is not a valid image.</div>";
-	} else if ($_FILES['imageFile']['size'] > 5000000) { // 5MB limit
-		$isValid = false;
-		echo "<div class='alert alert-danger'>File is too large. Maximum size is 5MB.</div>";
-	} else if (!move_uploaded_file($_FILES['imageFile']['tmp_name'], $targetFile)) {
-		$isValid = false;
-		echo "<div class='alert alert-danger'>Failed to upload the image.</div>";
+		echo "<div class='alert alert-danger' role='alert'>Image upload failed: " . htmlspecialchars($result['error']) . "</div>";
 	}
 }
 
 if ($isValid) {
 
-	DataController::insertArtist(new Artist(
-		12345,
-		$_POST["albumName"],
-		$imageName, // Use the new uploaded image name
-		$_POST["activeSince"],
-		$_SESSION['userID']
+	ArtistController::insertArtist(new Artist(
+			0,
+			$_POST["artistName"],
+			$imageName,
+			$thumbnailName,// Use same image for thumbnail for now
+			$_POST["activeSince"],
+			$_SESSION['userID']
 	));
 	header("Location: ../account/profile.php");
 }
@@ -102,8 +88,8 @@ if ($isValid) {
 				<h1 class="mb-4">Become an Artist</h1>
 				<form action="artist.php" method="post" enctype="multipart/form-data">
 					<div class="mb-3">
-						<label for="albumName" class="form-label">Your Name:</label>
-						<input type="text" class="form-control" id="albumName" name="albumName" required>
+						<label for="artistName" class="form-label">Your Name:</label>
+						<input type="text" class="form-control" id="artistName" name="artistName" required>
 					</div>
 					<div class="form-group">
 						<label for="activeSince" class="form-label">When did you start making music?</label>
@@ -120,5 +106,4 @@ if ($isValid) {
 	</div>
 </div>
 </body>
-
 </html>

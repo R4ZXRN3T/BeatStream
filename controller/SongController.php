@@ -96,16 +96,24 @@ class SongController
 			return [];
 		}
 
-		// Then get all data for those songs with proper artist ordering
+		// Then get all data for those songs preserving random order
 		$placeholders = str_repeat('?,', count($songIDs) - 1) . '?';
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
-        FROM song, artist, releases_song
-        WHERE song.songID = releases_song.songID
-        AND artist.artistID = releases_song.artistID
-        AND song.songID IN ($placeholders)
-        ORDER BY song.songID, releases_song.artistIndex");
+		$orderByCase = "CASE song.songID ";
+		for ($i = 0; $i < count($songIDs); $i++) {
+			$orderByCase .= "WHEN ? THEN $i ";
+		}
+		$orderByCase .= "END";
 
-		$stmt->bind_param(str_repeat('i', count($songIDs)), ...$songIDs);
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+    	FROM song, artist, releases_song
+   		WHERE song.songID = releases_song.songID
+    	AND artist.artistID = releases_song.artistID
+    	AND song.songID IN ($placeholders)
+    	ORDER BY $orderByCase, releases_song.artistIndex");
+
+		// Bind the song IDs twice - once for IN clause, once for CASE statement
+		$allParams = array_merge($songIDs, $songIDs);
+		$stmt->bind_param(str_repeat('i', count($allParams)), ...$allParams);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
@@ -118,6 +126,7 @@ class SongController
 				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
 					$alreadyExists = true;
 					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
+					break;
 				}
 			}
 			if (!$alreadyExists) {

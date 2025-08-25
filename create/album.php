@@ -25,7 +25,9 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 
 <body>
 <?php
-include("../DataController.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
 
 // Get the current user's artist ID
 $stmt = DBConn::getConn()->prepare("SELECT artistID, name FROM artist WHERE userID = ?");
@@ -37,85 +39,52 @@ $currentArtistID = $currentArtist['artistID'];
 $currentArtistName = $currentArtist['name'];
 
 // Get all artists for selection
-$artistList = DataController::getArtistList();
+$artistList = ArtistController::getArtistList();
 
 // Get only songs by the current artist
-$stmt = DBConn::getConn()->prepare("
-        SELECT song.songID, song.title, song.genre, song.releaseDate, song.imageName, song.songLength, song.fileName 
-        FROM song 
-        JOIN releases_song ON song.songID = releases_song.songID 
-        WHERE releases_song.artistID = ?
-        ORDER BY song.title");
-$stmt->bind_param("i", $currentArtistID);
-$stmt->execute();
-$songResult = $stmt->get_result();
-
-$artistSongs = array();
-while ($row = $songResult->fetch_assoc()) {
-	$artistSongs[] = new Song(
-		$row["songID"],
-		$row["title"],
-		$currentArtistName,
-		$row["genre"],
-		$row["releaseDate"],
-		$row["songLength"],
-		$row["fileName"],
-		$row["imageName"]
-	);
-}
-
-$isValid = true;
+$artistSongs = SongController::getArtistSongs($currentArtistID);
 
 if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['artistInput'])) {
-	$uploadDir = "../images/album/";
-	$finalFileName = "";
-	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] == UPLOAD_ERR_OK) {
-		$imageFile = $_FILES['imageFileInput'];
-		$extension = strtolower(pathinfo($imageFile['name'], PATHINFO_EXTENSION));
-		$finalFileName = uniqid() . '.' . $extension;
-		$imageName = $uploadDir . $finalFileName;
-		if (!move_uploaded_file($imageFile['tmp_name'], $imageName)) {
-			echo "<div class='alert alert-danger'>Failed to upload image.</div>";
+	require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+
+	$imageName = "";
+	$thumbnailName = "";
+
+	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] === UPLOAD_ERR_OK) {
+		$imageResult = Converter::uploadImage($_FILES['imageFileInput'], ImageType::ALBUM);
+
+		if ($imageResult['success']) {
+			$imageName = $imageResult['large_filename'];
+			$thumbnailName = $imageResult['thumbnail_filename'];
+		} else {
 			$isValid = false;
+			$errorMessage = $imageResult['error'];
 		}
 	}
 
-	$totalDuration = new DateTime("00:00:00");
+	$totalMilliSeconds = 0;
 	foreach ($_POST['songInput'] as $selectedSongID) {
-		foreach ($artistSongs as $song) {
-			if ($song->getSongID() == $selectedSongID) {
-				$duration = $song->getSongLength();
-				$hours = (int)$duration->format('H');
-				$minutes = (int)$duration->format('i');
-				$seconds = (int)$duration->format('s');
-				$interval = new DateInterval("PT{$hours}H{$minutes}M{$seconds}S");
-				$totalDuration->add($interval);
-				break;
-			}
-		}
+		$totalMilliSeconds += SongController::getSongByID($selectedSongID)->getSongLength();
 	}
 
-	// Get artist names for selected artist IDs
+	// Get artist IDs for selected artists
+	$selectedArtistIDs = $_POST['artistInput'];
 	$artistNames = [];
-	foreach ($_POST['artistInput'] as $artistID) {
-		foreach ($artistList as $artist) {
-			if ($artist->getArtistID() == $artistID) {
-				$artistNames[] = $artist->getName();
-				break;
-			}
-		}
+	foreach ($selectedArtistIDs as $artistID) {
+		$artistNames[] = ArtistController::getArtistByID($artistID)->getName();
 	}
 
-	DataController::insertAlbum(new Album(
-		0,
-		$_POST['albumName'],
-		$_POST['songInput'],
-		$artistNames,
-		$finalFileName,
-		count($_POST['songInput']),
-		$totalDuration->format('H:i:s')
+	AlbumController::insertAlbum(new Album(
+			0,
+			$_POST['albumName'],
+			$_POST['songInput'],
+			$artistNames,
+			$selectedArtistIDs,
+			$imageName,
+			$thumbnailName,
+			count($_POST['songInput']),
+			$totalMilliSeconds
 	));
-
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
 

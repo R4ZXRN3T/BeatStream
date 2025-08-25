@@ -1,6 +1,9 @@
 <?php
-include("../dbConnection.php");
-include("../DataController.php");
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/DBConn.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/SongController.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/ArtistController.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/converter.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/Objects/Song.php";
 session_start();
 
 // Check if user is logged in
@@ -32,7 +35,7 @@ $currentArtist = $result->fetch_assoc();
 $stmt->close();
 
 // Get all artists for dropdown
-$artistList = DataController::getArtistList();
+$artistList = ArtistController::getArtistList();
 
 // Process form submission
 $isValid = true;
@@ -41,55 +44,69 @@ $successMessage = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"][0]) && !empty($_POST["genreInput"]) &&
-		!empty($_POST["releaseDateInput"]) && !empty($_FILES["fileInput"]))) {
+			!empty($_POST["releaseDateInput"]) && !empty($_FILES["fileInput"]))) {
 		$isValid = false;
 		$errorMessage = "Please fill all required fields";
 	}
 
-	$imageUploadDir = $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/";
-	$audioUploadDir = $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/";
-	$songimageName = "";
-	$newimageName = "";
-	$songfileName = "";
-	$newFileName = "";
+	$imageName = "";
+	$thumbnailName = "";
+	$flacFileName = "";
+	$opusFileName = "";
+	$duration = 0;
 
-	// Handle image upload
+	// Handle image upload if provided
 	if ($isValid && isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
-		$fileTmpPath = $_FILES['songImageInput']['tmp_name'];
-		$fileName = $_FILES['songImageInput']['name'];
-		$newimageName = uniqid() . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
-		$destPath = $imageUploadDir . $newimageName;
-
-		if (!is_dir($imageUploadDir)) {
-			mkdir($imageUploadDir, 0777, true);
-		}
-
-		if (move_uploaded_file($fileTmpPath, $destPath)) {
-			$songimageName = $newimageName;
+		$imageResult = Converter::uploadImage($_FILES['songImageInput'], ImageType::SONG);
+		if ($imageResult['success']) {
+			$imageName = $imageResult['large_filename'];
+			$thumbnailName = $imageResult['thumbnail_filename'];
 		} else {
 			$isValid = false;
-			$errorMessage = "Image upload failed";
+			$errorMessage = "Image upload failed: " . $imageResult['error'];
 		}
 	}
 
 	// Handle audio upload
 	if ($isValid) {
-		include_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
 		$audioResult = Converter::uploadAudio($_FILES['fileInput']);
 
-		DataController::insertSong(new Song(
-				0,
-				$_POST["titleInput"],
-				[],
-				$_POST["artistInput"],
-				$_POST["genreInput"],
-				$_POST["releaseDateInput"],
-				$audioResult['duration'],
-				$audioResult['flacFilename'],
-				$audioResult['opusFilename'],
-				$newFileName,
-				$newimageName
-		));
+		if ($audioResult['success']) {
+			$flacFileName = $audioResult['flac_filename'];
+			$opusFileName = $audioResult['opus_filename'];
+			$duration = $audioResult['duration'];
+
+			// Show warning if lossy format was uploaded
+			if (isset($audioResult['warning'])) {
+				$errorMessage = $audioResult['warning'];
+			}
+		} else {
+			$isValid = false;
+			$errorMessage = "Audio upload failed: " . $audioResult['error'];
+		}
+	}
+
+	// Create and insert song
+	if ($isValid) {
+		try {
+			SongController::insertSong(new Song(
+					0,
+					$_POST["titleInput"],
+					[],
+					$_POST["artistInput"],
+					$_POST["genreInput"],
+					$_POST["releaseDateInput"],
+					$duration,
+					$flacFileName,
+					$opusFileName,
+					$imageName,
+					$thumbnailName
+			));
+			$successMessage = "Song uploaded successfully!";
+		} catch (Exception $e) {
+			$isValid = false;
+			$errorMessage = "Failed to create song: " . $e->getMessage();
+		}
 	}
 }
 ?>
@@ -128,11 +145,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				<h1>Create New Song</h1>
 
 				<?php if (!empty($errorMessage)): ?>
-					<div class="alert alert-danger"><?php echo $errorMessage; ?></div>
+					<div class="alert alert-danger"><?php echo htmlspecialchars($errorMessage); ?></div>
 				<?php endif; ?>
 
 				<?php if (!empty($successMessage)): ?>
-					<div class="alert alert-success"><?php echo $successMessage; ?></div>
+					<div class="alert alert-success"><?php echo htmlspecialchars($successMessage); ?></div>
 				<?php endif; ?>
 
 				<form action="song.php" method="post" enctype="multipart/form-data">
@@ -149,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 								<select name="artistInput[]" class="form-control me-2" required>
 									<?php foreach ($artistList as $artist): ?>
 										<option value="<?php echo htmlspecialchars($artist->getArtistID()); ?>"
-											<?php echo ($currentArtist && $artist->getArtistID() == $currentArtist['artistID']) ? 'selected' : ''; ?>>
+												<?php echo ($currentArtist && $artist->getArtistID() == $currentArtist['artistID']) ? 'selected' : ''; ?>>
 											<?php echo htmlspecialchars($artist->getName()); ?>
 										</option>
 									<?php endforeach; ?>
@@ -175,13 +192,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 					<div class="form-group mb-3">
 						<label for="songFile">Audio File:</label>
-						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/mpeg"
+						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/*"
 							   required>
+						<small class="form-text text-muted">Supported formats: FLAC, WAV, MP3, AAC, OGG, and many
+							others. Lossless formats recommended.</small>
 					</div>
 
 					<div class="form-group mb-3">
-						<label for="songImage">Cover Image:</label>
+						<label for="songImage">Cover Image (optional):</label>
 						<input type="file" id="songImage" name="songImageInput" class="form-control" accept="image/*">
+						<small class="form-text text-muted">Will be converted to WebP format and resized
+							automatically.</small>
 					</div>
 
 					<button type="submit" class="btn btn-primary mt-3">Upload Song</button>
@@ -216,7 +237,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		</main>
 	</div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
