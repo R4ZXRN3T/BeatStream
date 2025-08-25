@@ -7,7 +7,7 @@
 	--text-muted: #6c757d;
 	--light-bg: #f8f9fa;
 	--sidebar-width: 220px;
-	--navbar-height: 67px;
+	--navbar-height: 66px;
 	--transition-fast: 0.2s ease;
 	--transition-normal: 0.3s ease;
 	--shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -566,11 +566,4 @@ body.dark-mode .form-control::file-selector-button {
 body.dark-mode .form-control::file-selector-button:hover {
 	background-color: var(--border-color) !important;
 	color: #e0e0e0 !important;
-}
-
-/* Dark mode edit playlist */
-body.dark-mode .edit-playlist .search-box input {
-	background: var(--card-bg);
-	color: #e0e0e0;
-	border-color: var(--border-color);
 }

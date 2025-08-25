@@ -202,13 +202,58 @@
 
 /* Queue panel */
 #queuePanel {
+	position: fixed !important;
+	bottom: 105px !important;
+	right: 5px !important;
+	width: 600px !important;
+	max-width: calc(100vw - 40px) !important;
+	max-height: 400px !important;
+	overflow-y: auto !important;
+	z-index: 1050 !important;
 	background: linear-gradient(135deg, rgba(33, 37, 41, 0.95), rgba(52, 58, 64, 0.95)) !important;
 	backdrop-filter: blur(20px) !important;
 	-webkit-backdrop-filter: blur(20px) !important;
 	border: 1px solid rgba(255, 255, 255, 0.1) !important;
 	border-radius: 12px !important;
 	box-shadow: var(--shadow-heavy) !important;
-	margin-bottom: 1rem !important;
+}
+
+/* Responsive positioning for smaller screens */
+@media (max-width: 768px) {
+	#queuePanel {
+		bottom: 70px !important;
+		right: 10px !important;
+		left: 10px !important;
+		width: auto !important;
+		max-width: none !important;
+	}
+}
+
+/* Custom scrollbar for queue panel */
+#queuePanel::-webkit-scrollbar {
+	width: 8px;
+}
+
+#queuePanel::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 10px;
+	margin: 8px 0;
+}
+
+#queuePanel::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15));
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	transition: background var(--transition-fast);
+}
+
+#queuePanel::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, rgba(0, 123, 255, 0.6), rgba(0, 86, 179, 0.4));
+	border-color: rgba(0, 123, 255, 0.3);
+}
+
+#queuePanel::-webkit-scrollbar-corner {
+	background: transparent;
 }
 
 #queuePanel h6 {
@@ -258,4 +303,30 @@ body.dark-mode #musicPlayer {
 body.dark-mode #queuePanel {
 	background: linear-gradient(135deg, rgba(24, 24, 24, 0.2), rgba(35, 39, 43, 0.2)) !important;
 	border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Dark mode scrollbar adjustments */
+body.dark-mode #queuePanel::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.02);
+}
+
+body.dark-mode #queuePanel::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+	border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode #queuePanel::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, rgba(0, 123, 255, 0.5), rgba(0, 86, 179, 0.3));
+}
+
+/* Firefox scrollbar styling */
+@supports (scrollbar-width: thin) {
+	#queuePanel {
+		scrollbar-width: thin;
+		scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.05);
+	}
+
+	body.dark-mode #queuePanel {
+		scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.02);
+	}
 }

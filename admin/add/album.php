@@ -137,7 +137,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			?>
 
 			<div class="container mt-5">
-				<h1>Album Einfügen</h1>
+				<h1>Add Album</h1>
 
 				<form action="album.php" method="post" id="addAlbumForm" enctype="multipart/form-data">
 					<div class="form-group">
@@ -175,7 +175,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($songList as $song) {
-										echo "<option value='{$song->getSongID()}'>{$song->getTitle()} - {$song->getArtists()}</option>";
+										echo "<option value='{$song->getSongID()}'>{$song->getTitle()} - " . implode(", ", $song->getArtists()) . "</option>";
 									}
 									?>
 								</select>

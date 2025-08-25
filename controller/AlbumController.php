@@ -27,8 +27,8 @@ class AlbumController
 		$artistsInAlbum = $album->getArtistIDs();
 
 		for ($j = 0; $j < count($artistsInAlbum); $j++) {
-			$stmt = DBConn::getConn()->prepare("INSERT INTO releases_album (artistID, albumID) VALUES (?, ?)");
-			$stmt->bind_param("ii", $artistsInAlbum[$j], $newAlbumID);
+			$stmt = DBConn::getConn()->prepare("INSERT INTO releases_album (artistID, albumID, artistIndex) VALUES (?, ?, ?)");
+			$stmt->bind_param("iii", $artistsInAlbum[$j], $newAlbumID, $j);
 			$stmt->execute();
 			$stmt->close();
 		}
@@ -46,7 +46,7 @@ class AlbumController
 		FROM album, artist, releases_album
 		WHERE releases_album.artistID = artist.artistID
 		AND album.albumID = releases_album.albumID
-		ORDER BY " . $sortBy . ";");
+		ORDER BY " . $sortBy . ", releases_album.artistIndex;");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
@@ -103,7 +103,7 @@ class AlbumController
 		WHERE releases_album.artistID = artist.artistID
 		AND album.albumID = releases_album.albumID
 		AND artist.artistID = ?
-		ORDER BY " . $sortBy . ";");
+		ORDER BY " . $sortBy . ", releases_album.artistIndex;");
 
 		$stmt->bind_param("i", $artistID);
 		$stmt->execute();
@@ -171,6 +171,7 @@ class AlbumController
         WHERE releases_album.artistID = artist.artistID
         AND album.albumID = releases_album.albumID
         AND album.albumID = ?
+        ORDER BY releases_album.artistIndex
     ");
 
 		$stmt->bind_param("i", $albumID);
@@ -247,7 +248,7 @@ class AlbumController
         WHERE releases_album.artistID = artist.artistID
         AND album.albumID = releases_album.albumID
         AND album.albumID IN ($placeholders)
-        ORDER BY album.albumID
+        ORDER BY album.albumID, releases_album.artistIndex;
     ");
 		$stmt->bind_param(str_repeat('i', count($albumIDs)), ...$albumIDs);
 		$stmt->execute();
