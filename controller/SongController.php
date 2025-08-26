@@ -126,6 +126,7 @@ class SongController
 				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
 					$alreadyExists = true;
 					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
+					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
 					break;
 				}
 			}
@@ -181,14 +182,18 @@ class SongController
 	public static function getArtistSongs(int $artistID): array
 	{
 		$stmt = DBConn::getConn()->prepare("
-		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
-			   song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
-		FROM song, artist, releases_song
-		WHERE song.songID = releases_song.songID
-		AND artist.artistID = releases_song.artistID
-		AND releases_song.artistID = ?
-		ORDER BY song.title, releases_song.artistIndex
-		");
+			SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
+				song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+			FROM song, artist, releases_song
+			WHERE song.songID = releases_song.songID
+			AND artist.artistID = releases_song.artistID
+			AND song.songID IN (
+				SELECT DISTINCT songID 
+				FROM releases_song 
+				WHERE artistID = ?
+			)
+			ORDER BY song.title, releases_song.artistIndex
+    	");
 
 		$stmt->bind_param("i", $artistID);
 		$stmt->execute();
