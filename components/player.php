@@ -188,6 +188,7 @@
 					songID: song.songID,
 					title: song.title,
 					artists: song.artists,
+					artistIDs: song.artistIDs || [], // Add this line
 					fileName: (localStorage.getItem('audioFormat') === 'flac' ? song.flacFilename : song.opusFilename),
 					imageName: song.thumbnailName || ''
 				}));
@@ -208,7 +209,14 @@
 
 				this.audio.src = `${this.audioBasePath}${song.fileName}`;
 				this.playerTitle.textContent = song.title;
-				this.playerArtist.textContent = song.artists;
+
+				// Use artist links if available
+				if (song.artistIDs && song.artistIDs.length > 0) {
+					this.playerArtist.innerHTML = this.generateArtistLinks(song.artists, song.artistIDs);
+				} else {
+					this.playerArtist.textContent = song.artists;
+				}
+
 				this.playerCover.src = song.imageName ?
 					`${this.imageBasePath}${song.imageName}` :
 					'../images/defaultSong.webp';
@@ -328,17 +336,19 @@
 						index === this.currentIndex ? 'active' : ''
 					}`;
 
-					li.innerHTML = `
-                    <img src="${song.imageName ? `${this.imageBasePath}${song.imageName}` : '../images/defaultSong.webp'}"
-                         class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                    <div class="flex-grow-1">
-                        <div class="text-truncate">${song.title}</div>
-                        <small style="color: rgb(200, 200, 200)">${song.artists}</small>
-                    </div>
-                    <button class="btn btn-sm text-danger" onclick="event.stopPropagation(); player.removeFromQueue(${index})">
-                        <i class="bi bi-x"></i>
-                    </button>
-                `;
+					const artistDisplay = song.artistIDs && song.artistIDs.length > 0
+						? this.generateArtistLinks(song.artists, song.artistIDs)
+						: song.artists;
+
+					li.innerHTML = `<img src="${song.imageName ? `${this.imageBasePath}${song.imageName}` : '../images/defaultSong.webp'}"
+									class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+									<div class="flex-grow-1">
+										<div class="text-truncate">${song.title}</div>
+										<small style="color: rgb(200, 200, 200)">${artistDisplay}</small>
+									</div>
+									<button class="btn btn-sm text-danger" onclick="event.stopPropagation(); player.removeFromQueue(${index})">
+										<i class="bi bi-x"></i>
+									</button>`;
 
 					li.onclick = () => this.playFromQueue(index);
 					this.queueList.appendChild(li);
@@ -376,6 +386,23 @@
 				const iconClass = this.audio.muted || this.audio.volume === 0 ? 'volume-mute' :
 					this.audio.volume < 0.5 ? 'volume-down' : 'volume-up';
 				this.volumeIcon.className = `bi bi-${iconClass} me-2`;
+			}
+
+			generateArtistLinks(artistsString, artistIDs) {
+				if (!artistIDs || artistIDs.length === 0) {
+					return artistsString;
+				}
+
+				const artists = artistsString.split(', ');
+				const artistLinks = artists.map((artist, index) => {
+					const artistID = artistIDs[index];
+					if (artistID) {
+						return `<a href="/BeatStream/view/artist.php?id=${artistID}" class="custom-link">${artist}</a>`;
+					}
+					return artist;
+				});
+
+				return artistLinks.join(', ');
 			}
 		}
 
