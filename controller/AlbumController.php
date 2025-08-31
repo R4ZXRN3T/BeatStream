@@ -332,4 +332,37 @@ class AlbumController
 			$stmt->close();
 		}
 	}
+
+	public static function searchAlbum(string $query): array
+	{
+		$stmt = DBConn::getConn()->prepare("
+			SELECT album.albumID, album.title, artist.name, album.imageName, album.thumbnailName, album.length, album.duration, artist.artistID
+			FROM album
+			JOIN releases_album ON album.albumID = releases_album.albumID
+			JOIN artist ON artist.artistID = releases_album.artistID
+			WHERE
+				(album.title LIKE CONCAT('%', ?, '%') OR damlev(album.title, ?) <= 2)
+				OR (artist.name LIKE CONCAT('%', ?, '%') OR damlev(artist.name, ?) <= 2)
+			ORDER BY album.title, releases_album.artistIndex
+		");
+		$stmt->bind_param("ssss", $query, $query, $query, $query);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$albumList = [];
+		while ($row = $result->fetch_assoc()) {
+			$albumID = $row["albumID"];
+			if (!isset($albumList[$albumID])) {
+				$albumList[$albumID] = new Album(
+					$row["albumID"], $row["title"], [], [$row["name"]], [$row["artistID"]],
+					$row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"]
+				);
+			} else {
+				$albumList[$albumID]->setArtists(array_merge($albumList[$albumID]->getArtists(), [$row["name"]]));
+				$albumList[$albumID]->setArtistIDs(array_merge($albumList[$albumID]->getArtistIDs(), [$row["artistID"]]));
+			}
+		}
+		$stmt->close();
+		return array_values($albumList);
+	}
 }

@@ -121,4 +121,23 @@ class ArtistController
 			return null;
 		}
 	}
+
+	public static function searchArtist(string $query): array
+	{
+		$stmt = DBConn::getConn()->prepare("
+			SELECT * FROM artist
+			WHERE (name LIKE CONCAT('%', ?, '%') OR damlev(name, ?) <= 2)
+			ORDER BY name
+		");
+		$stmt->bind_param("ss", $query, $query);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$artistList = [];
+		while ($row = $result->fetch_assoc()) {
+			$artistList[] = new Artist($row["artistID"], $row["name"], $row["imageName"], $row["thumbnailName"], $row["activeSince"], $row["userID"]);
+		}
+		$stmt->close();
+		return $artistList;
+	}
 }
