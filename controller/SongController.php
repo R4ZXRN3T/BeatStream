@@ -327,4 +327,64 @@ class SongController
 			$stmt->close();
 		}
 	}
+
+	public static function searchSong(string $query): array
+	{
+		// Step 1: Find matching song IDs
+		$stmt = DBConn::getConn()->prepare("
+			SELECT DISTINCT song.songID
+			FROM song
+			JOIN releases_song ON song.songID = releases_song.songID
+			JOIN artist ON artist.artistID = releases_song.artistID
+			WHERE
+				((song.title LIKE CONCAT('%', ?, '%') OR damlev(song.title, ?) <= 2) OR
+				(artist.name LIKE CONCAT('%', ?, '%') OR damlev(artist.name, ?) <= 2))
+		");
+		$stmt->bind_param("ssss", $query, $query, $query, $query);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$songIDs = [];
+		while ($row = $result->fetch_assoc()) {
+			$songIDs[] = $row["songID"];
+		}
+		$stmt->close();
+
+		if (empty($songIDs)) {
+			return [];
+		}
+
+		// Step 2: Get all artists for those songs
+		$placeholders = implode(',', array_fill(0, count($songIDs), '?'));
+		$types = str_repeat('i', count($songIDs));
+		$stmt = DBConn::getConn()->prepare("
+			SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
+				song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+			FROM song
+			JOIN releases_song ON song.songID = releases_song.songID
+			JOIN artist ON artist.artistID = releases_song.artistID
+			WHERE song.songID IN ($placeholders)
+			ORDER BY song.title, releases_song.artistIndex
+		");
+		$stmt->bind_param($types, ...$songIDs);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$songList = [];
+		while ($row = $result->fetch_assoc()) {
+			$songID = $row["songID"];
+			if (!isset($songList[$songID])) {
+				$songList[$songID] = new Song(
+					$row["songID"], $row["title"], [$row["name"]], [$row["artistID"]],
+					$row["genre"], $row["releaseDate"], $row["songLength"],
+					$row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]
+				);
+			} else {
+				$songList[$songID]->setArtists(array_merge($songList[$songID]->getArtists(), [$row["name"]]));
+				$songList[$songID]->setArtistIDs(array_merge($songList[$songID]->getArtistIDs(), [$row["artistID"]]));
+			}
+		}
+		$stmt->close();
+		return array_values($songList);
+	}
 }

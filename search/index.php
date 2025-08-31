@@ -1,6 +1,5 @@
 <?php
 include("../dbConnection.php");
-include("../DataController.php");
 session_start();
 
 $isAdmin = false;
@@ -26,62 +25,27 @@ if (!empty($_GET['search'])) {
 	$searchTerm = trim($_GET['search']);
 	$searchCategory = $_GET['category'] ?? 'all';
 
-	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
-	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
-	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php");
-	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
-	require_once ($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
+	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
+	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php");
+	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
+	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
 
-	// Get all data lists
-	$allSongs = SongController::getSongList();
-	$allArtists = ArtistController::getArtistList();
-	$allAlbums = AlbumController::getAlbumList();
-	$allPlaylists = PlaylistController::getPlaylistList();
-	$allUsers = UserController::getUserList();
-
-	// Create user lookup array for playlist creators
-	$usernames = [];
-	foreach ($allUsers as $user) {
-		$usernames[$user->getUserID()] = $user->getUsername();
-	}
-
-	// Search in songs
+	// Only use specific controllers for searching
 	if ($searchCategory == 'all' || $searchCategory == 'songs') {
-		foreach ($allSongs as $song) {
-			if (stripos($song->getTitle(), $searchTerm) !== false ||
-					stripos(implode(", ", $song->getArtists()), $searchTerm) !== false ||
-					stripos($song->getGenre(), $searchTerm) !== false) {
-				$songResults[] = $song;
-			}
-		}
+		$songResults = SongController::searchSong($searchTerm);
 	}
 
-	// Search in artists
 	if ($searchCategory == 'all' || $searchCategory == 'artists') {
-		foreach ($allArtists as $artist) {
-			if (stripos($artist->getName(), $searchTerm) !== false) {
-				$artistResults[] = $artist;
-			}
-		}
+		$artistResults = ArtistController::searchArtist($searchTerm);
 	}
 
-	// Search in albums
 	if ($searchCategory == 'all' || $searchCategory == 'albums') {
-		foreach ($allAlbums as $album) {
-			if (stripos($album->getName(), $searchTerm) !== false ||
-					stripos(implode(", ", $album->getArtists()), $searchTerm) !== false) {
-				$albumResults[] = $album;
-			}
-		}
+		$albumResults = AlbumController::searchAlbum($searchTerm);
 	}
 
-	// Search in playlists
 	if ($searchCategory == 'all' || $searchCategory == 'playlists') {
-		foreach ($allPlaylists as $playlist) {
-			if (stripos($playlist->getName(), $searchTerm) !== false) {
-				$playlistResults[] = $playlist;
-			}
-		}
+		$playlistResults = PlaylistController::searchPlaylist($searchTerm);
 	}
 
 	// Create song queue data for player
@@ -90,8 +54,9 @@ if (!empty($_GET['search'])) {
 				'songID' => $song->getSongID(),
 				'title' => $song->getTitle(),
 				'artists' => implode(", ", $song->getArtists()),
-				'flacFileName' => $song->getFlacFileName(),
-				'opusFileName' => $song->getOpusFileName(),
+				'artistIDs' => $song->getArtistIDs(),
+				'flacFilename' => $song->getFlacFileName(),
+				'opusFilename' => $song->getOpusFileName(),
 				'imageName' => $song->getImageName(),
 				'thumbnailName' => $song->getThumbnailName(),
 		];
@@ -252,39 +217,14 @@ if (!empty($_GET['search'])) {
 							<div class="results-section">
 								<h3>Albums</h3>
 								<div class="result-count"><?php echo count($albumResults); ?> results</div>
-								<div class="row g-4">
-									<?php foreach ($albumResults as $album): ?>
-										<div class="col-12 col-md-6 col-lg-4">
-											<a class="custom-link"
-											   href="../view/album.php?id=<?php echo $album->getAlbumID(); ?>">
-												<div class="card shadow-sm border-0" style="border-radius: 10px;">
-													<div class="card-body d-flex align-items-center p-3">
-														<?php if (!empty($album->getimageName())): ?>
-															<img src="<?php echo "/BeatStream/images/album/" . htmlspecialchars($album->getimageName()); ?>"
-																 class="me-3 rounded"
-																 alt="<?php echo htmlspecialchars($album->getName()); ?>"
-																 style="width: 50px; height: 50px; object-fit: cover;">
-														<?php else: ?>
-															<img src="../images/defaultAlbum.webp" class="me-3 rounded"
-																 alt="Default Album Cover"
-																 style="width: 50px; height: 50px; object-fit: cover;">
-														<?php endif; ?>
-														<div>
-															<h5 class="card-title mb-1"
-																style="font-size: 1.1rem; font-weight: bold;">
-																<?php echo htmlspecialchars($album->getName()); ?>
-															</h5>
-															<p class="card-text mb-0"
-															   style="font-size: 0.9rem; color: #6c757d;">
-																<?php echo htmlspecialchars(implode(", ", $album->getArtists())); ?>
-															</p>
-														</div>
-													</div>
-												</div>
-											</a>
-										</div>
-									<?php endforeach; ?>
-								</div>
+								<?php
+								$albumList = $albumResults;
+								$options = [
+										'containerClass' => 'col-12 col-md-6 col-lg-4',
+										'emptyMessage' => 'No albums found.'
+								];
+								include($_SERVER['DOCUMENT_ROOT'] . '/BeatStream/components/album-list.php');
+								?>
 							</div>
 						<?php endif; ?>
 
@@ -301,7 +241,7 @@ if (!empty($_GET['search'])) {
 										'homepageStyle' => false
 								];
 								$playlistList = $playlistResults;
-								include('/BeatStream/components/playlist-list.php');
+								include($_SERVER['DOCUMENT_ROOT'] . '/BeatStream/components/playlist-list.php');
 								?>
 							</div>
 						<?php endif; ?>
