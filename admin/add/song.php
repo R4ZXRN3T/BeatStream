@@ -77,8 +77,9 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php";
 			$artistList = ArtistController::getArtistList();
 			$isValid = true;
 			$errorMessage = "";
@@ -161,7 +162,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($artistList as $artist) {
-										echo "<option value='{$artist->getArtistID()}'>{$artist->getName()}</option>";
+										echo "<option value='{$artist->getArtistID()}'>" . $artist->getName() . " (" . UserController::getUserById($artist->getUserID())->getUsername() . ")" . "</option>";
 									}
 									?>
 								</select>
