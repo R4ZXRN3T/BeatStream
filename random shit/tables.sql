@@ -52,7 +52,7 @@ CREATE TABLE playlist
 CREATE TABLE artist
 (
 	artistID      INT PRIMARY KEY,
-	name          VARCHAR(255) NOT NULL UNIQUE,
+	name          VARCHAR(255) NOT NULL,
 	imageName     VARCHAR(255),
 	thumbnailName VARCHAR(255),
 	activeSince   DATE,
