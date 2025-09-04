@@ -4,10 +4,14 @@
 	ExpiresByType image/jpeg "access plus 1 year"
 	ExpiresByType image/png "access plus 1 year"
 	ExpiresByType image/gif "access plus 1 year"
+	ExpiresByType audio/flac "access plus 1 year"
+	ExpiresByType audio/x-flac "access plus 1 year"
+	ExpiresByType audio/ogg "access plus 1 year"
+	ExpiresByType audio/opus "access plus 1 year"
 </IfModule>
 
 <IfModule mod_headers.c>
-	<FilesMatch "\.(webp|jpg|jpeg|png|gif)$">
+	<FilesMatch "\.(webp|jpg|jpeg|png|gif|flac|opus)$">
 		Header set Cache-Control "public, max-age=31536000"
 	</FilesMatch>
 </IfModule>
