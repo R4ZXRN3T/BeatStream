@@ -79,6 +79,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php";
 			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
 			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+			require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php";
 			$artistList = ArtistController::getArtistList();
 			$songList = SongController::getSongList();
 
@@ -154,7 +155,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($artistList as $artist) {
-										echo "<option value='{$artist->getArtistID()}'>{$artist->getName()}</option>";
+										echo "<option value='{$artist->getArtistID()}'>" . $artist->getName() . " (" . UserController::getUserById($artist->getUserID())->getUsername() . ")" . "</option>";
 									}
 									?>
 								</select>
