@@ -30,10 +30,10 @@
 	border-radius: 6px !important;
 	box-shadow: var(--shadow-light);
 	transition: transform var(--transition-normal);
-	width: 75px !important;
-	height: 75px !important;
+	width: 64px !important;
+	height: 64px !important;
 	object-fit: cover !important;
-	margin: 5px 20px 5px 5px !important;
+	margin: 3px 20px 3px 3px !important;
 }
 
 #playerTitle {
