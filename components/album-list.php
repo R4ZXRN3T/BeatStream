@@ -11,12 +11,12 @@ $emptyMessage = $options['emptyMessage'] ?? 'No albums available.';
 $albums = $albumList ?? [];
 ?>
 
-<div class="row g-4">
+<div class="row g-3">
 	<?php if (!empty($albums)): ?>
 		<?php foreach ($albums as $album): ?>
 			<?php
 			$cardOptions = [
-				'containerClass' => $containerClass
+					'containerClass' => $containerClass
 			];
 			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-card.php");
 			?>
