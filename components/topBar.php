@@ -13,7 +13,7 @@
 		<div class="ms-auto d-flex align-items-center">
 			<button id="audioFormatToggle" class="btn btn-secondary me-2" title="Toggle Audio Format"
 					style="background-color: transparent; border: none;">
-				<img id="audioFormatImage" class="codec-image" src="/BeatStream/images/flac_logo.webp" alt="FLAC">
+				<img id="audioFormatImage" class="codec-image" src="/BeatStream/images/opus_logo.webp" alt="opus">
 			</button>
 			<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode"
 					style="background-color: transparent; border: none;">
@@ -66,13 +66,17 @@
 		const audioToggle = document.getElementById('audioFormatToggle');
 		const audioFormatImage = document.getElementById('audioFormatImage');
 
+		if (localStorage.getItem('audioFormat') === null) {
+			localStorage.setItem('audioFormat', 'opus');
+		}
+
 		// Load preference
-		const savedFormat = localStorage.getItem('audioFormat') || 'flac';
+		const savedFormat = localStorage.getItem('audioFormat') || 'opus';
 		audioFormatImage.src = `/BeatStream/images/${savedFormat}_logo.webp`;
 		audioFormatImage.alt = savedFormat.toUpperCase();
 
 		audioToggle.onclick = function () {
-			const currentFormat = localStorage.getItem('audioFormat') || 'flac';
+			const currentFormat = localStorage.getItem('audioFormat') || 'opus';
 			const newFormat = currentFormat === 'flac' ? 'opus' : 'flac';
 
 			localStorage.setItem('audioFormat', newFormat);
@@ -81,7 +85,7 @@
 
 			// Trigger custom event for other parts of your app to listen to
 			document.dispatchEvent(new CustomEvent('audioFormatChanged', {
-				detail: { format: newFormat }
+				detail: {format: newFormat}
 			}));
 		};
 	</script>
