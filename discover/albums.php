@@ -80,7 +80,7 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 			<div class="container mt-4">
 				<?php
 				$options = [
-						'containerClass' => 'col-md-4 mb-4',
+						'containerClass' => 'col-md-4 mb',
 						'emptyMessage' => 'No albums available at the moment.',
 						'compact' => true
 				];
@@ -88,9 +88,8 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 				include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-list.php");
 				?>
 			</div>
+		</main>
 	</div>
-	</main>
-</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
