@@ -4,11 +4,12 @@ class Converter
 {
 	private static int $opusBitrate = 160;
 	private static int $flacCompressionLevel = 8;
-	private static string $ffmpegPath = 'C:\\Tools\\ffmpeg\\ffmpeg.exe';
-	private static string $ffprobePath = 'C:\\Tools\\ffmpeg\\ffprobe.exe';
 
 	public static function uploadAudio($file): array
 	{
+		$ffmpegPath = self::isWindows() ? shell_exec("where.exe ffmpeg") : shell_exec("which ffmpeg");
+		$ffprobePath = self::isWindows() ? shell_exec("where.exe ffprobe") : shell_exec("which ffprobe");
+
 		$flacUploadDir = $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/flac/";
 		$opusUploadDir = $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/opus/";
 
@@ -49,7 +50,7 @@ class Converter
 			// Get duration using ffprobe
 			$durationCmd = sprintf(
 				'"%s" -v quiet -print_format csv=p=0 -show_entries format=duration "%s"',
-				self::$ffprobePath,
+				$ffprobePath,
 				escapeshellarg($file['tmp_name'])
 			);
 			$duration = trim(shell_exec($durationCmd));
@@ -57,7 +58,7 @@ class Converter
 			// Convert to FLAC
 			$flacCmd = sprintf(
 				'"%s" -i "%s" -vn -map 0:a -compression_level %d -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
-				self::$ffmpegPath,
+				$ffmpegPath,
 				escapeshellarg($file['tmp_name']),
 				self::$flacCompressionLevel,
 				escapeshellarg($flacPath)
@@ -71,7 +72,7 @@ class Converter
 			// Convert to Opus
 			$opusCmd = sprintf(
 				'"%s" -i "%s" -vn -map 0:a -c:a libopus -b:a %dk -vbr on -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
-				self::$ffmpegPath,
+				$ffmpegPath,
 				escapeshellarg($file['tmp_name']),
 				self::$opusBitrate,
 				escapeshellarg($opusPath)
@@ -107,6 +108,14 @@ class Converter
 
 			return ['success' => false, 'error' => 'Audio conversion failed: ' . $e->getMessage()];
 		}
+	}
+
+	static public function isWindows(): bool
+	{
+		return match (true) {
+			stristr(PHP_OS, 'WIN') => true,
+			default => false,
+		};
 	}
 
 	public static function uploadImage($image, ImageType $imageType): array
