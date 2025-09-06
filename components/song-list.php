@@ -16,7 +16,7 @@ $emptyMessage = $options['emptyMessage'] ?? 'No songs available.';
 ?>
 
 <div class="row g-3">
-    <?php if (!empty($songs)): ?>
+	<?php if (!empty($songs)): ?>
 		<?php foreach ($songs as $index => $song): ?>
 			<?php
 			$options = [
@@ -30,9 +30,9 @@ $emptyMessage = $options['emptyMessage'] ?? 'No songs available.';
 			include('song-card.php');
 			?>
 		<?php endforeach; ?>
-    <?php else: ?>
-        <div class="col-12">
-            <p class="text-center"><?php echo htmlspecialchars($emptyMessage); ?></p>
-        </div>
-    <?php endif; ?>
+	<?php else: ?>
+		<div class="col-12">
+			<p class="text-center"><?php echo htmlspecialchars($emptyMessage); ?></p>
+		</div>
+	<?php endif; ?>
 </div>
