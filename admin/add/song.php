@@ -119,19 +119,21 @@ include_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/mp3file.class.php")
 					}
 				}
 
-				SongController::insertSong(new Song(
-						0,
-						$_POST["titleInput"],
-						[],
-						$_POST["artistInput"],
-						$_POST["genreInput"],
-						$_POST["releaseDateInput"],
-						$songLength,
-						$flacFilename,
-						$opusFilename,
-						$imageName,
-						$thumbnailName
-				));
+				if ($isValid) {
+					SongController::insertSong(new Song(
+							0,
+							$_POST["titleInput"],
+							[],
+							$_POST["artistInput"],
+							$_POST["genreInput"],
+							$_POST["releaseDateInput"],
+							$songLength,
+							$flacFilename,
+							$opusFilename,
+							$imageName,
+							$thumbnailName
+					));
+				}
 			}
 			?>
 
