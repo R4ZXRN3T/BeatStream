@@ -1,4 +1,6 @@
-/* ===== CSS VARIABLES ===== */
+/* =========================
+   CSS VARIABLES
+   ========================= */
 :root {
 	--card-bg: #fff;
 	--primary-dark: #343a40;
@@ -15,14 +17,15 @@
 	--shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== BASE STYLES ===== */
+/* =========================
+   BASE & LAYOUT
+   ========================= */
 body {
 	background-color: var(--light-bg);
 	margin-left: var(--sidebar-width);
 	margin-top: var(--navbar-height);
 }
 
-/* ===== LAYOUT ===== */
 .main {
 	padding: 20px;
 	margin-bottom: 300px;
@@ -32,7 +35,9 @@ body {
 	margin-left: 50px;
 }
 
-/* ===== SIDEBAR ===== */
+/* =========================
+   SIDEBAR
+   ========================= */
 .sidebar {
 	background: linear-gradient(180deg, var(--primary-dark), var(--secondary-dark));
 	border-right: 2px solid var(--border-color);
@@ -63,7 +68,9 @@ body {
 	font-weight: bold;
 }
 
-/* ===== NAVIGATION ===== */
+/* =========================
+   NAVIGATION
+   ========================= */
 .myNavbar {
 	margin-bottom: 20px;
 }
@@ -77,7 +84,9 @@ body {
 	color: white;
 }
 
-/* ===== TABLES ===== */
+/* =========================
+   TABLES
+   ========================= */
 .table {
 	border-collapse: collapse;
 	margin: 0 auto;
@@ -100,7 +109,9 @@ tr:nth-child(even) {
 	background-color: #c7c7c7;
 }
 
-/* ===== CARD COMPONENTS ===== */
+/* =========================
+   CARD COMPONENTS
+   ========================= */
 .card-img-top {
 	height: 180px;
 	object-fit: cover;
@@ -111,14 +122,14 @@ tr:nth-child(even) {
 	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
 	border-radius: 0;
 	position: relative;
-	overflow: hidden;
+	overflow: visible;
 	white-space: nowrap;
 	max-width: 100%;
 }
 
 .card-body[data-song-id]:hover,
 .card:hover {
-	background-color: rgba(93, 93, 93, 0.5);
+	background-color: rgba(200, 200, 200, 0.5);
 	border-radius: 10px;
 	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
 }
@@ -142,7 +153,42 @@ tr:nth-child(even) {
 	border-radius: 10px;
 }
 
-/* ===== SONG ELEMENTS ===== */
+/* =========================
+   SONG CARDS
+   ========================= */
+
+/* --- Menu Button --- */
+.song-menu-btn {
+	opacity: 0;
+	transition: opacity 0.2s;
+	font-size: 1.5rem;
+}
+
+.song-card:hover .song-menu-btn,
+.song-menu-btn:focus {
+	opacity: 1;
+}
+
+.song-menu-dropdown,
+.dropdown-submenu {
+	position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+	top: 0;
+	left: 100%;
+	margin-top: -6px;
+	margin-left: 0;
+	display: none;
+	position: absolute;
+}
+
+.dropdown-submenu:hover > .dropdown-menu,
+.dropdown-submenu:focus-within > .dropdown-menu {
+	display: block;
+}
+
+/* --- Song card elements --- */
 .song-image {
 	width: 64px;
 	height: 64px;
@@ -179,20 +225,34 @@ tr:nth-child(even) {
 	color: #6c757d;
 }
 
-/* ===== ALBUM COMPONENTS ===== */
-.album-card {
+.song-info-container {
+	max-width: 65%;
+	min-width: 0;
+	position: relative;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* =========================
+   ALBUM COMPONENTS
+   ========================= */
+.album-card,
+.playlist-card {
 	border-radius: 10px;
 	cursor: pointer;
 	transition: background-color var(--transition-fast), transform var(--transition-fast);
 }
 
-.album-card:hover {
+.album-card:hover,
+.playlist-card:hover {
 	background-color: rgba(93, 93, 93, 0.5);
 	border-radius: 10px;
 	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
 }
 
-.album-card-large {
+.album-card-large,
+.playlist-card-large {
 	width: 100%;
 }
 
@@ -204,18 +264,21 @@ tr:nth-child(even) {
 }
 
 .album-card-standard .album-image {
-	width: 64px;
-	height: 64px;
+	width: 80px;
+	height: 80px;
 	object-fit: cover;
 }
 
-.album-title {
+.album-title,
+.playlist-title {
 	font-size: 1.1rem;
 	font-weight: bold;
 	margin-bottom: 0.25rem;
 }
 
-.album-artist {
+.album-artist,
+.album-info,
+.playlist-creator {
 	font-size: 0.9rem;
 	color: var(--text-muted);
 	margin-bottom: 0;
@@ -223,26 +286,7 @@ tr:nth-child(even) {
 
 .album-info {
 	font-size: 0.8rem;
-	color: var(--text-muted);
 	text-align: left;
-	margin-bottom: 0;
-}
-
-/* ===== PLAYLIST COMPONENTS ===== */
-.playlist-card {
-	border-radius: 10px;
-	cursor: pointer;
-	transition: background-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.playlist-card:hover {
-	background-color: rgba(93, 93, 93, 0.5);
-	border-radius: 10px;
-	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
-}
-
-.playlist-card-large {
-	width: 100%;
 }
 
 .playlist-card-large .playlist-image {
@@ -252,31 +296,16 @@ tr:nth-child(even) {
 	border-radius: 10px 10px 0 0;
 }
 
-.playlist-card-standard .playlist-image {
-	width: 80px;
-	height: 80px;
-	object-fit: cover;
-}
-
+.playlist-card-standard .playlist-image,
 .playlist-image {
 	width: 80px;
 	height: 80px;
 	object-fit: cover;
 }
 
-.playlist-title {
-	font-size: 1.1rem;
-	font-weight: bold;
-	margin-bottom: 0.25rem;
-}
-
-.playlist-creator {
-	font-size: 0.9rem;
-	color: var(--text-muted);
-	margin-bottom: 0;
-}
-
-/* ===== ARTIST COMPONENTS ===== */
+/* =========================
+   ARTIST COMPONENTS
+   ========================= */
 .artist-header {
 	background-color: #ffffff;
 	margin-bottom: 2rem;
@@ -291,7 +320,9 @@ tr:nth-child(even) {
 	width: 200px;
 }
 
-/* ===== FORMS ===== */
+/* =========================
+   FORMS
+   ========================= */
 .form-control {
 	border: 1px solid #ced4da;
 	border-radius: 5px;
@@ -299,7 +330,9 @@ tr:nth-child(even) {
 	padding: 10px;
 }
 
-/* ===== SEARCH ===== */
+/* =========================
+   SEARCH
+   ========================= */
 .search-container {
 	max-width: 800px;
 	margin: 0 auto 2rem;
@@ -321,7 +354,9 @@ tr:nth-child(even) {
 	color: var(--text-muted);
 }
 
-/* ===== EDIT PLAYLIST ===== */
+/* =========================
+   EDIT PLAYLIST
+   ========================= */
 .edit-playlist .song-list {
 	height: 400px;
 	overflow-y: auto;
@@ -359,7 +394,9 @@ tr:nth-child(even) {
 	box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
-/* ===== UTILITY CLASSES ===== */
+/* =========================
+   UTILITY CLASSES
+   ========================= */
 .rcorners1 {
 	border-radius: 10px;
 	height: 40px;
@@ -398,7 +435,9 @@ h2.recommended-header {
 	font-size: 23px !important;
 }
 
-/* ===== ANIMATIONS ===== */
+/* =========================
+   ANIMATIONS
+   ========================= */
 @keyframes pulse {
 	0% {
 		transform: scale(1);
@@ -415,7 +454,9 @@ h2.recommended-header {
 	animation: pulse 0.2s ease;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
+/* =========================
+   RESPONSIVE DESIGN
+   ========================= */
 @media (max-width: 768px) {
 	.controls {
 		gap: 0.5rem !important;
@@ -432,7 +473,9 @@ h2.recommended-header {
 	}
 }
 
-/* ===== DARK MODE STYLES ===== */
+/* =========================
+   DARK MODE
+   ========================= */
 body.dark-mode {
 	--card-bg: #23272b;
 	--light-bg: #181818;
@@ -441,7 +484,7 @@ body.dark-mode {
 	color: #e0e0e0;
 }
 
-/* Dark mode sidebar */
+/* --- Sidebar --- */
 body.dark-mode .sidebar {
 	background: linear-gradient(180deg, #23272b, #181a1b);
 	border-right: 2px solid var(--primary-dark);
@@ -458,7 +501,7 @@ body.dark-mode .sidebar a.active {
 	color: #fff;
 }
 
-/* Dark mode navigation */
+/* --- Navigation --- */
 body.dark-mode .nav-tabs .nav-link.active {
 	background-color: #23272b;
 	color: #fff;
@@ -468,7 +511,7 @@ body.dark-mode .navbar-expand-lg .navbar-dark .navbar-nav .nav-link {
 	color: #646464;
 }
 
-/* Dark mode tables */
+/* --- Tables --- */
 body.dark-mode th {
 	background-color: #23272b;
 	color: #e0e0e0;
@@ -478,7 +521,7 @@ body.dark-mode tr:nth-child(even) {
 	background-color: #23272b;
 }
 
-/* Dark mode cards */
+/* --- Cards --- */
 body.dark-mode .card {
 	background-color: #23272b;
 	color: #e0e0e0;
@@ -493,17 +536,20 @@ body.dark-mode .card-body:after {
 	background: linear-gradient(to right, rgba(35, 39, 43, 0), var(--card-bg));
 }
 
+body.dark-mode .card-body[data-song-id]:hover,
 body.dark-mode .card:hover {
-	background-color: #23272b;
+	background-color: rgba(75, 75, 75, 0.5) !important;
 }
 
-/* Dark mode albums */
-body.dark-mode .album-card {
+/* --- Albums --- */
+body.dark-mode .album-card,
+body.dark-mode .playlist-card {
 	background-color: #23272b;
 	color: #e0e0e0;
 }
 
-body.dark-mode .album-card:hover {
+body.dark-mode .album-card:hover,
+body.dark-mode .playlist-card:hover {
 	background-color: rgba(93, 93, 93, 0.5);
 	border-radius: 10px;
 	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
@@ -511,50 +557,31 @@ body.dark-mode .album-card:hover {
 
 body.dark-mode .album-title,
 body.dark-mode .album-artist,
-body.dark-mode .album-info {
-	color: #e0e0e0;
-}
-
-body.dark-mode .album-artist,
-body.dark-mode .album-info {
-	color: var(--text-muted) !important;
-}
-
-/* Dark mode playlists */
-body.dark-mode .playlist-card {
-	background-color: #23272b;
-	color: #e0e0e0;
-}
-
-body.dark-mode .playlist-card:hover {
-	background-color: rgba(93, 93, 93, 0.5);
-	border-radius: 10px;
-	transition: background-color var(--transition-fast), border-radius var(--transition-fast);
-}
-
+body.dark-mode .album-info,
 body.dark-mode .playlist-title,
 body.dark-mode .playlist-creator {
 	color: #e0e0e0;
 }
 
+body.dark-mode .album-artist,
+body.dark-mode .album-info,
 body.dark-mode .playlist-creator {
 	color: var(--text-muted) !important;
 }
 
-/* Dark mode artist */
+/* --- Artist --- */
 body.dark-mode .artist-header {
 	background-color: #23272b;
 }
 
-/* Dark mode forms */
+/* --- Forms --- */
 body.dark-mode .form-control {
 	background-color: var(--primary-dark);
 	color: #e0e0e0;
 }
 
-/* Dark mode placeholder */
 body.dark-mode .form-control::placeholder {
-	color: #e0e0e0; /* Dark mode placeholder color */
+	color: #e0e0e0;
 }
 
 body.dark-mode .form-control::file-selector-button {

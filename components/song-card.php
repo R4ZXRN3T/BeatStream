@@ -32,7 +32,7 @@ if ($showArtistLinks && !empty($song->getArtists())) {
 		$artistID = $artistIDs[$i] ?? null;
 
 		if ($artistID) {
-			$artistLinks[] = '<a href="/BeatStream/view/artist.php?id=' . $artistID . '" class="custom-link">' . $artistName . '</a>';
+			$artistLinks[] = '<a href="/BeatStream/view/artist.php?id=' . $artistID . '" class="custom-link" onclick="event.stopPropagation();">' . $artistName . '</a>';
 		} else {
 			$artistLinks[] = $artistName; // Fallback to plain text if no artist ID
 		}
@@ -70,7 +70,7 @@ $songData = htmlspecialchars(json_encode($songQueueData));
 				<?php endif; ?>
 			</div>
 
-			<div class="flex-grow-1">
+			<div class="flex-grow-1 song-info-container">
 				<h5 class="card-title mb-1 song-title">
 					<?= htmlspecialchars($song->getTitle()) ?>
 				</h5>
