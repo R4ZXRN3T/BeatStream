@@ -7,9 +7,6 @@ class Converter
 
 	public static function uploadAudio($file): array
 	{
-		$ffmpegPath = self::isWindows() ? shell_exec("where.exe ffmpeg") : shell_exec("which ffmpeg");
-		$ffprobePath = self::isWindows() ? shell_exec("where.exe ffprobe") : shell_exec("which ffprobe");
-
 		$flacUploadDir = $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/flac/";
 		$opusUploadDir = $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/opus/";
 
@@ -30,8 +27,10 @@ class Converter
 		}
 
 		$losslessFormats = ['wav', 'flac', 'caf', 'aiff', 'aif', 'ape', 'wv', 'tta', 'shn', 'pcm', 'au', 'snd', 'w64', 'rf64', 'bwf', 'tak', 'als'];
-		$isLossy = !in_array(strtolower($extension), $losslessFormats);
-		$warning = $isLossy ? 'Warning: You are uploading a lossy audio format (' . strtoupper($extension) . '). For best quality, consider using lossless formats like FLAC or WAV.' : null;
+
+		if (!in_array(strtolower($extension), $losslessFormats)) {
+			return ['success' => false, 'error' => 'Error: You are uploading a lossy audio format (' . strtoupper($extension) . '). In order to keep up our quality standard, you must upload lossless files such as FLAC or WAV.'];
+		}
 
 		if (!is_dir($flacUploadDir)) {
 			mkdir($flacUploadDir, 0777, true);
@@ -49,16 +48,14 @@ class Converter
 		try {
 			// Get duration using ffprobe
 			$durationCmd = sprintf(
-				'"%s" -v quiet -print_format csv=p=0 -show_entries format=duration "%s"',
-				$ffprobePath,
+				'ffprobe -v quiet -print_format csv=p=0 -show_entries format=duration "%s"',
 				escapeshellarg($file['tmp_name'])
 			);
 			$duration = trim(shell_exec($durationCmd));
 
 			// Convert to FLAC
 			$flacCmd = sprintf(
-				'"%s" -i "%s" -vn -map 0:a -compression_level %d -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
-				$ffmpegPath,
+				'ffmpeg -i "%s" -vn -map 0:a -compression_level %d -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
 				escapeshellarg($file['tmp_name']),
 				self::$flacCompressionLevel,
 				escapeshellarg($flacPath)
@@ -71,8 +68,7 @@ class Converter
 
 			// Convert to Opus
 			$opusCmd = sprintf(
-				'"%s" -i "%s" -vn -map 0:a -c:a libopus -b:a %dk -vbr on -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
-				$ffmpegPath,
+				'ffmpeg -i "%s" -vn -map 0:a -c:a libopus -b:a %dk -vbr on -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
 				escapeshellarg($file['tmp_name']),
 				self::$opusBitrate,
 				escapeshellarg($opusPath)
@@ -85,18 +81,12 @@ class Converter
 
 			$duration *= 1000;
 
-			$result = [
+			return [
 				'success' => true,
 				'flac_filename' => $flacFileName,
 				'opus_filename' => $opusFileName,
 				'duration' => (int)$duration // Convert seconds to milliseconds
 			];
-
-			if ($warning) {
-				$result['warning'] = $warning;
-			}
-
-			return $result;
 
 		} catch (Exception $e) {
 			if (file_exists($flacPath)) {
