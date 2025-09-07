@@ -95,6 +95,7 @@
 				this.basePath = '/BeatStream';
 				this.audioBasePath = `${this.basePath}/audio/${localStorage.getItem('audioFormat')}/`;
 				this.imageBasePath = `${this.basePath}/images/song/thumbnail/`;
+				this.largeImagePath = `${this.basePath}/images/song/large/`;
 
 				// Core elements only
 				this.playerUI = document.getElementById('musicPlayer');
@@ -190,7 +191,8 @@
 					artists: song.artists,
 					artistIDs: song.artistIDs || [], // Add this line
 					fileName: (localStorage.getItem('audioFormat') === 'flac' ? song.flacFilename : song.opusFilename),
-					imageName: song.thumbnailName || ''
+					thumbnailName: song.thumbnailName || '',
+					imageName: song.imageName || '',
 				}));
 
 				this.currentIndex = this.queue.findIndex(song =>
@@ -217,11 +219,32 @@
 					this.playerArtist.textContent = song.artists;
 				}
 
-				this.playerCover.src = song.imageName ?
-					`${this.imageBasePath}${song.imageName}` :
+				this.playerCover.src = song.thumbnailName ?
+					`${this.imageBasePath}${song.thumbnailName}` :
 					'../images/defaultSong.webp';
 
 				this.audio.play().catch(error => console.error('Playback error:', error));
+				if ("mediaSession" in navigator) {
+					navigator.mediaSession.metadata = new window.MediaMetadata({
+						title: song.title,
+						artist: song.artists,
+						album: "test",
+						artwork: [{
+							src: (song.imageName
+								? `${location.origin}/BeatStream/images/song/large/${song.imageName}`
+								: `${location.origin}/BeatStream/images/defaultSong.webp`),
+						}]
+					});
+
+					navigator.mediaSession.setActionHandler('play', () => this.audio.play());
+					navigator.mediaSession.setActionHandler('pause', () => this.audio.pause());
+					navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
+					navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
+
+					console.log("Image set to " + ((song.imageName)
+						? `${location.origin}/BeatStream/images/song/large/${song.imageName}`
+						: `${location.origin}/BeatStream/images/defaultSong.webp`));
+				}
 
 				document.dispatchEvent(new CustomEvent('songPlaying', {
 					detail: {songId: song.songID}
