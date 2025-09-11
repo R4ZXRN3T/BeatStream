@@ -92,6 +92,8 @@
 	document.addEventListener('DOMContentLoaded', function () {
 		class MusicPlayer {
 			constructor() {
+				this.originalTitle = document.title;
+
 				this.basePath = '/BeatStream';
 				this.audioBasePath = `${this.basePath}/audio/${localStorage.getItem('audioFormat')}/`;
 				this.imageBasePath = `${this.basePath}/images/song/thumbnail/`;
@@ -162,6 +164,13 @@
 				document.addEventListener('click', (e) => {
 					if (!this.queuePanel.contains(e.target) && e.target !== this.queueBtn) {
 						this.queuePanel.classList.add('d-none');
+					}
+				});
+
+				document.addEventListener('keydown', (e) => {
+					if ((e.code === 'Space' && !e.target.matches('input, textarea')) || (e.code === 'KeyK' && !e.target.matches('input, textarea'))) {
+						e.preventDefault();
+						this.togglePlayPause();
 					}
 				});
 			}
@@ -236,10 +245,12 @@
 						}]
 					});
 
-					navigator.mediaSession.setActionHandler('play', () => this.audio.play());
-					navigator.mediaSession.setActionHandler('pause', () => this.audio.pause());
+					navigator.mediaSession.setActionHandler('play', () => this.togglePlayPause());
+					navigator.mediaSession.setActionHandler('pause', () => this.togglePlayPause());
 					navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
 					navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
+
+					console.log(song.imageName);
 
 					console.log("Image set to " + ((song.imageName)
 						? `${location.origin}/BeatStream/images/song/large/${song.imageName}`
@@ -249,6 +260,8 @@
 				document.dispatchEvent(new CustomEvent('songPlaying', {
 					detail: {songId: song.songID}
 				}));
+
+				document.title = `▶ ${song.title} by ${song.artists} - BeatStream`;
 			}
 
 			playFromQueue(index) {
@@ -265,7 +278,13 @@
 					this.playSong(this.queue[0]);
 					return;
 				}
-				this.audio.paused ? this.audio.play() : this.audio.pause();
+				if (this.audio.paused) {
+					this.audio.play();
+					document.title = `▶ ${this.playerTitle.textContent} by ${this.playerArtist.textContent} - BeatStream`;
+				} else {
+					this.audio.pause();
+					document.title = `❚❚ ${this.playerTitle.textContent} by ${this.playerArtist.textContent} - BeatStream`;
+				}
 			}
 
 			playNext() {
@@ -363,7 +382,7 @@
 						? this.generateArtistLinks(song.artists, song.artistIDs)
 						: song.artists;
 
-					li.innerHTML = `<img src="${song.imageName ? `${this.imageBasePath}${song.imageName}` : '../images/defaultSong.webp'}"
+					li.innerHTML = `<img src="${song.thumbnailName ? `${this.imageBasePath}${song.thumbnailName}` : '../images/defaultSong.webp'}"
 									class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
 									<div class="flex-grow-1">
 										<div class="text-truncate">${song.title}</div>
