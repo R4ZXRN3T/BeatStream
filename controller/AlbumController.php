@@ -40,6 +40,14 @@ class AlbumController
 		}
 	}
 
+	public static function IdExists(int $albumID): bool
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT albumID FROM album WHERE albumID = ? LIMIT 1");
+		$stmt->bind_param("i", $albumID);
+		$stmt->execute();
+		return $stmt->get_result()->num_rows > 0;
+	}
+
 	public static function getAlbumList(string $sortBy = "album.title ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, artist.artistID
@@ -152,14 +160,6 @@ class AlbumController
 		}
 		$stmt->close();
 		return $albumList;
-	}
-
-	public static function IdExists(int $albumID): bool
-	{
-		$stmt = DBConn::getConn()->prepare("SELECT DISTINCT albumID FROM album WHERE albumID = ? LIMIT 1");
-		$stmt->bind_param("i", $albumID);
-		$stmt->execute();
-		return $stmt->get_result()->num_rows > 0;
 	}
 
 	public static function getAlbumByID(int $albumID): ?Album
@@ -340,12 +340,10 @@ class AlbumController
 			FROM album
 			JOIN releases_album ON album.albumID = releases_album.albumID
 			JOIN artist ON artist.artistID = releases_album.artistID
-			WHERE
-				(album.title LIKE CONCAT('%', ?, '%') OR damlev(album.title, ?) <= 2)
-				OR (artist.name LIKE CONCAT('%', ?, '%') OR damlev(artist.name, ?) <= 2)
+			WHERE album.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%')
 			ORDER BY album.title, releases_album.artistIndex
 		");
-		$stmt->bind_param("ssss", $query, $query, $query, $query);
+		$stmt->bind_param("ss", $query, $query);
 		$stmt->execute();
 		$result = $stmt->get_result();
 

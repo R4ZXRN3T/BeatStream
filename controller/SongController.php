@@ -332,15 +332,20 @@ class SongController
 	{
 		// Step 1: Find matching song IDs
 		$stmt = DBConn::getConn()->prepare("
-			SELECT DISTINCT song.songID
-			FROM song
+ 			SELECT DISTINCT song.songID,
+				CASE
+					WHEN song.title = ? OR artist.name = ? THEN 3
+					WHEN song.title LIKE CONCAT(?, '%') OR artist.name LIKE CONCAT(?, '%') THEN 2
+					WHEN song.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%') THEN 1
+				ELSE 0
+				END AS relevance
+ 			FROM song
 			JOIN releases_song ON song.songID = releases_song.songID
 			JOIN artist ON artist.artistID = releases_song.artistID
-			WHERE
-				((song.title LIKE CONCAT('%', ?, '%') OR damlev(song.title, ?) <= 2) OR
-				(artist.name LIKE CONCAT('%', ?, '%') OR damlev(artist.name, ?) <= 2))
+			WHERE song.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%')
+			ORDER BY relevance DESC, song.title
 		");
-		$stmt->bind_param("ssss", $query, $query, $query, $query);
+		$stmt->bind_param("ssssssss", $query, $query, $query, $query, $query, $query, $query, $query);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
