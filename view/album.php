@@ -33,6 +33,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 			'artistIDs' => $song->getArtistIDs(),
 			'flacFilename' => $song->getFlacFileName(),
 			'opusFilename' => $song->getOpusFileName(),
+			'imageName' => $song->getImageName(),
 			'thumbnailName' => $song->getThumbnailName()
 	];
 }, $albumSongs);
@@ -125,10 +126,10 @@ $songQueueData = array_map(function ($song) use ($album) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
+	document.addEventListener('DOMContentLoaded', function () {
 		// Prevent song playback when clicking on artist links
 		document.querySelectorAll('.card-body a.custom-link').forEach(link => {
-			link.addEventListener('click', function(event) {
+			link.addEventListener('click', function (event) {
 				event.stopPropagation();
 			});
 		});
