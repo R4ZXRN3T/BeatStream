@@ -138,12 +138,10 @@ class PlaylistController
 			SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, length, duration, creatorID, user.username
 			FROM playlist
 			JOIN user ON playlist.creatorID = user.userID
-			WHERE
-				(playlist.name LIKE CONCAT('%', ?, '%') OR damlev(playlist.name, ?) <= 2)
-				OR (user.username LIKE CONCAT('%', ?, '%') OR damlev(user.username, ?) <= 2)
+			WHERE playlist.name LIKE CONCAT('%', ?, '%') OR user.username LIKE CONCAT('%', ?, '%')
 			ORDER BY playlist.name
 		");
-		$stmt->bind_param("ssss", $query, $query, $query, $query);
+		$stmt->bind_param("ss", $query, $query);
 		$stmt->execute();
 		$result = $stmt->get_result();
 

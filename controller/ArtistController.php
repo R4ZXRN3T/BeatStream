@@ -126,10 +126,10 @@ class ArtistController
 	{
 		$stmt = DBConn::getConn()->prepare("
 			SELECT * FROM artist
-			WHERE (name LIKE CONCAT('%', ?, '%') OR damlev(name, ?) <= 2)
+			WHERE name LIKE CONCAT('%', ?, '%')
 			ORDER BY name
 		");
-		$stmt->bind_param("ss", $query, $query);
+		$stmt->bind_param("s", $query);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
