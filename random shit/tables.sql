@@ -19,8 +19,7 @@ CREATE TABLE album
 	imageName     VARCHAR(255),
 	thumbnailName VARCHAR(255),
 	length        INT,
-	duration      INT,
-	releaseDate   DATE
+	duration      INT
 );
 
 CREATE TABLE user
