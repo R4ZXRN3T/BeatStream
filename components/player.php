@@ -172,6 +172,14 @@
 						e.preventDefault();
 						this.togglePlayPause();
 					}
+					if ((e.code === 'KeyN') && !e.target.matches('input, textarea')) {
+						e.preventDefault();
+						this.playNext();
+					}
+					if ((e.code === 'KeyP') && !e.target.matches('input, textarea')) {
+						e.preventDefault();
+						this.playPrevious();
+					}
 				});
 			}
 
