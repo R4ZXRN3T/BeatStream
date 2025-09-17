@@ -164,6 +164,11 @@ tr:nth-child(even) {
 	font-size: 1.5rem;
 }
 
+.song-card {
+	border-radius: 10px;
+	cursor: pointer;
+}
+
 .song-card:hover .song-menu-btn,
 .song-menu-btn:focus {
 	opacity: 1;
