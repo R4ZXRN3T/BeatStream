@@ -52,7 +52,7 @@ $songData = htmlspecialchars(json_encode($songQueueData));
 ?>
 
 <div class="<?= $containerClass ?>">
-	<div class="card shadow-sm border-0 song-card" style="border-radius: 10px; cursor: pointer;">
+	<div class="card shadow-sm border-0 song-card">
 		<div class="card-body d-flex align-items-center p-3 position-relative"
 			 data-song-id="<?= $song->getSongID() ?>"
 			 data-song-queue='<?= $songData ?>'>
