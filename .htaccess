@@ -15,3 +15,20 @@
 		Header set Cache-Control "public, max-age=31536000"
 	</FilesMatch>
 </IfModule>
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule (.*) $1.php [L]
+
+    RewriteEngine on
+
+    #1)externally redirect "/file.php" to "/file"
+    RewriteCond %{THE_REQUEST} /([^.]+)\.php [NC]
+    RewriteRule ^ /%1 [NC,L,R]
+    #2)Internally map "/file" back to "/file.php"
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.*?)/?$ /$1.php [NC,L]
+</IfModule>
