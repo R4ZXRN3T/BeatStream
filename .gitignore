@@ -78,8 +78,20 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 .idea/
-
 vendor/
-
 beatstream.sql
-
+für BeatStream/
+composer.lock
+config.php
+audio/flac/*.flac
+audio/opus/*.opus
+images/album/large/*.webp
+images/album/thumbnail/*.webp
+images/artist/large/*.webp
+images/artist/thumbnail/*.webp
+images/playlist/large/*.webp
+images/playlist/thumbnail/*.webp
+images/song/large/*.webp
+images/song/thumbnail/*.webp
+images/user/large/*.webp
+images/user/thumbnail/*.webp
