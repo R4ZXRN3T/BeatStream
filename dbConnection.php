@@ -2,20 +2,21 @@
 
 class DBConn
 {
-	private static string $servername = "localhost";
-	private static string $username = "dbuser";
-	private static string $password = "dbpassword";
-	private static string $dbname = "BeatStream";
 	private static $conn;
 
 	public static function getConn()
 	{
+		static $config;
+		if (!$config) {
+			$config = require 'config.php';
+		}
+
 		if (!isset(self::$conn)) {
 			self::$conn = new mysqli(
-				self::$servername,
-				self::$username,
-				self::$password,
-				self::$dbname
+				$config['servername'],
+				$config['username'],
+				$config['password'],
+				$config['dbname']
 			);
 			if (self::$conn->connect_error) {
 				die("Connection failed successfully: " . self::$conn->connect_error);
