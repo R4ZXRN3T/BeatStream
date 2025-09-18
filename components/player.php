@@ -70,6 +70,9 @@
 			<!-- Volume Control -->
 			<div class="col-md-3 text-end">
 				<div class="d-flex align-items-center justify-content-end">
+					<button id="killPlayerBtn" class="btn btn-sm btn-outline-danger me-2" title="Kill Player">
+						<i class="bi bi-x-circle"></i>
+					</button>
 					<i id="volumeIcon" class="bi bi-volume-up me-2"></i>
 					<input type="range" class="form-range" id="volumeControl" min="0" max="100" value="100"
 						   style="width: 100px;">
@@ -114,6 +117,7 @@
 				this.totalTimeEl = document.getElementById('totalTime');
 				this.prevBtn = document.getElementById('prevBtn');
 				this.nextBtn = document.getElementById('nextBtn');
+				this.killPlayerBtn = document.getElementById('killPlayerBtn');
 				this.queueBtn = document.getElementById('queueBtn');
 				this.queuePanel = document.getElementById('queuePanel');
 				this.queueList = document.getElementById('queueList');
@@ -131,6 +135,7 @@
 				this.playerUI.classList.add('d-none');
 				this.setupEventListeners();
 				this.setupSongCardListeners();
+				this.restoreState();
 			}
 
 			setupEventListeners() {
@@ -161,6 +166,8 @@
 				});
 				this.volumeIcon.addEventListener('click', () => this.toggleMute());
 
+				this.killPlayerBtn.addEventListener('click', () => this.killPlayer());
+
 				document.addEventListener('click', (e) => {
 					if (!this.queuePanel.contains(e.target) && e.target !== this.queueBtn) {
 						this.queuePanel.classList.add('d-none');
@@ -181,6 +188,8 @@
 						this.playPrevious();
 					}
 				});
+
+				this.startAutoSave();
 			}
 
 			setupSongCardListeners() {
@@ -198,6 +207,47 @@
 						}
 					});
 				});
+			}
+
+			startAutoSave() {
+				if (this.autoSaveInterval) clearInterval(this.autoSaveInterval);
+				this.autoSaveInterval = setInterval(() => {
+					this.saveState();
+				}, 2000); // 5000 ms = 5 seconds
+			}
+
+			saveState() {
+				const state = {
+					queue: this.queue,
+					currentIndex: this.currentIndex,
+					currentTime: this.audio.currentTime
+				};
+				localStorage.setItem('playerState', JSON.stringify(state));
+			}
+
+			restoreState() {
+				const state = JSON.parse(localStorage.getItem('playerState'));
+				if (state && state.queue && state.queue.length > 0) {
+					this.queue = state.queue;
+					this.currentIndex = state.currentIndex;
+					this.playerUI.classList.remove('d-none');
+					this.updateQueueDisplay();
+					this.playSong(this.queue[this.currentIndex]);
+					this.audio.addEventListener('loadedmetadata', () => {
+						this.audio.currentTime = state.currentTime || 0;
+					}, {once: true});
+				}
+			}
+
+			killPlayer() {
+				this.audio.pause();
+				this.audio.src = '';
+				this.playerUI.classList.add('d-none');
+				this.queue = [];
+				this.currentIndex = -1;
+				this.updateQueueDisplay();
+				document.title = this.originalTitle;
+				localStorage.removeItem('playerState');
 			}
 
 			loadQueueFromData(queueData, clickedSongId) {
@@ -257,12 +307,6 @@
 					navigator.mediaSession.setActionHandler('pause', () => this.togglePlayPause());
 					navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
 					navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
-
-					console.log(song.imageName);
-
-					console.log("Image set to " + ((song.imageName)
-						? `${location.origin}/BeatStream/images/song/large/${song.imageName}`
-						: `${location.origin}/BeatStream/images/defaultSong.webp`));
 				}
 
 				document.dispatchEvent(new CustomEvent('songPlaying', {
@@ -270,6 +314,7 @@
 				}));
 
 				document.title = `▶ ${song.title} by ${song.artists} - BeatStream`;
+				this.saveState();
 			}
 
 			playFromQueue(index) {
@@ -293,6 +338,7 @@
 					this.audio.pause();
 					document.title = `❚❚ ${this.playerTitle.textContent} by ${this.playerArtist.textContent} - BeatStream`;
 				}
+				this.saveState();
 			}
 
 			playNext() {
