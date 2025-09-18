@@ -52,36 +52,34 @@ if (isset($_SESSION['account_loggedin'])) {
 			$isValid = true;
 			$credentialsCorrect = true;
 
-			if (!(
-				!empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])
-			)) {
-				$isValid = false;
-			}
-
-			if ($isValid) {
-				$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, thumbnailName FROM user WHERE email = ?");
-				$stmt->bind_param("s", $_POST['emailInput']);
-				$stmt->execute();
-				$result = $stmt->get_result()->fetch_assoc();
-				if ($result) {
-					$hashedPassword = $result['userPassword'];
-					$salt = $result['salt'];
-					if (hash("sha256", $_POST['userPasswordInput'] . $salt) == $hashedPassword) {
-						$credentialsCorrect = true;
-						$_SESSION['account_loggedin'] = true;
-						$_SESSION['email'] = $_POST['emailInput'];
-						$_SESSION['username'] = $result['username'];
-						$_SESSION['userID'] = $result['userID'];
-						$_SESSION['isAdmin'] = $result['isAdmin'] == 1;
-						$_SESSION['imageName'] = $result['thumbnailName'];
-						header("location: /BeatStream/account/loginSuccess.php");
+			if (isset($_POST['submit'])) {
+				if (!empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])) {
+					$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, thumbnailName FROM user WHERE email = ?");
+					$stmt->bind_param("s", $_POST['emailInput']);
+					$stmt->execute();
+					$result = $stmt->get_result()->fetch_assoc();
+					if ($result) {
+						$hashedPassword = $result['userPassword'];
+						$salt = $result['salt'];
+						if (hash("sha256", $_POST['userPasswordInput'] . $salt) == $hashedPassword) {
+							$_SESSION['account_loggedin'] = true;
+							$_SESSION['email'] = $_POST['emailInput'];
+							$_SESSION['username'] = $result['username'];
+							$_SESSION['userID'] = $result['userID'];
+							$_SESSION['isAdmin'] = $result['isAdmin'] == 1;
+							$_SESSION['imageName'] = $result['thumbnailName'];
+							header("location: /BeatStream/account/loginSuccess.php");
+							exit();
+						} else {
+							$credentialsCorrect = false;
+						}
 					} else {
 						$credentialsCorrect = false;
 					}
+					$stmt->close();
 				} else {
-					$credentialsCorrect = false;
+					$isValid = false;
 				}
-				$stmt->close();
 			}
 			?>
 
