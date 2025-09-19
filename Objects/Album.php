@@ -11,8 +11,9 @@ class Album
 	private string $thumbnailName;
 	private int $length;
 	private int $duration;
+	private DateTime $releaseDate; // Add releaseDate property
 
-	public function __construct(int $albumID, string $name, array $songIDs, array $artists, array $artistIds, string $imageName, string $thumbnailName, int $length, int $duration)
+	public function __construct(int $albumID, string $name, array $songIDs, array $artists, array $artistIds, string $imageName, string $thumbnailName, int $length, int $duration, string $releaseDate)
 	{
 		$this->albumID = $albumID;
 		$this->name = $name;
@@ -23,6 +24,7 @@ class Album
 		$this->thumbnailName = $thumbnailName;
 		$this->length = $length;
 		$this->duration = $duration;
+		$this->releaseDate = new DateTime($releaseDate); // Store as DateTime
 	}
 
 	// Getter Methods
@@ -101,5 +103,15 @@ class Album
 		if (!in_array($songID, $this->songIDs)) {
 			$this->songIDs[] = $songID;
 		}
+	}
+
+	public function getReleaseDate(): DateTime
+	{
+		return $this->releaseDate;
+	}
+
+	public function setReleaseDate(string $releaseDate): void
+	{
+		$this->releaseDate = new DateTime($releaseDate);
 	}
 }

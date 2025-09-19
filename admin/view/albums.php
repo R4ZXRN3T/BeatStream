@@ -93,15 +93,16 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			<table style="width:100%; font-family:segoe UI,serif;">
 				<colgroup>
-					<col span="9">
+					<col span="10">
 				</colgroup>
 				<tr>
-					<th style="width:14.3%;">Album ID</th>
-					<th style="width:14.3%;">Name</th>
-					<th style="width:14.3%;">Artists</th>
-					<th style="width:14.3%;">Image Name</th>
-					<th style="width:14.3%;">Album Length</th>
-					<th style="width:14.3%;">Album Duration</th>
+					<th style="width:10%;">Album ID</th>
+					<th style="width:10%;">Name</th>
+					<th style="width:10%;">Artists</th>
+					<th style="width:10%;">Image Name</th>
+					<th style="width:10%;">Album Length</th>
+					<th style="width:10%;">Album Duration</th>
+					<th style="width:10%;">Release Date</th>
 					<th style="width:1%;"></th>
 				</tr>
 				<?php
@@ -114,6 +115,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $albumList[$i]->getImageName() ?></td>
 						<td><?php echo $albumList[$i]->getLength() ?></td>
 						<td><?php echo $albumList[$i]->getFormattedDuration() ?></td>
+						<td><?php echo $albumList[$i]->getReleaseDate()->format('Y-m-d') ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove"

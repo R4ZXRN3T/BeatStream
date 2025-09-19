@@ -118,6 +118,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					$artistNames[] = ArtistController::getArtistByID($selectedArtistID)->getName();
 				}
 
+				$releaseDate = $_POST['releaseDateInput'] ?? date('Y-m-d');
+
 				try {
 					AlbumController::insertAlbum(new Album(
 							0,
@@ -128,7 +130,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 							$imageName,
 							$thumbnailName,
 							$albumLength,
-							$totalMilliSeconds
+							$totalMilliSeconds,
+							$releaseDate
 					));
 					$successMessage = "Album successfully added!";
 				} catch (Exception $e) {
@@ -192,6 +195,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<label for="albumImage">Image:</label>
 						<input type="file" id="albumImage" name="albumImageInput" class="form-control" accept="image/*"
 							   required>
+					</div>
+
+					<div class="form-group">
+						<label for="releaseDateInput">Release Date:</label>
+						<input type="date" id="releaseDateInput" name="releaseDateInput" class="form-control" required>
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
@@ -260,4 +268,3 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 </body>
 
 </html>
-
