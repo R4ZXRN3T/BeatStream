@@ -294,6 +294,10 @@ tr:nth-child(even) {
 	text-align: left;
 }
 
+.album-date {
+	margin-top: -50px;
+}
+
 .playlist-card-large .playlist-image {
 	width: 100%;
 	height: 200px;

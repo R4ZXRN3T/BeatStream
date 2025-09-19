@@ -86,7 +86,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 					</div>
 					<div class="col-md-8">
 						<h1 class="mb-2"><?php echo htmlspecialchars($album->getName()); ?></h1>
-						<p class="text mb-2" style="color: #6c757d"><?php
+						<p class="text mb-2" style="color: #6c757d; font-size: 20px"><?php
 							$artistLinks = [];
 							$artists = $album->getArtists();
 							$artistIDs = $album->getArtistIDs();
@@ -96,8 +96,10 @@ $songQueueData = array_map(function ($song) use ($album) {
 							echo implode(", ", $artistLinks);
 							?>
 						</p>
+						<p><?php echo htmlspecialchars($album->getReleaseDate()->format('F d\, Y')); ?></p>
 						<p><?php echo count($albumSongs); ?> songs ·
-							<?php echo $album->getFormattedDuration(); ?></p>
+							<?php echo $album->getFormattedDuration(); ?>
+						</p>
 					</div>
 				</div>
 			</div>

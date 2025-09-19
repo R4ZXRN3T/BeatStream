@@ -74,6 +74,8 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 		$artistNames[] = ArtistController::getArtistByID($artistID)->getName();
 	}
 
+	$releaseDate = $_POST['releaseDateInput'] ?? date('Y-m-d');
+
 	AlbumController::insertAlbum(new Album(
 			0,
 			$_POST['albumName'],
@@ -83,7 +85,8 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 			$imageName,
 			$thumbnailName,
 			count($_POST['songInput']),
-			$totalMilliSeconds
+			$totalMilliSeconds,
+			$releaseDate
 	));
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
@@ -159,6 +162,11 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 						<label for="imageFile">Album Cover Image:</label>
 						<input type="file" id="imageFile" name="imageFileInput" class="form-control" accept="image/*"
 							   required>
+					</div>
+
+					<div class="mb-3">
+						<label for="releaseDateInput" class="form-label">Release Date:</label>
+						<input type="date" class="form-control" id="releaseDateInput" name="releaseDateInput" required>
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Create Album">

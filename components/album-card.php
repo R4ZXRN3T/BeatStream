@@ -42,6 +42,7 @@ if ($compact) {
 	$titleClasses = "card-title mb-1 album-title";
 	$artistClasses = "card-text mb-0 album-artist";
 	$infoClasses = "card-text mb-0 album-info";
+	$dateInfoClasses = "card-text mb-0 text-end album-date";
 }
 ?>
 
@@ -65,9 +66,14 @@ if ($compact) {
 			<!-- Large Layout -->
 			<img src="<?= $imageSrc ?>" class="mb-2 <?= $imageClasses ?>" alt="<?= $albumName ?>" loading="lazy">
 			<div class="card-body p-3">
-				<h5 class="<?= $titleClasses ?>"><?= $albumName ?></h5>
-				<p class="<?= $artistClasses ?>"><?= $artistNames ?></p>
-				<p class="<?= $infoClasses ?>"><?= $albumInfo ?></p>
+				<div class="mb-2">
+					<h5 class="<?= $titleClasses ?>"><?= $albumName ?></h5>
+					<p class="<?= $artistClasses ?>"><?= $artistNames ?></p>
+					<div class="d-flex align-items-center justify-content-between">
+						<p class="<?= $infoClasses ?> mb-0"><?= $albumInfo ?></p>
+						<p class="<?= $dateInfoClasses ?> mb-0"><?= $album->getReleaseDate()->format('Y') ?></p>
+					</div>
+				</div>
 			</div>
 		<?php else: ?>
 			<!-- Standard Layout -->
