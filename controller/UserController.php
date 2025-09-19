@@ -8,9 +8,8 @@ class UserController
 {
 	public static function insertUser(User $user): void
 	{
-		$salt = htmlspecialchars(Utils::generateRandomString(16));
-		$password = hash("sha256", $user->getUserPassword() . $salt);
-
+		$salt = htmlspecialchars(Utils::generateRandomString());
+		$password = Utils::hashPassword($user->getUserPassword(), $salt);
 		// Generate unique user ID
 		do {
 			$newUserID = rand();

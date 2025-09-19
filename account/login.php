@@ -47,7 +47,8 @@ if (isset($_SESSION['account_loggedin'])) {
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+			require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+			require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/Utils.php");
 
 			$isValid = true;
 			$credentialsCorrect = true;
@@ -61,7 +62,7 @@ if (isset($_SESSION['account_loggedin'])) {
 					if ($result) {
 						$hashedPassword = $result['userPassword'];
 						$salt = $result['salt'];
-						if (hash("sha256", $_POST['userPasswordInput'] . $salt) == $hashedPassword) {
+						if (Utils::hashPassword($_POST['userPasswordInput'], $salt) == $hashedPassword) {
 							$_SESSION['account_loggedin'] = true;
 							$_SESSION['email'] = $_POST['emailInput'];
 							$_SESSION['username'] = $result['username'];
