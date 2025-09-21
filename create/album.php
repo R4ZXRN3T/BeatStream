@@ -75,6 +75,7 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 	}
 
 	$releaseDate = $_POST['releaseDateInput'] ?? date('Y-m-d');
+	$isSingle = isset($_POST['isSingleInput']);
 
 	AlbumController::insertAlbum(new Album(
 			0,
@@ -86,7 +87,8 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 			$thumbnailName,
 			count($_POST['songInput']),
 			$totalMilliSeconds,
-			$releaseDate
+			$releaseDate,
+			$isSingle
 	));
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
@@ -167,6 +169,11 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 					<div class="mb-3">
 						<label for="releaseDateInput" class="form-label">Release Date:</label>
 						<input type="date" class="form-control" id="releaseDateInput" name="releaseDateInput" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="isSingleInput" class="form-label">Is this a single?</label>
+						<input type="checkbox" id="isSingleInput" name="isSingleInput" value="1">
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Create Album">

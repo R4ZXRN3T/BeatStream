@@ -11,7 +11,7 @@ class AlbumController
 			$newAlbumID = rand();
 		} while (AlbumController::IdExists($newAlbumID));
 
-		$sqlAlbum = "INSERT INTO album VALUES (?, ?, ?, ?, ?, ?, ?)";
+		$sqlAlbum = "INSERT INTO album VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 
 		$name = $album->getName();
@@ -20,8 +20,9 @@ class AlbumController
 		$length = $album->getLength();
 		$duration = $album->getDuration();
 		$releaseDate = $album->getReleaseDate()->format("Y-m-d");
+		$isSingle = $album->isSingle();
 
-		$stmt->bind_param("isssiis", $newAlbumID, $name, $imageName, $thumbnailName, $length, $duration, $releaseDate);
+		$stmt->bind_param("isssiisb", $newAlbumID, $name, $imageName, $thumbnailName, $length, $duration, $releaseDate, $isSingle);
 		$stmt->execute();
 		$stmt->close();
 
@@ -51,7 +52,7 @@ class AlbumController
 
 	public static function getAlbumList(string $sortBy = "album.title ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID
+		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID, album.isSingle
 		FROM album, artist, releases_album
 		WHERE releases_album.artistID = artist.artistID
 		AND album.albumID = releases_album.albumID
@@ -62,7 +63,7 @@ class AlbumController
 
 		$albumList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), array($row['artistID']), $row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"]);
+			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), array($row['artistID']), $row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"], (bool)$row["isSingle"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($albumList); $i++) {
@@ -108,7 +109,7 @@ class AlbumController
 	public static function getArtistAlbums(int $artistID, string $sortBy = "album.releaseDate DESC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("
-			SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID
+			SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID, album.isSingle
 			FROM album, artist, releases_album
 			WHERE releases_album.artistID = artist.artistID
 			AND album.albumID = releases_album.albumID
@@ -122,7 +123,7 @@ class AlbumController
 
 		$albumList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), array($row['artistID']), $row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"]);
+			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), array($row['artistID']), $row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"], (bool)$row["isSingle"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($albumList); $i++) {
@@ -169,7 +170,7 @@ class AlbumController
 	{
 		// Get album basic info and artists
 		$stmt = DBConn::getConn()->prepare("
-			SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID
+			SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID, album.isSingle
 			FROM album, artist, releases_album
 			WHERE releases_album.artistID = artist.artistID
 			AND album.albumID = releases_album.albumID
@@ -217,7 +218,7 @@ class AlbumController
 		}
 		$stmt->close();
 
-		return new Album($albumData["albumID"], $albumData["title"], $songIDs, $artists, $artistIDs, $albumData["imageName"], $albumData["thumbnailName"], $albumData["length"], $albumData["duration"], $albumData["releaseDate"]);
+		return new Album($albumData["albumID"], $albumData["title"], $songIDs, $artists, $artistIDs, $albumData["imageName"], $albumData["thumbnailName"], $albumData["length"], $albumData["duration"], $albumData["releaseDate"], (bool)$albumData["isSingle"]);
 	}
 
 	public static function getRandomAlbums(int $limit = 3): array
@@ -246,7 +247,7 @@ class AlbumController
 		// Then get all data for those albums
 		$placeholders = str_repeat('?,', count($albumIDs) - 1) . '?';
 		$stmt = DBConn::getConn()->prepare("
-        SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID
+        SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID, album.isSingle
         FROM album, artist, releases_album
         WHERE releases_album.artistID = artist.artistID
         AND album.albumID = releases_album.albumID
@@ -259,7 +260,7 @@ class AlbumController
 
 		$albumList = array();
 		while ($row = $result->fetch_assoc()) {
-			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), array($row['artistID']), $row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"]);
+			$newAlbum = new Album($row["albumID"], $row["title"], array(), array($row["name"]), array($row['artistID']), $row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"], (bool)$row["isSingle"]);
 			$alreadyExists = false;
 
 			for ($i = 0; $i < count($albumList); $i++) {
@@ -339,7 +340,7 @@ class AlbumController
 	public static function searchAlbum(string $query): array
 	{
 		$stmt = DBConn::getConn()->prepare("
-			SELECT album.albumID, album.title, artist.name, album.imageName, album.thumbnailName, album.length, album.duration, album.releaseDate, artist.artistID
+			SELECT album.albumID, album.title, artist.name, album.imageName, album.thumbnailName, album.length, album.duration, album.releaseDate, artist.artistID, album.isSingle
 			FROM album
 			JOIN releases_album ON album.albumID = releases_album.albumID
 			JOIN artist ON artist.artistID = releases_album.artistID
@@ -356,7 +357,7 @@ class AlbumController
 			if (!isset($albumList[$albumID])) {
 				$albumList[$albumID] = new Album(
 					$row["albumID"], $row["title"], [], [$row["name"]], [$row["artistID"]],
-					$row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"]
+					$row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"], $row["releaseDate"], (bool)$row["isSingle"]
 				);
 			} else {
 				$albumList[$albumID]->setArtists(array_merge($albumList[$albumID]->getArtists(), [$row["name"]]));

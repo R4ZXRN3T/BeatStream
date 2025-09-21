@@ -12,8 +12,9 @@ class Album
 	private int $length;
 	private int $duration;
 	private DateTime $releaseDate; // Add releaseDate property
+	private bool $isSingle;
 
-	public function __construct(int $albumID, string $name, array $songIDs, array $artists, array $artistIds, string $imageName, string $thumbnailName, int $length, int $duration, string $releaseDate)
+	public function __construct(int $albumID, string $name, array $songIDs, array $artists, array $artistIds, string $imageName, string $thumbnailName, int $length, int $duration, string $releaseDate, bool $isSingle = false)
 	{
 		$this->albumID = $albumID;
 		$this->name = $name;
@@ -25,6 +26,7 @@ class Album
 		$this->length = $length;
 		$this->duration = $duration;
 		$this->releaseDate = new DateTime($releaseDate); // Store as DateTime
+		$this->isSingle = $isSingle;
 	}
 
 	// Getter Methods
@@ -113,5 +115,15 @@ class Album
 	public function setReleaseDate(string $releaseDate): void
 	{
 		$this->releaseDate = new DateTime($releaseDate);
+	}
+
+	public function isSingle(): bool
+	{
+		return $this->isSingle;
+	}
+
+	public function setIsSingle(bool $isSingle): void
+	{
+		$this->isSingle = $isSingle;
 	}
 }

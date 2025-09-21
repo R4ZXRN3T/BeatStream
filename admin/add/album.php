@@ -119,6 +119,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				}
 
 				$releaseDate = $_POST['releaseDateInput'] ?? date('Y-m-d');
+				$isSingle = isset($_POST['isSingleInput']);
 
 				try {
 					AlbumController::insertAlbum(new Album(
@@ -131,7 +132,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 							$thumbnailName,
 							$albumLength,
 							$totalMilliSeconds,
-							$releaseDate
+							$releaseDate,
+							$isSingle
 					));
 					$successMessage = "Album successfully added!";
 				} catch (Exception $e) {
@@ -139,10 +141,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				}
 			}
 			?>
-
 			<div class="container mt-5">
 				<h1>Add Album</h1>
-
 				<form action="album.php" method="post" id="addAlbumForm" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="name">Album title:</label>
@@ -200,6 +200,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<div class="form-group">
 						<label for="releaseDateInput">Release Date:</label>
 						<input type="date" id="releaseDateInput" name="releaseDateInput" class="form-control" required>
+					</div>
+
+					<div class="form-group">
+						<label for="isSingleInput">Is this a single?</label>
+						<input type="checkbox" id="isSingleInput" name="isSingleInput" value="1">
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
