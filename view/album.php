@@ -33,8 +33,8 @@ $songQueueData = array_map(function ($song) use ($album) {
 			'artistIDs' => $song->getArtistIDs(),
 			'flacFilename' => $song->getFlacFileName(),
 			'opusFilename' => $song->getOpusFileName(),
-			'imageName' => $song->getImageName(),
-			'thumbnailName' => $song->getThumbnailName()
+			'imageName' => "../../album/large/" . $album->getImageName(),
+			'thumbnailName' => "../../album/thumbnail/" . $album->getThumbnailName()
 	];
 }, $albumSongs);
 ?>
@@ -113,7 +113,9 @@ $songQueueData = array_map(function ($song) use ($album) {
 						'showDuration' => true,
 						'showArtistLinks' => true,
 						'containerClass' => 'col-12',
-						'emptyMessage' => 'No songs available in this album.'
+						'emptyMessage' => 'No songs available in this album.',
+						'albumView' => true,
+						'albumImageName' => $album->getThumbnailName()
 				];
 
 				$songs = $albumSongs;

@@ -20,6 +20,8 @@ $showDuration = $options['showDuration'] ?? true;
 $showArtistLinks = $options['showArtistLinks'] ?? true;
 $index = $options['index'] ?? 0;
 $containerClass = $options['containerClass'] ?? 'col-12 col-md-6';
+$albumView = $options['albumView'] ?? false; // Use album image if true
+$albumImageName = $options['albumImageName'] ?? "../../defaultSong.webp"; // Default album image
 
 $artistDisplay = '';
 if ($showArtistLinks && !empty($song->getArtists())) {
@@ -44,9 +46,11 @@ if ($showArtistLinks && !empty($song->getArtists())) {
 }
 
 // Optimize image source
-$imageSrc = $song->getImageName()
-		? "/BeatStream/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
-		: "../images/defaultSong.webp";
+$imageSrc = $albumView
+		? "/BeatStream/images/album/thumbnail/" . $albumImageName
+		: ($song->getImageName()
+				? "/BeatStream/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
+				: "../images/defaultSong.webp");
 
 $songData = htmlspecialchars(json_encode($songQueueData));
 ?>
