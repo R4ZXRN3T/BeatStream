@@ -18,6 +18,9 @@ $albums = $albumList ?? [];
 			$cardOptions = [
 					'containerClass' => $containerClass
 			];
+			if (!empty($options['compact'])) {
+				$cardOptions['compact'] = true;
+			}
 			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-card.php");
 			?>
 		<?php endforeach; ?>

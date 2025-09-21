@@ -28,6 +28,17 @@ $artistSongs = SongController::getArtistSongs($artistID);
 // Get all albums by this artist (filter by artistID)
 $artistAlbums = AlbumController::getArtistAlbums($artistID);
 
+// Separate singles and albums
+$singles = [];
+$albums = [];
+foreach ($artistAlbums as $album) {
+	if ($album->isSingle()) {
+		$singles[] = $album;
+	} else {
+		$albums[] = $album;
+	}
+}
+
 $songQueueData = array_map(function ($song) {
 	return [
 			'songID' => $song->getSongID(),
@@ -114,11 +125,11 @@ $songQueueData = array_map(function ($song) {
 				<!-- Albums Section -->
 				<div class="container mb-5">
 					<h2 class="mb-4">Albums</h2>
-					<?php if (empty($artistAlbums)): ?>
+					<?php if (empty($albums)): ?>
 						<div class="alert alert-info">No albums available for this artist.</div>
 					<?php else: ?>
 						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
-							<?php foreach ($artistAlbums as $album): ?>
+							<?php foreach ($albums as $album): ?>
 								<?php
 								$options = [
 										'containerClass' => 'col-md-3 mb-3',
@@ -128,6 +139,23 @@ $songQueueData = array_map(function ($song) {
 								?>
 							<?php endforeach; ?>
 						</div>
+					<?php endif; ?>
+				</div>
+				<!-- Singles Section -->
+				<div class="container mb-5">
+					<h2 class="mb-4">Singles</h2>
+					<?php if (empty($singles)): ?>
+						<div class="alert alert-info">No singles available for this artist.</div>
+					<?php else: ?>
+						<?php
+						$options = [
+							'containerClass' => 'col-md-4 mb-2',
+							'compact' => true,
+							'emptyMessage' => 'No singles available for this artist.'
+						];
+						$albumList = $singles;
+						include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-list.php");
+						?>
 					<?php endif; ?>
 				</div>
 			</div>

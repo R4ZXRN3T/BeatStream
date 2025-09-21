@@ -20,7 +20,8 @@ CREATE TABLE album
 	thumbnailName VARCHAR(255),
 	length        INT,
 	duration      INT,
-	releaseDate   DATE
+	releaseDate   DATE,
+	isSingle      BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE user

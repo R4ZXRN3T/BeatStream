@@ -103,6 +103,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 					<th style="width:10%;">Album Length</th>
 					<th style="width:10%;">Album Duration</th>
 					<th style="width:10%;">Release Date</th>
+					<th style="width:10%;">Single?</th>
 					<th style="width:1%;"></th>
 				</tr>
 				<?php
@@ -116,6 +117,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<td><?php echo $albumList[$i]->getLength() ?></td>
 						<td><?php echo $albumList[$i]->getFormattedDuration() ?></td>
 						<td><?php echo $albumList[$i]->getReleaseDate()->format('Y-m-d') ?></td>
+						<td><?php echo $albumList[$i]->isSingle() ? "Yes" : "No" ?></td>
 						<td>
 							<form method="post" action="">
 								<button name="removeButton" id="remove"
