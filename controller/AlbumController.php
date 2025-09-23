@@ -1,7 +1,7 @@
 <?php
 
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Album.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Album.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 
 class AlbumController
 {
@@ -317,8 +317,8 @@ class AlbumController
 		$result = $deleteImage->get_result()->fetch_assoc();
 		if ($result) {
 			try {
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/large/" . $result['imageName']);
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/thumbnail/" . $result['thumbnailName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/large/" . $result['imageName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/thumbnail/" . $result['thumbnailName']);
 			} catch (Exception) {
 			}
 		}
@@ -340,15 +340,32 @@ class AlbumController
 
 	public static function searchAlbum(string $query): array
 	{
-		$stmt = DBConn::getConn()->prepare("
+		$words = preg_split('/\s+/', trim($query));
+		if (empty($words)) return [];
+
+		// Build dynamic WHERE clause
+		$where = [];
+		$params = [];
+		$types = '';
+		foreach ($words as $word) {
+			$where[] = "(album.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%'))";
+			$params[] = $word;
+			$params[] = $word;
+			$types .= 'ss';
+		}
+		$whereClause = implode(' AND ', $where);
+
+		$sql = "
 			SELECT album.albumID, album.title, artist.name, album.imageName, album.thumbnailName, album.length, album.duration, album.releaseDate, artist.artistID, album.isSingle
 			FROM album
 			JOIN releases_album ON album.albumID = releases_album.albumID
 			JOIN artist ON artist.artistID = releases_album.artistID
-			WHERE album.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%')
+			WHERE $whereClause
 			ORDER BY album.title, releases_album.artistIndex
-		");
-		$stmt->bind_param("ss", $query, $query);
+		";
+
+		$stmt = DBConn::getConn()->prepare($sql);
+		$stmt->bind_param($types, ...$params);
 		$stmt->execute();
 		$result = $stmt->get_result();
 

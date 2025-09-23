@@ -1,7 +1,7 @@
 <?php
 
-include_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";#
-include_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+include_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";#
+include_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 
 class SongController
 {
@@ -303,10 +303,10 @@ class SongController
 		$result = $stmt->get_result()->fetch_assoc();
 		if ($result) {
 			try {
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/large/" . $result['imageName']);
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/thumbnail/" . $result['thumbnailName']);
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/flac/" . $result['flacFilename']);
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/opus/" . $result['opusFilename']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/large/" . $result['imageName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/thumbnail/" . $result['thumbnailName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/audio/flac/" . $result['flacFilename']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/audio/opus/" . $result['opusFilename']);
 			} catch (Exception) {
 			}
 		}
@@ -330,22 +330,32 @@ class SongController
 
 	public static function searchSong(string $query): array
 	{
-		// Step 1: Find matching song IDs
-		$stmt = DBConn::getConn()->prepare("
- 			SELECT DISTINCT song.songID,
-				CASE
-					WHEN song.title = ? OR artist.name = ? THEN 3
-					WHEN song.title LIKE CONCAT(?, '%') OR artist.name LIKE CONCAT(?, '%') THEN 2
-					WHEN song.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%') THEN 1
-				ELSE 0
-				END AS relevance
- 			FROM song
+		$words = preg_split('/\s+/', trim($query));
+		if (empty($words)) return [];
+
+		// Build dynamic WHERE clause
+		$where = [];
+		$params = [];
+		$types = '';
+		foreach ($words as $word) {
+			$where[] = "(song.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%'))";
+			$params[] = $word;
+			$params[] = $word;
+			$types .= 'ss';
+		}
+		$whereClause = implode(' AND ', $where);
+
+		$sql = "
+			SELECT DISTINCT song.songID
+			FROM song
 			JOIN releases_song ON song.songID = releases_song.songID
 			JOIN artist ON artist.artistID = releases_song.artistID
-			WHERE song.title LIKE CONCAT('%', ?, '%') OR artist.name LIKE CONCAT('%', ?, '%')
-			ORDER BY relevance DESC, song.title
-		");
-		$stmt->bind_param("ssssssss", $query, $query, $query, $query, $query, $query, $query, $query);
+			WHERE $whereClause
+			ORDER BY song.title
+		";
+
+		$stmt = DBConn::getConn()->prepare($sql);
+		$stmt->bind_param($types, ...$params);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
@@ -355,13 +365,11 @@ class SongController
 		}
 		$stmt->close();
 
-		if (empty($songIDs)) {
-			return [];
-		}
+		if (empty($songIDs)) return [];
 
-		// Step 2: Get all artists for those songs
+		// Fetch full song data as before
 		$placeholders = implode(',', array_fill(0, count($songIDs), '?'));
-		$types = str_repeat('i', count($songIDs));
+		$types2 = str_repeat('i', count($songIDs));
 		$stmt = DBConn::getConn()->prepare("
 			SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
 				song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
@@ -371,7 +379,7 @@ class SongController
 			WHERE song.songID IN ($placeholders)
 			ORDER BY song.title, releases_song.artistIndex
 		");
-		$stmt->bind_param($types, ...$songIDs);
+		$stmt->bind_param($types2, ...$songIDs);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
