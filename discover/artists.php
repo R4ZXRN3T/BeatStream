@@ -74,7 +74,7 @@ include  $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
 
 			<script>document.getElementById("sortInput").value = "<?php echo $sortBy ?>";</script>
 
-			<!-- Song List -->
+			<!-- Artist List -->
 			<div class="container mt-4">
 				<div class="row" style="justify-content: center; width: 100%; margin: auto;">
 					<?php if (!empty($artistList)): ?>
