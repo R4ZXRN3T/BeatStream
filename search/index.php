@@ -25,11 +25,11 @@ if (!empty($_GET['search'])) {
 	$searchTerm = trim($_GET['search']);
 	$searchCategory = $_GET['category'] ?? 'all';
 
-	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php");
-	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
-	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php");
-	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
-	require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php");
+	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php");
+	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php");
+	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php");
+	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
 
 	// Only use specific controllers for searching
 	if ($searchCategory == 'all' || $searchCategory == 'songs') {
@@ -76,7 +76,7 @@ if (!empty($_GET['search'])) {
 </head>
 <body>
 
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -86,9 +86,9 @@ if (!empty($_GET['search'])) {
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2 active">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -223,7 +223,7 @@ if (!empty($_GET['search'])) {
 										'containerClass' => 'col-12 col-md-6 col-lg-4',
 										'emptyMessage' => 'No albums found.'
 								];
-								include($_SERVER['DOCUMENT_ROOT'] . '/BeatStream/components/album-list.php');
+								include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 								?>
 							</div>
 						<?php endif; ?>
@@ -241,7 +241,7 @@ if (!empty($_GET['search'])) {
 										'homepageStyle' => false
 								];
 								$playlistList = $playlistResults;
-								include($_SERVER['DOCUMENT_ROOT'] . '/BeatStream/components/playlist-list.php');
+								include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 								?>
 							</div>
 						<?php endif; ?>
@@ -253,7 +253,7 @@ if (!empty($_GET['search'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 
 <script>
 	// Add event listeners for song playback

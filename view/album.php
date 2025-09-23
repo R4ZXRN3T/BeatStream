@@ -51,7 +51,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 </head>
 
 <body>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -61,9 +61,9 @@ $songQueueData = array_map(function ($song) use ($album) {
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -74,7 +74,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 				<div class="row">
 					<div class="col-md-4 text-center">
 						<?php if (!empty($album->getImageName())): ?>
-							<img src="<?php echo "/BeatStream/images/album/large/" . htmlspecialchars($album->getImageName()); ?>"
+							<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/album/large/" . htmlspecialchars($album->getImageName()); ?>"
 								 class="img-fluid rounded shadow"
 								 alt="<?php echo htmlspecialchars($album->getName()); ?>"
 								 style="max-width: 300px;">
@@ -128,7 +128,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 		// Prevent song playback when clicking on artist links

@@ -22,7 +22,7 @@ $playlists = $playlistList ?? [];
 				'containerClass' => $containerClass,
 				'showCreator' => $showCreator,
 			];
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/playlist-card.php");
+			include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-card.php");
 			?>
 		<?php endforeach; ?>
 	<?php else: ?>

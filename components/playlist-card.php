@@ -16,12 +16,12 @@ $compact = $options['compact'] ?? false;
 $isLarge = $options['large'] ?? false;
 
 $imageSrc = $playlist->getThumbnailName()
-		? "/BeatStream/images/playlist/thumbnail/" . htmlspecialchars($playlist->getThumbnailName())
-		: "/BeatStream/images/defaultPlaylist.webp";
+		? "{$GLOBALS['PROJECT_ROOT']}/images/playlist/thumbnail/" . htmlspecialchars($playlist->getThumbnailName())
+		: "{$GLOBALS['PROJECT_ROOT']}/images/defaultPlaylist.webp";
 
 $playlistName = htmlspecialchars($playlist->getName());
 $creatorName = htmlspecialchars($playlist->getCreatorName());
-$playlistUrl = "/BeatStream/view/playlist.php?id=" . $playlist->getPlaylistID();
+$playlistUrl = "{$GLOBALS['PROJECT_ROOT']}/view/playlist.php?id=" . $playlist->getPlaylistID();
 
 // CSS classes similar to album cards
 $cardClasses = "card shadow-sm border-0 playlist-card";

@@ -21,15 +21,13 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 <body>
 
 <?php
-include("../DataController.php");
-
 $stmt = DBConn::getConn()->prepare("SELECT isArtist FROM user WHERE userID = ?;");
 $stmt->bind_param("i", $_SESSION['userID']);
 $stmt->execute();
 $result = $stmt->get_result();
 $isArtist = $result->fetch_assoc()['isArtist'] ?? false;
 
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 ?>
 
 <div class="container-fluid">
@@ -40,9 +38,9 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2 active">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2 active">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

@@ -25,9 +25,9 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 
 <body>
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
 // Get the current user's artist ID
 $stmt = DBConn::getConn()->prepare("SELECT artistID, name FROM artist WHERE userID = ?");
@@ -45,7 +45,7 @@ $artistList = ArtistController::getArtistList();
 $artistSongs = SongController::getArtistSongs($currentArtistID);
 
 if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['artistInput'])) {
-	require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+	require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 
 	$imageName = "";
 	$thumbnailName = "";
@@ -93,7 +93,7 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
 
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -103,9 +103,9 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2 active">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2 active">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

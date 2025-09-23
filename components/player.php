@@ -22,8 +22,8 @@
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-<link rel="stylesheet" href="/BeatStream/mainStyle.css">
-<link rel="stylesheet" href="/BeatStream/playerStyle.css">
+<link rel="stylesheet" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css">
+<link rel="stylesheet" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/playerStyle.css">
 
 <!-- Music Player -->
 <div id="musicPlayer" class="fixed-bottom bg-dark text-white p-2 d-none">
@@ -97,7 +97,7 @@
 			constructor() {
 				this.originalTitle = document.title;
 
-				this.basePath = '/BeatStream';
+				this.basePath = '<?= $GLOBALS['PROJECT_ROOT'] ?>';
 				this.audioBasePath = `${this.basePath}/audio/${localStorage.getItem('audioFormat')}/`;
 				this.imageBasePath = `${this.basePath}/images/song/thumbnail/`;
 				this.largeImagePath = `${this.basePath}/images/song/large/`;
@@ -298,8 +298,8 @@
 						album: "test",
 						artwork: [{
 							src: (song.imageName
-								? `${location.origin}/BeatStream/images/song/large/${song.imageName}`
-								: `${location.origin}/BeatStream/images/defaultSong.webp`),
+								? `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/song/large/${song.imageName}`
+								: `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp`),
 						}]
 					});
 
@@ -352,7 +352,7 @@
 					this.audio.pause();
 					this.playerTitle.textContent = 'End of queue';
 					this.playerArtist.textContent = 'Play again or add more songs';
-					this.playerCover.src = '/BeatStream/images/defaultSong.webp';
+					this.playerCover.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
 				}
 				this.updateQueueDisplay();
 			}
@@ -386,7 +386,7 @@
 						this.currentIndex = -1;
 						this.playerTitle.textContent = 'No song selected';
 						this.playerArtist.textContent = '';
-						this.playerCover.src = '/BeatStream/images/defaultSong.webp';
+						this.playerCover.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
 					} else {
 						// Adjust current index and play next available song
 						if (this.currentIndex >= this.queue.length) {
@@ -493,7 +493,7 @@
 				const artistLinks = artists.map((artist, index) => {
 					const artistID = artistIDs[index];
 					if (artistID) {
-						return `<a href="/BeatStream/view/artist.php?id=${artistID}" class="custom-link">${artist}</a>`;
+						return `<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/view/artist.php?id=${artistID}" class="custom-link">${artist}</a>`;
 					}
 					return artist;
 				});

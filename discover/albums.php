@@ -17,9 +17,9 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'album.title ASC';
 
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/AlbumController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
 $albumList = AlbumController::getAlbumList($sortBy);
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
+include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 ?>
 
 <script>
@@ -36,9 +36,9 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2 active">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -85,7 +85,7 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 						'compact' => true
 				];
 				$albumListVar = $albumList; // To avoid variable name conflict
-				include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/album-list.php");
+				include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 				?>
 			</div>
 		</main>

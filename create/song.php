@@ -1,9 +1,9 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/DBConn.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/SongController.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/ArtistController.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/converter.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/Objects/Song.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/DBConn.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";
 session_start();
 
 // Check if user is logged in
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<link href="../favicon.ico" rel="icon">
 </head>
 <body>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -132,9 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2 active">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2 active">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

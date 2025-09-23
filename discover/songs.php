@@ -17,7 +17,7 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'song.title ASC';
 
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 $songList = SongController::getSongList($sortBy);
 
 $songQueueData = array_map(function ($song) {
@@ -32,7 +32,7 @@ $songQueueData = array_map(function ($song) {
 			'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $songList);
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
+include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 ?>
 <script>
 	if (window.history.replaceState) {
@@ -48,9 +48,9 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2 active">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -109,6 +109,6 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 </body>
 </html>

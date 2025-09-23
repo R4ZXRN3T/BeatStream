@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php");
+include( $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
 session_start();
 $isAdmin = false;
 if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
@@ -11,12 +11,12 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	$stmt->close();
 	if (!$isAdmin) {
 		$_SESSION['isAdmin'] = $isAdmin;
-		header("Location: /BeatStream/admin/blocked.php");
+		header("Location: {$GLOBALS['PROJECT_ROOT']}/admin/blocked.php");
 		exit();
 	}
 	$_SESSION['isAdmin'] = $isAdmin;
 } else {
-	header("Location: /BeatStream/account/login.php");
+	header("Location: {$GLOBALS['PROJECT_ROOT']}/account/login.php");
 	exit();
 }
 ?>
@@ -29,8 +29,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>BeatStream - view users</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/BeatStream/mainStyle.css" rel="stylesheet">
-	<link href="/BeatStream/favicon.ico" rel="icon">
+	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css" rel="stylesheet">
+	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/favicon.ico" rel="icon">
 </head>
 
 <body>
@@ -41,19 +41,19 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	}
 </script>
 
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
 		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
 			<div class="nav flex-column py-4">
-				<a href="/BeatStream/" class="nav-link mb-2">Home</a>
-				<a href="/BeatStream/search/" class="nav-link mb-2">Search</a>
-				<a href="/BeatStream/discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/" class="nav-link mb-2">Home</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/search/" class="nav-link mb-2">Search</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/discover/" class="nav-link mb-2">Discover</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2 active">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2 active">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -64,24 +64,24 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link active" href="/BeatStream/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/add/song.php">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a></li>
+						<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add content</a></li>
 					</ul>
 				</div>
 			</nav>
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/songs.php">Songs</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/artists.php">Artists</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">Songs</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/artists.php">Artists</a></li>
 					<li class="nav-item"><a class="nav-link active" href="">Users</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/playlists.php">Playlists</a></li>
-					<li class="nav-item"><a class="nav-link" href="/BeatStream/admin/view/albums.php">Albums</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/playlists.php">Playlists</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/albums.php">Albums</a></li>
 				</ul>
 			</div>
 
 			<?php
-			include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
+			include( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
 			$userList = UserController::getUserList();
 
 			if (array_key_exists('removeButton', $_POST)) {

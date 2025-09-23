@@ -23,3 +23,5 @@
 	RewriteCond %{HTTPS} off
 	RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
+
+php_value auto_prepend_file "C:/xampp/htdocs/BeatStream/globals.php"
