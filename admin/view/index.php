@@ -1,2 +1,2 @@
 <?php
-header('location: /BeatStream/admin/view/songs.php/');
+header("Location: {$GLOBALS['PROJECT_ROOT']}/admin/view/songs.php/");

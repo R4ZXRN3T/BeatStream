@@ -27,8 +27,8 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 <body>
 
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/ArtistController.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/controller/UserController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
 
 $isValid = true;
 $imageName = '';
@@ -40,7 +40,7 @@ if (!(!empty($_POST["artistName"]) && !empty($_POST["activeSince"]))) {
 
 // Process file upload if form fields are valid
 if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
-	require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";#
+	require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";#
 	$result = Converter::uploadImage($_FILES['imageFile'], ImageType::ARTIST);
 	if ($result['success']) {
 		$imageName = $result['large_filename'];
@@ -65,7 +65,7 @@ if ($isValid) {
 }
 ?>
 
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -75,9 +75,9 @@ if ($isValid) {
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2 active">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2 active">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

@@ -1,7 +1,7 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/Objects/Song.php";#
-include_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php";
+include_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";#
+include_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 
 class SongController
 {
@@ -303,10 +303,10 @@ class SongController
 		$result = $stmt->get_result()->fetch_assoc();
 		if ($result) {
 			try {
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/large/" . $result['imageName']);
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/song/thumbnail/" . $result['thumbnailName']);
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/flac/" . $result['flacFilename']);
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/audio/opus/" . $result['opusFilename']);
+				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/large/" . $result['imageName']);
+				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/thumbnail/" . $result['thumbnailName']);
+				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/flac/" . $result['flacFilename']);
+				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/opus/" . $result['opusFilename']);
 			} catch (Exception) {
 			}
 		}

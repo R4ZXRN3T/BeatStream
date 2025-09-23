@@ -16,19 +16,11 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $playlistId = (int)$_GET['id'];
 
 // Include data controller
-include_once("../DataController.php");
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
 // Get playlist data
-$playlistList = DataController::getPlaylistList();
-$playlist = null;
-
-// Find the requested playlist
-foreach ($playlistList as $p) {
-	if ($p->getPlaylistID() == $playlistId) {
-		$playlist = $p;
-		break;
-	}
-}
+$playlist = PlaylistController::getPlaylistById($playlistId);
 
 // If playlist not found, redirect
 if ($playlist === null) {
@@ -43,7 +35,7 @@ if ($_SESSION['userID'] != $playlist->getCreatorID()) {
 }
 
 // Get all songs for selection
-$allSongs = DataController::getSongList();
+$allSongs = SongController::getSongList();
 
 // Get songs currently in the playlist
 $playlistSongIds = $playlist->getSongIDs();
@@ -74,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$imageName = $playlist->getimageName();
 
 			if (isset($_FILES['playlist_image']) && $_FILES['playlist_image']['size'] > 0) {
-				$targetDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/playlist/";
+				$targetDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/images/playlist/";
 				$fileExtension = strtolower(pathinfo($_FILES['playlist_image']['name'], PATHINFO_EXTENSION));
 
 				// Check if file is an actual image
@@ -100,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			}
 
 			// Get selected songs
-			$selectedSongs = isset($_POST['selected_songs']) ? $_POST['selected_songs'] : [];
+			$selectedSongs = $_POST['selected_songs'] ?? [];
 
 			if (empty($selectedSongs)) {
 				$errorMessage = "Playlist must contain at least one song.";
@@ -126,30 +118,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				// Update playlist in database
 				try {
 					// First delete the old playlist
-					DataController::deletePlaylist($playlistId);
+					PlaylistController::deletePlaylist($playlistId);
 
 					// Create a new playlist with the same ID
 					$updatedPlaylist = new Playlist(
-						$playlistId,
-						$newName,
-						$selectedSongs,
-						$totalDuration->format('H:i:s'),
-						$length,
-						$imageName,
-						$playlist->getCreatorID()
+							$playlistId,
+							$newName,
+							$selectedSongs,
+							$totalDuration->format('H:i:s'),
+							$length,
+							$imageName,
+							$playlist->getCreatorID()
 					);
 
-					DataController::insertPlaylist($updatedPlaylist);
+					PlaylistController::insertPlaylist($updatedPlaylist);
 
 					$successMessage = "Playlist updated successfully!";
 					// Reload the playlist data
-					$playlistList = DataController::getPlaylistList();
-					foreach ($playlistList as $p) {
-						if ($p->getPlaylistID() == $playlistId) {
-							$playlist = $p;
-							break;
-						}
-					}
+					$playlist = PlaylistController::getPlaylistById($playlistId);
 
 					// Refresh song lists
 					$playlistSongIds = $playlist->getSongIDs();
@@ -184,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -194,9 +180,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2 active">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2 active">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -268,10 +254,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 												 data-title="<?php echo strtolower(htmlspecialchars($song->getTitle())); ?>"
 												 data-artist="<?php echo strtolower(htmlspecialchars(implode(', ', $song->getArtists()))); ?>">
 												<?php if (!empty($song->getimageName())): ?>
-													<img class="song-image" src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
+													<img class="song-image"
+														 src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 														 alt="<?php echo htmlspecialchars($song->getTitle()); ?>">
 												<?php else: ?>
-													<img class= "song-image" src="../images/defaultSong.webp" alt="Default Song Cover">
+													<img class="song-image" src="../images/defaultSong.webp"
+														 alt="Default Song Cover">
 												<?php endif; ?>
 												<div class="song-info">
 													<p class="song-title"><?php echo htmlspecialchars($song->getTitle()); ?></p>
@@ -282,7 +270,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										<?php endforeach; ?>
 
 										<?php if (empty($availableSongs)): ?>
-											<p class="text-muted text-center mt-3" id="no_available_songs">No more songs available</p>
+											<p class="text-muted text-center mt-3" id="no_available_songs">No more songs
+												available</p>
 										<?php endif; ?>
 									</div>
 								</div>
@@ -303,12 +292,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 											<div class="song-item" data-song-id="<?php echo $song->getSongID(); ?>"
 												 data-title="<?php echo strtolower(htmlspecialchars($song->getTitle())); ?>"
 												 data-artist="<?php echo strtolower(htmlspecialchars(implode(', ', $song->getArtists()))); ?>">
-												<input type="hidden" name="selected_songs[]" value="<?php echo $song->getSongID(); ?>">
+												<input type="hidden" name="selected_songs[]"
+													   value="<?php echo $song->getSongID(); ?>">
 												<?php if (!empty($song->getimageName())): ?>
-													<img class="song-image" src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
+													<img class="song-image"
+														 src="<?php echo "/BeatStream/images/song/" . htmlspecialchars($song->getimageName()); ?>"
 														 alt="<?php echo htmlspecialchars($song->getTitle()); ?>">
 												<?php else: ?>
-													<img class="song-image" src="../images/defaultSong.webp" alt="Default Song Cover">
+													<img class="song-image" src="../images/defaultSong.webp"
+														 alt="Default Song Cover">
 												<?php endif; ?>
 												<div class="song-info">
 													<p class="song-title"><?php echo htmlspecialchars($song->getTitle()); ?></p>
@@ -319,7 +311,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										<?php endforeach; ?>
 
 										<?php if (empty($playlistSongs)): ?>
-											<p class="text-muted text-center mt-3" id="no_selected_songs">No songs selected</p>
+											<p class="text-muted text-center mt-3" id="no_selected_songs">No songs
+												selected</p>
 										<?php endif; ?>
 									</div>
 								</div>

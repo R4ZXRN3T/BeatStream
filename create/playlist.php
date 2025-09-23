@@ -15,8 +15,8 @@ session_start();
 
 <body>
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
 $songList = SongController::getSongList();
 
 $isValid = true;
@@ -31,7 +31,7 @@ if ($isValid) {
 
 	// Handle image upload using converter
 	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] == UPLOAD_ERR_OK) {
-		require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/converter.php";
+		require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 		$imageResult = Converter::uploadImage($_FILES['imageFileInput'], ImageType::PLAYLIST);
 		if ($imageResult['success']) {
 			$imageName = $imageResult['large_filename'];
@@ -59,7 +59,7 @@ if ($isValid) {
 	));
 }
 
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -69,9 +69,9 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2 active">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2 active">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

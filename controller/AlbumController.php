@@ -1,7 +1,7 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/Objects/Album.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/BeatStream/dbConnection.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Album.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 
 class AlbumController
 {
@@ -317,8 +317,8 @@ class AlbumController
 		$result = $deleteImage->get_result()->fetch_assoc();
 		if ($result) {
 			try {
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/album/large/" . $result['imageName']);
-				unlink($_SERVER["DOCUMENT_ROOT"] . "/BeatStream/images/album/thumbnail/" . $result['thumbnailName']);
+				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/large/" . $result['imageName']);
+				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/thumbnail/" . $result['thumbnailName']);
 			} catch (Exception) {
 			}
 		}

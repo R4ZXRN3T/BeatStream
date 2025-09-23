@@ -1,15 +1,15 @@
 <?php
 session_start();
-require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/UserController.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php");
+require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
+require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php");
+require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php");
 
 // Fetch user info
 $userID = $_SESSION['userID'];
 $user = UserController::getUserById($userID);
 
 if (!$user) {
-	header("Location: /BeatStream/auth/login.php");
+	header("Location: {$GLOBALS['PROJECT_ROOT']}/auth/login.php");
 	exit();
 }
 
@@ -37,21 +37,21 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 	<meta charset="UTF-8">
 	<title>Profile - BeatStream</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/BeatStream/mainStyle.css" rel="stylesheet">
+	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css" rel="stylesheet">
 </head>
 <body>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
 		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
 			<div class="nav flex-column py-4">
-				<a href="/BeatStream/" class="nav-link mb-2">Home</a>
-				<a href="/BeatStream/search/" class="nav-link mb-2">Search</a>
-				<a href="/BeatStream/discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/" class="nav-link mb-2">Home</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/search/" class="nav-link mb-2">Search</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/discover/" class="nav-link mb-2">Discover</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -67,14 +67,14 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 							<div class="card-body">
 								<h4 class="card-title"><?= htmlspecialchars($user->getUsername()) ?></h4>
 								<p class="card-text"><?= htmlspecialchars($user->getEmail()) ?></p>
-								<a href="/BeatStream/account/edit.php" class="btn btn-primary">Edit Profile</a>
+								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/edit.php" class="btn btn-primary">Edit Profile</a>
 							</div>
 						</div>
 						<?php if ($artistID != -1): ?>
 							<div class="card mt-3">
 								<div class="card-body">
 									<h5 class="card-title">Your Artist profile:</h5>
-									<a href="/BeatStream/view/artist.php?id=<?php echo $artistID ?>" class="btn btn-primary">View Artist Profile</a>
+									<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/view/artist.php?id=<?php echo $artistID ?>" class="btn btn-primary">View Artist Profile</a>
 								</div>
 							</div>
 						<?php else: ?>
@@ -82,7 +82,7 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 								<div class="card-body">
 									<h5 class="card-title">Become an Artist</h5>
 									<p class="card-text">Create your artist profile to share your music with the world.</p>
-									<a href="/BeatStream/create/artist.php" class="btn btn-primary">Create Artist Profile</a>
+									<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/artist.php" class="btn btn-primary">Create Artist Profile</a>
 								</div>
 							</div>
 						<?php endif; ?>
@@ -92,7 +92,7 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 						<div class="d-flex justify-content-between align-items-center mb-3">
 							<h3>Your Playlists</h3>
 							<?php if (!empty($userPlaylists)): ?>
-								<a href="/BeatStream/create/playlist.php" class="btn btn-primary">Create New Playlist</a>
+								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/playlist.php" class="btn btn-primary">Create New Playlist</a>
 							<?php endif; ?>
 						</div>
 						<?php
@@ -103,11 +103,11 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 								'showCreator' => false, // Don't show creator since it's the user's own playlists
 								'emptyMessage' => 'No playlists created yet.'
 						];
-						include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/playlist-list.php");
+						include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 						?>
 						<?php if (empty($userPlaylists)): ?>
 							<div class="text-center mt-3">
-								<a href="/BeatStream/create/playlist.php" class="btn btn-primary">Create Your First Playlist</a>
+								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/playlist.php" class="btn btn-primary">Create Your First Playlist</a>
 							</div>
 						<?php endif; ?>
 					</div>

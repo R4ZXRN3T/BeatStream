@@ -17,9 +17,9 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'playlist.name ASC';
 
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
 $playlistList = PlaylistController::getPlaylistList($sortBy);
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
+include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 ?>
 
 <script>
@@ -36,9 +36,9 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2 active">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -82,7 +82,7 @@ include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php");
 						'showCreator' => true,
 						'emptyMessage' => 'No playlists available at the moment.'
 				];
-				include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/playlist-list.php");
+				include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 				?>
 			</div>
 		</main>

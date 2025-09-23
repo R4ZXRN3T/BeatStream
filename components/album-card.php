@@ -15,7 +15,7 @@ $isLarge = $options['large'] ?? false;
 $compact = $options['compact'] ?? false;
 
 // Image handling
-$imageFolder = $isLarge ? "/BeatStream/images/album/large/" : "/BeatStream/images/album/thumbnail/";
+$imageFolder = $isLarge ? "{$GLOBALS['PROJECT_ROOT']}/images/album/large/" : "{$GLOBALS['PROJECT_ROOT']}/images/album/thumbnail/";
 $imageSrc = !empty($album->getImageName())
 		? $imageFolder . htmlspecialchars($album->getImageName())
 		: "../images/defaultAlbum.webp";
@@ -23,7 +23,7 @@ $imageSrc = !empty($album->getImageName())
 // Common data
 $albumName = htmlspecialchars($album->getName());
 $artistNames = htmlspecialchars(implode(", ", $album->getArtists()));
-$albumUrl = "/BeatStream/view/album.php?id=" . $album->getAlbumID();
+$albumUrl = "{$GLOBALS['PROJECT_ROOT']}/view/album.php?id=" . $album->getAlbumID();
 $albumInfo = $album->getLength() . " songs &bull; " . $album->getFormattedDuration();
 
 // CSS classes

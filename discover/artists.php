@@ -17,9 +17,9 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'artist.name ASC';
 
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/ArtistController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
 $artistList = ArtistController::getArtistList($sortBy);
-include $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php";
+include  $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
 ?>
 
 <script>
@@ -36,9 +36,9 @@ include $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php";
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2 active">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -85,7 +85,7 @@ include $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php";
 									<div class="card shadow-sm border-0" style="border-radius: 10px;">
 										<div class="card-body d-flex align-items-center p-3">
 											<?php if (!empty($artist->getImageName())): ?>
-												<img src="<?php echo "/BeatStream/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
+												<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
 													 class="me-3 rounded"
 													 alt="<?php echo htmlspecialchars($artist->getName()); ?>"
 													 style="width: 60px; height: 60px; object-fit: cover;">

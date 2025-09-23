@@ -1,7 +1,8 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/dbConnection.php");
-include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/DataController.php");
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/UserController.php';
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/Utils.php';
 
 // Redirect if not logged in
 if (!isset($_SESSION['account_loggedin']) || !$_SESSION['account_loggedin']) {
@@ -11,14 +12,7 @@ if (!isset($_SESSION['account_loggedin']) || !$_SESSION['account_loggedin']) {
 
 $userID = $_SESSION['userID'];
 // Fetch user data
-$userList = DataController::getUserList();
-$currentUser = null;
-foreach ($userList as $user) {
-	if ($user->getUserID() == $userID) {
-		$currentUser = $user;
-		break;
-	}
-}
+$currentUser = UserController::getUserById($userID);
 if (!$currentUser) {
 	echo "<div class='alert alert-danger'>User not found.</div>";
 	exit();
@@ -36,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 	// Handle image upload
 	if (isset($_FILES['imageFile']) && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK) {
-		unlink($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/user/" . $currentUser->getimageName());
-		$uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/images/user/";
+		unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/user/" . $currentUser->getimageName());
+		$uploadDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/images/user/";
 		$ext = pathinfo($_FILES['imageFile']['name'], PATHINFO_EXTENSION);
 		$newFileName = uniqid() . "." . $ext;
 		$destPath = $uploadDir . $newFileName;
@@ -70,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		if (!empty($password) && !$wrongPassword) {
 			// Update password with new salt
-			$salt = DataController::generateRandomString(16);
+			$salt = Utils::generateRandomString();
 			$hashed = hash("sha256", $password . $salt);
 			$stmt = $conn->prepare("UPDATE user SET username=?, email=?, userPassword=?, salt=?, imageName=? WHERE userID=?");
 			$stmt->bind_param("sssssi", $username, $email, $hashed, $salt, $imageName, $userID);
@@ -92,13 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$stmt->close();
 	}
 	// Refresh user data
-	$userList = DataController::getUserList();
-	foreach ($userList as $user) {
-		if ($user->getUserID() == $userID) {
-			$currentUser = $user;
-			break;
-		}
-	}
+	$currentUser = UserController::getUserById($userID);
 }
 ?>
 
@@ -108,22 +96,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<meta charset="UTF-8">
 	<title>Edit Profile</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/BeatStream/mainStyle.css" rel="stylesheet">
-	<link href="/BeatStream/favicon.ico" rel="icon">
+	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css" rel="stylesheet">
+	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/favicon.ico" rel="icon">
 </head>
 <body>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
 		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
 			<div class="nav flex-column py-4">
-				<a href="/BeatStream/" class="nav-link mb-2">Home</a>
-				<a href="/BeatStream/search/" class="nav-link mb-2">Search</a>
-				<a href="/BeatStream/discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/" class="nav-link mb-2">Home</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/search/" class="nav-link mb-2">Search</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/discover/" class="nav-link mb-2">Discover</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>

@@ -34,7 +34,8 @@ if ($showArtistLinks && !empty($song->getArtists())) {
 		$artistID = $artistIDs[$i] ?? null;
 
 		if ($artistID) {
-			$artistLinks[] = '<a href="/BeatStream/view/artist.php?id=' . $artistID . '" class="custom-link" onclick="event.stopPropagation();">' . $artistName . '</a>';
+			$artistLinks[] = '<a href="' . $GLOBALS['PROJECT_ROOT'] . '/view/artist.php?id=' . $artistID . '" class="custom-link" onclick="event.stopPropagation();">' . $artistName . '</a>';
+
 		} else {
 			$artistLinks[] = $artistName; // Fallback to plain text if no artist ID
 		}
@@ -47,9 +48,9 @@ if ($showArtistLinks && !empty($song->getArtists())) {
 
 // Optimize image source
 $imageSrc = $albumView
-		? "/BeatStream/images/album/thumbnail/" . $albumImageName
+		? "{$GLOBALS['PROJECT_ROOT']}/images/album/thumbnail/" . $albumImageName
 		: ($song->getImageName()
-				? "/BeatStream/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
+				? "{$GLOBALS['PROJECT_ROOT']}/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
 				: "../images/defaultSong.webp");
 
 $songData = htmlspecialchars(json_encode($songQueueData));

@@ -5,15 +5,15 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
 	<div class="container-fluid">
 		<!-- Account Info -->
-		<a class="navbar-brand" href="/BeatStream/">
-			<img src="/BeatStream/images/logo_white.webp" alt="BeatStream Logo" class="d-inline-block align-text-top"
+		<a class="navbar-brand" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/">
+			<img src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/logo_white.webp" alt="BeatStream Logo" class="d-inline-block align-text-top"
 				 style="width: 276px; height: 40px; object-fit: fill;">
 		</a>
 
 		<div class="ms-auto d-flex align-items-center">
 			<button id="audioFormatToggle" class="btn btn-secondary me-2" title="Toggle Audio Format"
 					style="background-color: transparent; border: none;">
-				<img id="audioFormatImage" class="codec-image" src="/BeatStream/images/opus_logo.webp" alt="opus">
+				<img id="audioFormatImage" class="codec-image" src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/opus_logo.webp" alt="opus">
 			</button>
 			<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode"
 					style="background-color: transparent; border: none;">
@@ -27,22 +27,22 @@
 							<div class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
 							<div class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
 						</div>
-						<img src="<?php echo $_SESSION['imageName'] ? '/BeatStream/images/user/thumbnail/' . $_SESSION['imageName'] : '/BeatStream/images/defaultUser.webp'; ?>"
+						<img src="<?php echo $_SESSION['imageName'] ? "{$GLOBALS['PROJECT_ROOT']}/images/user/thumbnail/" . $_SESSION['imageName'] : "{$GLOBALS['PROJECT_ROOT']}/images/defaultUser.webp"; ?>"
 							 alt="Profile" class="rounded-circle me-2"
 							 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-						<li><a class="dropdown-item" href="/BeatStream/account/profile.php">View Profile</a></li>
+						<li><a class="dropdown-item" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/profile.php">View Profile</a></li>
 						<li>
 							<hr class="dropdown-divider">
 						</li>
-						<li><a class="dropdown-item text-danger" href="/BeatStream/account/logout.php">Log Out</a></li>
+						<li><a class="dropdown-item text-danger" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/logout.php">Log Out</a></li>
 					</ul>
 				</div>
 			<?php else: ?>
 				<div class="ms-auto d-flex">
-					<a href="/BeatStream/account/login.php" class="btn btn-outline-light me-2">Login</a>
-					<a href="/BeatStream/account/signup.php" class="btn btn-primary">Sign Up</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php" class="btn btn-outline-light me-2">Login</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php" class="btn btn-primary">Sign Up</a>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -72,7 +72,7 @@
 
 		// Load preference
 		const savedFormat = localStorage.getItem('audioFormat') || 'opus';
-		audioFormatImage.src = `/BeatStream/images/${savedFormat}_logo.webp`;
+		audioFormatImage.src = `<?= $GLOBALS['PROJECT_ROOT'] ?>/images/${savedFormat}_logo.webp`;
 		audioFormatImage.alt = savedFormat.toUpperCase();
 
 		audioToggle.onclick = function () {
@@ -80,7 +80,7 @@
 			const newFormat = currentFormat === 'flac' ? 'opus' : 'flac';
 
 			localStorage.setItem('audioFormat', newFormat);
-			audioFormatImage.src = `/BeatStream/images/${newFormat}_logo.webp`;
+			audioFormatImage.src = `<?= $GLOBALS['PROJECT_ROOT'] ?>/images/${newFormat}_logo.webp`;
 			audioFormatImage.alt = newFormat.toUpperCase();
 
 			// Trigger custom event for other parts of your app to listen to

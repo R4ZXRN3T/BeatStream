@@ -10,8 +10,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $playlistId = (int)$_GET['id'];
 
 // Include data controller
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/PlaylistController.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/BeatStream/controller/SongController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
+require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
 $playlist = PlaylistController::getPlaylistById($playlistId);
 
@@ -50,7 +50,7 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 </head>
 
 <body>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/topBar.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -60,9 +60,9 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 				<a href="../" class="nav-link mb-2">Home</a>
 				<a href="../search/" class="nav-link mb-2">Search</a>
 				<a href="../discover/" class="nav-link mb-2">Discover</a>
-				<a href="/BeatStream/create/" class="nav-link mb-2">Create</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
 				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="/BeatStream/admin/" class="nav-link mb-2">Admin</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
 				<?php endif; ?>
 			</div>
 		</nav>
@@ -73,7 +73,7 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 				<div class="row">
 					<div class="col-md-4 text-center">
 						<?php if (!empty($playlist->getImageName())): ?>
-							<img src="<?php echo "/BeatStream/images/playlist/large/" . htmlspecialchars($playlist->getImageName()); ?>"
+							<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/playlist/large/" . htmlspecialchars($playlist->getImageName()); ?>"
 								 class="img-fluid rounded shadow"
 								 alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
 								 style="max-width: 300px;">
@@ -124,6 +124,6 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include($_SERVER['DOCUMENT_ROOT'] . "/BeatStream/components/player.php"); ?>
+<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 </body>
 </html>
