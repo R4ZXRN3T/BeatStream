@@ -21,9 +21,9 @@ $searchTerm = '';
 $searchCategory = 'all';
 
 // Handle search request
-if (!empty($_GET['search'])) {
-	$searchTerm = trim($_GET['search']);
-	$searchCategory = $_GET['category'] ?? 'all';
+if (!empty($_GET['q'])) {
+	$searchTerm = trim($_GET['q']);
+	$searchCategory = $_GET['c'] ?? 'all';
 
 	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
@@ -93,34 +93,34 @@ if (!empty($_GET['search'])) {
 						<div class="input-group mb-3">
 							<input type="text" class="form-control"
 								   placeholder="Search for songs, artists, albums, or playlists..."
-								   name="search" value="<?php echo htmlspecialchars($searchTerm); ?>" required>
+								   name="q" value="<?php echo htmlspecialchars($searchTerm); ?>" required>
 							<button class="btn btn-primary" type="submit">Search</button>
 						</div>
 						<div class="form-group">
 							<label class="mb-2">Filter by:</label>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="category" id="all" value="all"
+								<input class="form-check-input" type="radio" name="c" id="all" value="all"
 										<?php echo ($searchCategory == 'all') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="all">All</label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="category" id="songs" value="songs"
+								<input class="form-check-input" type="radio" name="c" id="songs" value="songs"
 										<?php echo ($searchCategory == 'songs') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="songs">Songs</label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="category" id="artists"
+								<input class="form-check-input" type="radio" name="c" id="artists"
 									   value="artists"
 										<?php echo ($searchCategory == 'artists') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="artists">Artists</label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="category" id="albums" value="albums"
+								<input class="form-check-input" type="radio" name="c" id="albums" value="albums"
 										<?php echo ($searchCategory == 'albums') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="albums">Albums</label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="category" id="playlists"
+								<input class="form-check-input" type="radio" name="c" id="playlists"
 									   value="playlists"
 										<?php echo ($searchCategory == 'playlists') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="playlists">Playlists</label>
@@ -172,7 +172,7 @@ if (!empty($_GET['search'])) {
 											   class="text-decoration-none">
 												<div class="card shadow-sm border-0" style="border-radius: 10px;">
 													<div class="card-body d-flex align-items-center p-3">
-														<?php if (!empty($artist->getImageName())): ?>
+														<?php if (!empty($artist->getThumbnailName())): ?>
 															<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
 																 class="me-3 rounded"
 																 alt="<?php echo htmlspecialchars($artist->getName()); ?>"
@@ -259,11 +259,11 @@ if (!empty($_GET['search'])) {
 	});
 
 	document.addEventListener('DOMContentLoaded', function () {
-		const filterRadios = document.querySelectorAll('input[name="category"]');
+		const filterRadios = document.querySelectorAll('input[name="c"]');
 		filterRadios.forEach(radio => {
 			radio.addEventListener('change', function () {
 				// Only submit if there's a search term
-				if (document.querySelector('input[name="search"]').value.trim() !== '') {
+				if (document.querySelector('input[name="q"]').value.trim() !== '') {
 					this.form.submit();
 				}
 			});
