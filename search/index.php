@@ -25,11 +25,10 @@ if (!empty($_GET['q'])) {
 	$searchTerm = trim($_GET['q']);
 	$searchCategory = $_GET['c'] ?? 'all';
 
-	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
-	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
-	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
-	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
+	if ($searchCategory == 'all' || $searchCategory == 'songs') require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+	if ($searchCategory == 'all' || $searchCategory == 'artists') require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+	if ($searchCategory == 'all' || $searchCategory == 'albums') require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
+	if ($searchCategory == 'all' || $searchCategory == 'playlists') require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
 
 	// Only use specific controllers for searching
 	if ($searchCategory == 'all' || $searchCategory == 'songs') $songResults = SongController::searchSong($searchTerm);
