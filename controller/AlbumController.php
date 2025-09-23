@@ -20,9 +20,9 @@ class AlbumController
 		$length = $album->getLength();
 		$duration = $album->getDuration();
 		$releaseDate = $album->getReleaseDate()->format("Y-m-d");
-		$isSingle = $album->isSingle();
+		$isSingle = (int)$album->isSingle();
 
-		$stmt->bind_param("isssiisb", $newAlbumID, $name, $imageName, $thumbnailName, $length, $duration, $releaseDate, $isSingle);
+		$stmt->bind_param("isssiisi", $newAlbumID, $name, $imageName, $thumbnailName, $length, $duration, $releaseDate, $isSingle);
 		$stmt->execute();
 		$stmt->close();
 
@@ -225,11 +225,12 @@ class AlbumController
 	{
 		// First get random album IDs
 		$stmt = DBConn::getConn()->prepare("
-        SELECT DISTINCT album.albumID 
-        FROM album 
-        ORDER BY RAND() 
-        LIMIT ?
-    ");
+			SELECT DISTINCT album.albumID 
+			FROM album
+			WHERE isSingle = 0
+			ORDER BY RAND() 
+			LIMIT ?
+		");
 		$stmt->bind_param("i", $limit);
 		$stmt->execute();
 		$result = $stmt->get_result();
