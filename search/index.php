@@ -25,28 +25,17 @@ if (!empty($_GET['search'])) {
 	$searchTerm = trim($_GET['search']);
 	$searchCategory = $_GET['category'] ?? 'all';
 
-	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php");
-	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php");
-	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php");
-	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php");
-	require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
+	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
+	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
+	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
 
 	// Only use specific controllers for searching
-	if ($searchCategory == 'all' || $searchCategory == 'songs') {
-		$songResults = SongController::searchSong($searchTerm);
-	}
-
-	if ($searchCategory == 'all' || $searchCategory == 'artists') {
-		$artistResults = ArtistController::searchArtist($searchTerm);
-	}
-
-	if ($searchCategory == 'all' || $searchCategory == 'albums') {
-		$albumResults = AlbumController::searchAlbum($searchTerm);
-	}
-
-	if ($searchCategory == 'all' || $searchCategory == 'playlists') {
-		$playlistResults = PlaylistController::searchPlaylist($searchTerm);
-	}
+	if ($searchCategory == 'all' || $searchCategory == 'songs') $songResults = SongController::searchSong($searchTerm);
+	if ($searchCategory == 'all' || $searchCategory == 'artists') $artistResults = ArtistController::searchArtist($searchTerm);
+	if ($searchCategory == 'all' || $searchCategory == 'albums') $albumResults = AlbumController::searchAlbum($searchTerm);
+	if ($searchCategory == 'all' || $searchCategory == 'playlists') $playlistResults = PlaylistController::searchPlaylist($searchTerm);
 
 	// Create song queue data for player
 	$songQueueData = array_map(function ($song) {
@@ -76,7 +65,7 @@ if (!empty($_GET['search'])) {
 </head>
 <body>
 
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -178,30 +167,24 @@ if (!empty($_GET['search'])) {
 								<div class="result-count"><?php echo count($artistResults); ?> results</div>
 								<div class="row g-4">
 									<?php foreach ($artistResults as $artist): ?>
-										<div class="col-12 col-md-6 col-lg-4">
-											<a class="custom-link"
-											   href="../view/artist.php?id=<?php echo $artist->getArtistID(); ?>">
+										<div class="col-md-4 mb-4">
+											<a href="../view/artist.php?id=<?php echo $artist->getArtistID(); ?>"
+											   class="text-decoration-none">
 												<div class="card shadow-sm border-0" style="border-radius: 10px;">
 													<div class="card-body d-flex align-items-center p-3">
-														<?php if (!empty($artist->getimageName())): ?>
-															<img src="<?php echo "/BeatStream/images/artist/" . htmlspecialchars($artist->getimageName()); ?>"
+														<?php if (!empty($artist->getImageName())): ?>
+															<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
 																 class="me-3 rounded"
 																 alt="<?php echo htmlspecialchars($artist->getName()); ?>"
-																 style="width: 50px; height: 50px; object-fit: cover;">
+																 style="width: 60px; height: 60px; object-fit: cover;">
 														<?php else: ?>
 															<img src="../images/defaultArtist.webp" class="me-3 rounded"
-																 alt="Default Artist Image"
-																 style="width: 50px; height: 50px; object-fit: cover;">
+																 alt="Default Artist image"
+																 style="width: 60px; height: 60px; object-fit: cover;">
 														<?php endif; ?>
 														<div>
 															<h5 class="card-title mb-1"
-																style="font-size: 1.1rem; font-weight: bold;">
-																<?php echo htmlspecialchars($artist->getName()); ?>
-															</h5>
-															<p class="card-text mb-0"
-															   style="font-size: 0.9rem; color: #6c757d;">
-																Artist
-															</p>
+																style="font-size: 1.1rem; font-weight: bold;"><?php echo htmlspecialchars($artist->getName()); ?></h5>
 														</div>
 													</div>
 												</div>
@@ -221,9 +204,11 @@ if (!empty($_GET['search'])) {
 								$albumList = $albumResults;
 								$options = [
 										'containerClass' => 'col-12 col-md-6 col-lg-4',
-										'emptyMessage' => 'No albums found.'
+										'emptyMessage' => 'No albums found.',
+										'large' => false,
+										'compact' => true,
 								];
-								include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
+								include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 								?>
 							</div>
 						<?php endif; ?>
@@ -241,7 +226,7 @@ if (!empty($_GET['search'])) {
 										'homepageStyle' => false
 								];
 								$playlistList = $playlistResults;
-								include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
+								include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 								?>
 							</div>
 						<?php endif; ?>
@@ -253,7 +238,7 @@ if (!empty($_GET['search'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 
 <script>
 	// Add event listeners for song playback
