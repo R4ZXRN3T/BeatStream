@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php");
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php");
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php");
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php");
 
 // Fetch user info
 $userID = $_SESSION['userID'];
@@ -40,7 +40,7 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css" rel="stylesheet">
 </head>
 <body>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
@@ -67,22 +67,26 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 							<div class="card-body">
 								<h4 class="card-title"><?= htmlspecialchars($user->getUsername()) ?></h4>
 								<p class="card-text"><?= htmlspecialchars($user->getEmail()) ?></p>
-								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/edit.php" class="btn btn-primary">Edit Profile</a>
+								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/edit.php" class="btn btn-primary">Edit
+									Profile</a>
 							</div>
 						</div>
 						<?php if ($artistID != -1): ?>
 							<div class="card mt-3">
 								<div class="card-body">
 									<h5 class="card-title">Your Artist profile:</h5>
-									<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/view/artist.php?id=<?php echo $artistID ?>" class="btn btn-primary">View Artist Profile</a>
+									<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/view/artist.php?id=<?php echo $artistID ?>"
+									   class="btn btn-primary">View Artist Profile</a>
 								</div>
 							</div>
 						<?php else: ?>
 							<div class="card mt-3">
 								<div class="card-body">
 									<h5 class="card-title">Become an Artist</h5>
-									<p class="card-text">Create your artist profile to share your music with the world.</p>
-									<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/artist.php" class="btn btn-primary">Create Artist Profile</a>
+									<p class="card-text">Create your artist profile to share your music with the
+										world.</p>
+									<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/artist.php" class="btn btn-primary">Create
+										Artist Profile</a>
 								</div>
 							</div>
 						<?php endif; ?>
@@ -92,7 +96,8 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 						<div class="d-flex justify-content-between align-items-center mb-3">
 							<h3>Your Playlists</h3>
 							<?php if (!empty($userPlaylists)): ?>
-								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/playlist.php" class="btn btn-primary">Create New Playlist</a>
+								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/playlist.php" class="btn btn-primary">Create
+									New Playlist</a>
 							<?php endif; ?>
 						</div>
 						<?php
@@ -103,11 +108,12 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 								'showCreator' => false, // Don't show creator since it's the user's own playlists
 								'emptyMessage' => 'No playlists created yet.'
 						];
-						include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
+						include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 						?>
 						<?php if (empty($userPlaylists)): ?>
 							<div class="text-center mt-3">
-								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/playlist.php" class="btn btn-primary">Create Your First Playlist</a>
+								<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/playlist.php" class="btn btn-primary">Create
+									Your First Playlist</a>
 							</div>
 						<?php endif; ?>
 					</div>

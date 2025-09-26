@@ -51,7 +51,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 </head>
 
 <body>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -128,7 +128,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 		// Prevent song playback when clicking on artist links

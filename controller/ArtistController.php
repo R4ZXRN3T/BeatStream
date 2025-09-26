@@ -1,7 +1,7 @@
 <?php
 
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Artist.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Artist.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 
 class ArtistController
 {
@@ -61,7 +61,7 @@ class ArtistController
 
 	public static function deleteArtist(int $artistID): void
 	{
-		require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+		require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
 		$conn = DBConn::getConn();
 
@@ -72,8 +72,8 @@ class ArtistController
 		$result = $deleteImage->get_result();
 		if ($row = $result->fetch_assoc()) {
 			try {
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/artist/large/" . $row['imageName']);
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/artist/thumbnail/" . $row['thumbnailName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/artist/large/" . $row['imageName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/artist/thumbnail/" . $row['thumbnailName']);
 			} catch (Exception) {
 			}
 		}

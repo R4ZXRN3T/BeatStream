@@ -19,10 +19,10 @@ $playlists = $playlistList ?? [];
 			<?php
 			$creatorID = $playlist->getCreatorID();
 			$cardOptions = [
-				'containerClass' => $containerClass,
-				'showCreator' => $showCreator,
+					'containerClass' => $containerClass,
+					'showCreator' => $showCreator,
 			];
-			include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-card.php");
+			include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-card.php");
 			?>
 		<?php endforeach; ?>
 	<?php else: ?>

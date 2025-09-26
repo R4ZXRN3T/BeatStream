@@ -15,8 +15,8 @@ session_start();
 
 <body>
 <?php
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
 $songList = SongController::getSongList();
 
 $isValid = true;
@@ -31,7 +31,7 @@ if ($isValid) {
 
 	// Handle image upload using converter
 	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] == UPLOAD_ERR_OK) {
-		require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+		require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 		$imageResult = Converter::uploadImage($_FILES['imageFileInput'], ImageType::PLAYLIST);
 		if ($imageResult['success']) {
 			$imageName = $imageResult['large_filename'];
@@ -59,7 +59,7 @@ if ($isValid) {
 	));
 }
 
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">

@@ -10,8 +10,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $playlistId = (int)$_GET['id'];
 
 // Include data controller
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
 $playlist = PlaylistController::getPlaylistById($playlistId);
 
@@ -50,7 +50,7 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 </head>
 
 <body>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -124,6 +124,6 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 </body>
 </html>

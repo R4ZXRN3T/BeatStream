@@ -27,8 +27,8 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 <body>
 
 <?php
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
 
 $isValid = true;
 $imageName = '';
@@ -40,7 +40,7 @@ if (!(!empty($_POST["artistName"]) && !empty($_POST["activeSince"]))) {
 
 // Process file upload if form fields are valid
 if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
-	require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";#
+	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";#
 	$result = Converter::uploadImage($_FILES['imageFile'], ImageType::ARTIST);
 	if ($result['success']) {
 		$imageName = $result['large_filename'];
@@ -65,7 +65,7 @@ if ($isValid) {
 }
 ?>
 
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">

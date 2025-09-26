@@ -6,14 +6,16 @@
 	<div class="container-fluid">
 		<!-- Account Info -->
 		<a class="navbar-brand" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/">
-			<img src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/logo_white.webp" alt="BeatStream Logo" class="d-inline-block align-text-top"
+			<img src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/logo_white.webp" alt="BeatStream Logo"
+				 class="d-inline-block align-text-top"
 				 style="width: 276px; height: 40px; object-fit: fill;">
 		</a>
 
 		<div class="ms-auto d-flex align-items-center">
 			<button id="audioFormatToggle" class="btn btn-secondary me-2" title="Toggle Audio Format"
 					style="background-color: transparent; border: none;">
-				<img id="audioFormatImage" class="codec-image" src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/opus_logo.webp" alt="opus">
+				<img id="audioFormatImage" class="codec-image"
+					 src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/opus_logo.webp" alt="opus">
 			</button>
 			<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode"
 					style="background-color: transparent; border: none;">
@@ -32,16 +34,19 @@
 							 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-						<li><a class="dropdown-item" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/profile.php">View Profile</a></li>
+						<li><a class="dropdown-item" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/profile.php">View
+								Profile</a></li>
 						<li>
 							<hr class="dropdown-divider">
 						</li>
-						<li><a class="dropdown-item text-danger" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/logout.php">Log Out</a></li>
+						<li><a class="dropdown-item text-danger"
+							   href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/logout.php">Log Out</a></li>
 					</ul>
 				</div>
 			<?php else: ?>
 				<div class="ms-auto d-flex">
-					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php" class="btn btn-outline-light me-2">Login</a>
+					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php"
+					   class="btn btn-outline-light me-2">Login</a>
 					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php" class="btn btn-primary">Sign Up</a>
 				</div>
 			<?php endif; ?>

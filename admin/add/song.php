@@ -1,5 +1,5 @@
 <?php
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
 session_start();
 $isAdmin = false;
 if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
@@ -34,8 +34,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <body>
 <?php
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
-include_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
+include_once($GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
 ?>
 
 <div class="container-fluid">
@@ -59,8 +59,11 @@ include_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add
+						<li class="nav-item"><a class="nav-link"
+												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a>
+						</li>
+						<li class="nav-item"><a class="nav-link active"
+												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add
 								content</a></li>
 					</ul>
 				</div>
@@ -69,17 +72,22 @@ include_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
 					<li class="nav-item"><a class="nav-link active" href="">Song</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/artist.php">Artist</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/user.php">User</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/playlist.php">Playlist</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/album.php">Album</a></li>
+					<li class="nav-item"><a class="nav-link"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/artist.php">Artist</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/user.php">User</a>
+					</li>
+					<li class="nav-item"><a class="nav-link"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/playlist.php">Playlist</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/album.php">Album</a>
+					</li>
 				</ul>
 			</div>
 
 			<?php
-			require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
-			require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-			require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
+			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
 			$artistList = ArtistController::getArtistList();
 			$isValid = true;
 			$errorMessage = "";
@@ -93,7 +101,7 @@ include_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
 			$imageName = "";
 			$thumbnailName = "";
 			$songLength = 0;
-			require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 
 			if ($isValid) {
 				if (isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {

@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php");
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php");
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php");
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php");
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php");
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php");
 
 // Get artist ID from URL parameter
 $artistID = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -66,7 +66,7 @@ $songQueueData = array_map(function ($song) {
 </head>
 <body>
 
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
@@ -118,7 +118,7 @@ $songQueueData = array_map(function ($song) {
 
 					$songs = $artistSongs;
 					$options = $songListOptions;
-					include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/song-list.php");
+					include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/song-list.php");
 					?>
 				</div>
 
@@ -135,7 +135,7 @@ $songQueueData = array_map(function ($song) {
 										'containerClass' => 'col-md-3 mb-3',
 										'large' => true
 								];
-								include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-card.php");
+								include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-card.php");
 								?>
 							<?php endforeach; ?>
 						</div>
@@ -149,12 +149,12 @@ $songQueueData = array_map(function ($song) {
 					<?php else: ?>
 						<?php
 						$options = [
-							'containerClass' => 'col-md-4 mb-2',
-							'compact' => true,
-							'emptyMessage' => 'No singles available for this artist.'
+								'containerClass' => 'col-md-4 mb-2',
+								'compact' => true,
+								'emptyMessage' => 'No singles available for this artist.'
 						];
 						$albumList = $singles;
-						include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
+						include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 						?>
 					<?php endif; ?>
 				</div>
@@ -164,7 +164,7 @@ $songQueueData = array_map(function ($song) {
 </div>
 
 <!-- Include the music player -->
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -25,9 +25,9 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 
 <body>
 <?php
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
 // Get the current user's artist ID
 $stmt = DBConn::getConn()->prepare("SELECT artistID, name FROM artist WHERE userID = ?");
@@ -45,7 +45,7 @@ $artistList = ArtistController::getArtistList();
 $artistSongs = SongController::getArtistSongs($currentArtistID);
 
 if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['artistInput'])) {
-	require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+	require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 
 	$imageName = "";
 	$thumbnailName = "";
@@ -93,7 +93,7 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
 
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">

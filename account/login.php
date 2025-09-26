@@ -20,7 +20,7 @@ if (isset($_SESSION['account_loggedin'])) {
 </head>
 
 <body>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -41,14 +41,16 @@ if (isset($_SESSION['account_loggedin'])) {
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link active" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php">login</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php">sign up</a></li>
+					<li class="nav-item"><a class="nav-link active"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php">login</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php">sign
+							up</a></li>
 				</ul>
 			</div>
 
 			<?php
-			require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
-			require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/Utils.php");
+			require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
+			require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/Utils.php");
 
 			$isValid = true;
 			$credentialsCorrect = true;
