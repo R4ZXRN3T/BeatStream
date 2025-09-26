@@ -1,7 +1,7 @@
 <?php
 
-include_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";#
-include_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 
 class SongController
 {
@@ -45,9 +45,6 @@ class SongController
 		return $result->num_rows > 0;
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
@@ -58,24 +55,32 @@ class SongController
 
 		$stmt->execute();
 		$result = $stmt->get_result();
-
-		$songList = array();
-		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
-			$alreadyExists = false;
-
-			for ($i = 0; $i < count($songList); $i++) {
-				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
-					$alreadyExists = true;
-					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
-					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
-				}
-			}
-			if (!$alreadyExists) $songList[] = $newSong;
-		}
+		$songList = self::mergeSongRowsToList($result);
 		$stmt->close();
 
 		return $songList;
+	}
+
+	/**
+	 * Helper to merge artists for a song list, indexed by songID.
+	 */
+	private static function mergeSongRowsToList(mysqli_result $result): array
+	{
+		$songList = [];
+		while ($row = $result->fetch_assoc()) {
+			$songID = $row["songID"];
+			if (!isset($songList[$songID])) {
+				$songList[$songID] = new Song(
+					$row["songID"], $row["title"], [$row["name"]], [$row["artistID"]],
+					$row["genre"], $row["releaseDate"], $row["songLength"],
+					$row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]
+				);
+			} else {
+				$songList[$songID]->setArtists(array_merge($songList[$songID]->getArtists(), [$row["name"]]));
+				$songList[$songID]->setArtistIDs(array_merge($songList[$songID]->getArtistIDs(), [$row["artistID"]]));
+			}
+		}
+		return array_values($songList);
 	}
 
 	public static function getRandomSongs(int $limit = 20): array
@@ -117,23 +122,8 @@ class SongController
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$songList = array();
-		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
-			$alreadyExists = false;
+		$songList = self::mergeSongRowsToList($result);
 
-			for ($i = 0; $i < count($songList); $i++) {
-				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
-					$alreadyExists = true;
-					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
-					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
-					break;
-				}
-			}
-			if (!$alreadyExists) {
-				$songList[] = $newSong;
-			}
-		}
 		$stmt->close();
 
 		return $songList;
@@ -156,24 +146,7 @@ class SongController
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$songList = array();
-		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
-
-			$alreadyExists = false;
-			for ($i = 0; $i < count($songList); $i++) {
-				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
-					$alreadyExists = true;
-					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
-					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
-					break;
-				}
-			}
-
-			if (!$alreadyExists) {
-				$songList[] = $newSong;
-			}
-		}
+		$songList = self::mergeSongRowsToList($result);
 
 		$stmt->close();
 		return $songList;
@@ -199,24 +172,7 @@ class SongController
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$songList = array();
-		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
-
-			$alreadyExists = false;
-			for ($i = 0; $i < count($songList); $i++) {
-				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
-					$alreadyExists = true;
-					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
-					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
-					break;
-				}
-			}
-
-			if (!$alreadyExists) {
-				$songList[] = $newSong;
-			}
-		}
+		$songList = self::mergeSongRowsToList($result);
 
 		$stmt->close();
 		return $songList;
@@ -269,24 +225,7 @@ class SongController
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$songList = array();
-		while ($row = $result->fetch_assoc()) {
-			$newSong = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
-
-			$alreadyExists = false;
-			for ($i = 0; $i < count($songList); $i++) {
-				if ($songList[$i]->getSongID() == $newSong->getSongID()) {
-					$alreadyExists = true;
-					$songList[$i]->setArtists(array_merge($songList[$i]->getArtists(), $newSong->getArtists()));
-					$songList[$i]->setArtistIDs(array_merge($songList[$i]->getArtistIDs(), $newSong->getArtistIDs()));
-					break;
-				}
-			}
-
-			if (!$alreadyExists) {
-				$songList[] = $newSong;
-			}
-		}
+		$songList = self::mergeSongRowsToList($result);
 
 		$stmt->close();
 		return $songList;
@@ -383,21 +322,8 @@ class SongController
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$songList = [];
-		while ($row = $result->fetch_assoc()) {
-			$songID = $row["songID"];
-			if (!isset($songList[$songID])) {
-				$songList[$songID] = new Song(
-					$row["songID"], $row["title"], [$row["name"]], [$row["artistID"]],
-					$row["genre"], $row["releaseDate"], $row["songLength"],
-					$row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]
-				);
-			} else {
-				$songList[$songID]->setArtists(array_merge($songList[$songID]->getArtists(), [$row["name"]]));
-				$songList[$songID]->setArtistIDs(array_merge($songList[$songID]->getArtistIDs(), [$row["artistID"]]));
-			}
-		}
+		$songList = self::mergeSongRowsToList($result);
 		$stmt->close();
-		return array_values($songList);
+		return $songList;
 	}
 }
