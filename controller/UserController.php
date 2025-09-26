@@ -1,8 +1,8 @@
 <?php
 
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/User.php");
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
-require_once( $GLOBALS['PROJECT_ROOT_DIR'] . "/Utils.php");
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/User.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Utils.php";
 
 class UserController
 {
@@ -62,7 +62,7 @@ class UserController
 
 	public static function deleteUser(int $userID): void
 	{
-		require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+		require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
 
 		$conn = DBConn::getConn();
 		$stmt = $conn->prepare("SELECT imageName, thumbnailName FROM user WHERE userID = ?");
@@ -73,8 +73,8 @@ class UserController
 
 		if ($result && $result['imageName']) {
 			try {
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/user/large/" . $result['imageName']);
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/user/thumbnail/" . $result['thumbnailName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/user/large/" . $result['imageName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/user/thumbnail/" . $result['thumbnailName']);
 			} catch (Exception) {
 			}
 		}

@@ -1,9 +1,9 @@
 <?php
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/DBConn.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/DBConn.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";
 session_start();
 
 // Check if user is logged in
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<link href="../favicon.ico" rel="icon">
 </head>
 <body>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">

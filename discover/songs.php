@@ -17,7 +17,7 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'song.title ASC';
 
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 $songList = SongController::getSongList($sortBy);
 
 $songQueueData = array_map(function ($song) {
@@ -32,7 +32,7 @@ $songQueueData = array_map(function ($song) {
 			'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $songList);
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 ?>
 <script>
 	if (window.history.replaceState) {
@@ -109,6 +109,6 @@ include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
 </body>
 </html>

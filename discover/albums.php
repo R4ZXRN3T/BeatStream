@@ -17,9 +17,9 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'album.title ASC';
 
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
 $albumList = AlbumController::getAlbumList($sortBy);
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 ?>
 
 <script>
@@ -85,7 +85,7 @@ include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 						'compact' => true
 				];
 				$albumListVar = $albumList; // To avoid variable name conflict
-				include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
+				include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 				?>
 			</div>
 		</main>

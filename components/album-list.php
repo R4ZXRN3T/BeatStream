@@ -21,7 +21,7 @@ $albums = $albumList ?? [];
 			if (!empty($options['compact'])) {
 				$cardOptions['compact'] = true;
 			}
-			include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-card.php");
+			include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-card.php");
 			?>
 		<?php endforeach; ?>
 	<?php else: ?>

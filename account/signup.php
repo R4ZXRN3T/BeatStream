@@ -20,7 +20,7 @@ if (isset($_SESSION['account_loggedin'])) {
 </head>
 
 <body>
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -41,14 +41,16 @@ if (isset($_SESSION['account_loggedin'])) {
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php">login</a></li>
-					<li class="nav-item"><a class="nav-link active" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php">sign up</a>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php">login</a>
+					</li>
+					<li class="nav-item"><a class="nav-link active"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php">sign up</a>
 					</li>
 				</ul>
 			</div>
 
 			<?php
-			include( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
+			include($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
 
 			$isValid = true;
 			$loginOk = true;
@@ -77,7 +79,7 @@ if (isset($_SESSION['account_loggedin'])) {
 				}
 
 				if (!empty($_FILES["imageToUpload"]["name"]) && $_FILES["imageToUpload"]["error"] == UPLOAD_ERR_OK && $uploadOk) {
-					require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+					require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 					$uploadResult = Converter::uploadImage($_FILES["imageToUpload"], ImageType::USER);
 					if ($uploadResult['success']) {
 						$largeFileName = $uploadResult['large_filename'];

@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
 session_start();
 $isAdmin = false;
 if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
@@ -41,7 +41,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	}
 </script>
 
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -64,24 +64,33 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link active" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add content</a></li>
+						<li class="nav-item"><a class="nav-link active"
+												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a>
+						</li>
+						<li class="nav-item"><a class="nav-link"
+												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add
+								content</a></li>
 					</ul>
 				</div>
 			</nav>
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">Songs</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/artists.php">Artists</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/users.php">Users</a></li>
+					<li class="nav-item"><a class="nav-link"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">Songs</a></li>
+					<li class="nav-item"><a class="nav-link"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/artists.php">Artists</a>
+					</li>
+					<li class="nav-item"><a class="nav-link"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/users.php">Users</a></li>
 					<li class="nav-item"><a class="nav-link active" href="">Playlists</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/albums.php">Albums</a></li>
+					<li class="nav-item"><a class="nav-link"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/albums.php">Albums</a></li>
 				</ul>
 			</div>
 
 			<?php
-			include( $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php");
+			include($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php");
 			$playlistList = PlaylistController::getPlaylistList();
 
 			if (array_key_exists('removeButton', $_POST)) {

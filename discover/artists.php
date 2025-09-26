@@ -17,9 +17,9 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'artist.name ASC';
 
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
 $artistList = ArtistController::getArtistList($sortBy);
-include  $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
+include $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
 ?>
 
 <script>

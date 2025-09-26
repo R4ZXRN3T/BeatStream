@@ -7,8 +7,8 @@ class Converter
 
 	public static function uploadAudio($file): array
 	{
-		$flacUploadDir =  $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/flac/";
-		$opusUploadDir =  $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/opus/";
+		$flacUploadDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/flac/";
+		$opusUploadDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/opus/";
 
 		if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
 			return ['success' => false, 'error' => 'No audio file provided or upload error'];
@@ -114,7 +114,7 @@ class Converter
 			return ['success' => false, 'error' => 'ImageMagick extension not available'];
 		}
 
-		$imageUploadDir =  $GLOBALS['PROJECT_ROOT_DIR'] . "/images/" . $imageType->value . "/";
+		$imageUploadDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/images/" . $imageType->value . "/";
 		$largeDir = $imageUploadDir . "large/";
 		$thumbnailDir = $imageUploadDir . "thumbnail/";
 

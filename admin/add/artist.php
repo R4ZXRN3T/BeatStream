@@ -1,5 +1,5 @@
 <?php
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
 session_start();
 $isAdmin = false;
 if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
@@ -34,7 +34,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <body>
 
-<?php include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 <div class="container-fluid">
 	<div class="row">
@@ -57,8 +57,11 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a></li>
-						<li class="nav-item"><a class="nav-link active" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add
+						<li class="nav-item"><a class="nav-link"
+												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a>
+						</li>
+						<li class="nav-item"><a class="nav-link active"
+												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add
 								content</a></li>
 					</ul>
 				</div>
@@ -66,17 +69,22 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			<div class="tab">
 				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Song</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Song</a>
+					</li>
 					<li class="nav-item"><a class="nav-link active" href="">Artist</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/user.php">User</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/playlist.php">Playlist</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/album.php">Album</a></li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/user.php">User</a>
+					</li>
+					<li class="nav-item"><a class="nav-link"
+											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/playlist.php">Playlist</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/album.php">Album</a>
+					</li>
 				</ul>
 			</div>
 
 			<?php
-			require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-			require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
+			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
+			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
 			$userList = UserController::getUserList();
 
 			$isValid = true;
@@ -89,7 +97,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			// Process file upload if form fields are valid
 			if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imageFile']['size'] > 0) {
-				require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+				require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 				$result = Converter::uploadImage($_FILES["imageFile"], ImageType::ARTIST);
 				if ($result['success']) {
 					$imageName = $result['large_filename'];

@@ -17,9 +17,9 @@ session_start();
 <?php
 $sortBy = $_POST['sortInput'] ?? 'playlist.name ASC';
 
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
 $playlistList = PlaylistController::getPlaylistList($sortBy);
-include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
+include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 ?>
 
 <script>
@@ -82,7 +82,7 @@ include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 						'showCreator' => true,
 						'emptyMessage' => 'No playlists available at the moment.'
 				];
-				include( $GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
+				include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 				?>
 			</div>
 		</main>

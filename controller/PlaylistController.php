@@ -1,7 +1,7 @@
 <?php
 
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
-require_once  $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Playlist.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Playlist.php";
 
 class PlaylistController
 {
@@ -82,8 +82,8 @@ class PlaylistController
 		$result = $deleteImage->get_result()->fetch_assoc();
 		if ($result) {
 			try {
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/playlist/large/" . $result['imageName']);
-				unlink( $GLOBALS['PROJECT_ROOT_DIR'] . "/images/playlist/thumbnail/" . $result['thumbnailName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/playlist/large/" . $result['imageName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/playlist/thumbnail/" . $result['thumbnailName']);
 			} catch (Exception) {
 			}
 		}
