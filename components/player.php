@@ -31,7 +31,8 @@
 		<div class="row align-items-center">
 			<!-- Song Info -->
 			<div class="col-md-3 d-flex align-items-center">
-				<img id="playerCover" src="/BeatStream/images/defaultSong.webp" alt="Song Cover" class="me-2"
+				<img id="playerCover" src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp" alt="Song Cover"
+					 class="me-2"
 					 style="width: 50px; height: 50px; object-fit: cover;">
 				<div>
 					<h6 id="playerTitle" class="mb-0">No song selected</h6>
@@ -70,12 +71,15 @@
 			<!-- Volume Control -->
 			<div class="col-md-3 text-end">
 				<div class="d-flex align-items-center justify-content-end">
-					<button id="killPlayerBtn" class="btn btn-sm btn-outline-danger me-2" title="Kill Player">
+					<i id="volumeIcon" class="bi bi-volume-up me-2"></i>
+					<label for="volumeControl"></label>
+					<input type="range" class="form-range" id="volumeControl" min="0"
+						   max="100" value="100"
+						   style="width: 100px;">
+					<button id="killPlayerBtn" class="btn btn-sm btn-outline-danger me-2" title="Kill Player"
+							style="margin-left: 20px;">
 						<i class="bi bi-x-circle"></i>
 					</button>
-					<i id="volumeIcon" class="bi bi-volume-up me-2"></i>
-					<input type="range" class="form-range" id="volumeControl" min="0" max="100" value="100"
-						   style="width: 100px;">
 				</div>
 			</div>
 		</div>
@@ -437,7 +441,7 @@
 						: song.artists;
 
 					li.innerHTML = `<img src="${song.thumbnailName ? `${this.imageBasePath}${song.thumbnailName}` : '../images/defaultSong.webp'}"
-									class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+									class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" alt="${song.title}">
 									<div class="flex-grow-1">
 										<div class="text-truncate">${song.title}</div>
 										<small style="color: rgb(200, 200, 200)">${artistDisplay}</small>
