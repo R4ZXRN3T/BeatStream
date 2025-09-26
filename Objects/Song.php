@@ -14,9 +14,6 @@ class Song
 	private string $imageName;
 	private string $thumbnailName;
 
-	/**
-	 * @throws Exception
-	 */
 	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, int $songLength, string $flacFileName, $opusFileName, string $imageName, string $thumbnailName)
 	{
 		$this->songID = $songID;
@@ -24,7 +21,11 @@ class Song
 		$this->artists = $artists;
 		$this->artistIDs = $artistIDs;
 		$this->genre = $genre;
-		$this->releaseDate = new DateTime($releaseDate);
+		try {
+			$this->releaseDate = new DateTime($releaseDate);
+		} catch (Exception) {
+			$this->releaseDate = new DateTime();
+		}
 		$this->songLength = $songLength;
 		$this->flacFileName = $flacFileName;
 		$this->opusFileName = $opusFileName;
@@ -83,9 +84,11 @@ class Song
 	{
 		$seconds = intval($this->songLength / 1000);
 		$minutes = intval($seconds / 60);
+		$hours = floor($minutes / 60);
 		$remainingSeconds = $seconds % 60;
+		$remainingMinutes = $minutes % 60;
 
-		return sprintf("%d:%02d", $minutes, $remainingSeconds);
+		return $hours >= 1 ? sprintf("%dh %02d min %02 sec", $hours, $remainingMinutes, $remainingSeconds) : sprintf("%d:%02d", $minutes, $remainingSeconds);
 	}
 
 	public function getFlacFileName(): string

@@ -17,8 +17,8 @@ class Artist
 		$this->thumbnailName = $thumbnailName;
 		try {
 			$this->activeSince = new DateTime($activeSince);
-		} catch (Exception $e) {
-			throw new RuntimeException("Invalid date format for activeSince: " . $e->getMessage());
+		} catch (Exception) {
+			$this->activeSince = new DateTime();
 		}
 		$this->userID = $userID;
 	}

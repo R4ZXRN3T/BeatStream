@@ -25,7 +25,11 @@ class Album
 		$this->thumbnailName = $thumbnailName;
 		$this->length = $length;
 		$this->duration = $duration;
-		$this->releaseDate = new DateTime($releaseDate); // Store as DateTime
+		try {
+			$this->releaseDate = new DateTime($releaseDate);
+		} catch (Exception) {
+			$this->releaseDate = new DateTime(); // Default to current date if parsing fails
+		}
 		$this->isSingle = $isSingle;
 	}
 
@@ -80,9 +84,11 @@ class Album
 	{
 		$seconds = intval($this->duration / 1000);
 		$minutes = intval($seconds / 60);
+		$hours = floor($minutes / 60);
 		$remainingSeconds = $seconds % 60;
+		$remainingMinutes = $minutes % 60;
 
-		return sprintf("%d:%02d", $minutes, $remainingSeconds);
+		return $hours >= 1 ? sprintf("%d:%02d:%02d", $hours, $remainingMinutes, $remainingSeconds) : sprintf("%d:%02d", $minutes, $remainingSeconds);
 	}
 
 	public function getAlbumID(): int
