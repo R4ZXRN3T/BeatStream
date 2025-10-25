@@ -109,13 +109,12 @@ $songQueueData = array_map(function ($song) use ($album) {
 				<?php
 				$songListOptions = [
 						'layout' => 'list',
-						'showIndex' => true,
+						'showIndex' => false,
 						'showDuration' => true,
 						'showArtistLinks' => true,
 						'containerClass' => 'col-12',
 						'emptyMessage' => 'No songs available in this album.',
-						'albumView' => true,
-						'albumImageName' => $album->getThumbnailName()
+						'albumView' => true
 				];
 
 				$songs = $albumSongs;

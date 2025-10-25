@@ -25,13 +25,19 @@
 <link rel="stylesheet" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css">
 <link rel="stylesheet" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/playerStyle.css">
 
+<div id="coverPanel" class="position-fixed d-none">
+	<img id="playerCoverLarge" src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp" alt="Song Cover"
+		 loading="lazy">
+</div>
+
 <!-- Music Player -->
 <div id="musicPlayer" class="fixed-bottom bg-dark text-white p-2 d-none">
 	<div class="container-fluid">
 		<div class="row align-items-center">
 			<!-- Song Info -->
 			<div class="col-md-3 d-flex align-items-center">
-				<img id="playerCover" src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp" alt="Song Cover"
+				<img id="playerCoverSmall" src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp"
+					 alt="Song Cover"
 					 class="me-2"
 					 style="width: 50px; height: 50px; object-fit: cover;">
 				<div>
@@ -114,7 +120,8 @@
 				this.progressContainer = document.querySelector('.progress');
 				this.volumeControl = document.getElementById('volumeControl');
 				this.volumeIcon = document.getElementById('volumeIcon');
-				this.playerCover = document.getElementById('playerCover');
+				this.playerCoverLarge = document.getElementById('playerCoverLarge');
+				this.playerCoverSmall = document.getElementById('playerCoverSmall');
 				this.playerTitle = document.getElementById('playerTitle');
 				this.playerArtist = document.getElementById('playerArtist');
 				this.currentTimeEl = document.getElementById('currentTime');
@@ -250,6 +257,8 @@
 				this.queue = [];
 				this.currentIndex = -1;
 				this.updateQueueDisplay();
+				this.playerCoverLarge.classList.add('d-none');
+				this.coverPanel.classList.add('d-none');
 				document.title = this.originalTitle;
 				localStorage.removeItem('playerState');
 			}
@@ -290,9 +299,13 @@
 					this.playerArtist.textContent = song.artists;
 				}
 
-				this.playerCover.src = song.thumbnailName ?
-					`${this.imageBasePath}${song.thumbnailName}` :
-					'../images/defaultSong.webp';
+				this.playerCoverLarge.src = song.imageName
+					? `${this.largeImagePath}${song.imageName}`
+					: `${this.basePath}/images/defaultSong.webp`;
+
+				this.playerCoverSmall.src = song.thumbnailName
+					? `${this.imageBasePath}${song.thumbnailName}`
+					: `${this.basePath}/images/defaultSong.webp`;
 
 				this.audio.play().catch(error => console.error('Playback error:', error));
 				if ("mediaSession" in navigator) {
@@ -319,6 +332,19 @@
 
 				document.title = `▶ ${song.title} by ${song.artists} - BeatStream`;
 				this.saveState();
+
+				const coverPanel = document.getElementById('coverPanel');
+				const playerCoverLarge = document.getElementById('playerCoverLarge');
+
+				if (song) {
+					coverPanel.classList.remove('d-none');
+					playerCoverLarge.classList.remove('d-none');
+					playerCoverLarge.src = song.imageName
+						? `${this.largeImagePath}${song.imageName}`
+						: '<?= $GLOBALS["PROJECT_ROOT"] ?>/images/defaultSong.webp';
+				} else {
+					coverPanel.classList.add('d-none');
+				}
 			}
 
 			playFromQueue(index) {
@@ -356,7 +382,8 @@
 					this.audio.pause();
 					this.playerTitle.textContent = 'End of queue';
 					this.playerArtist.textContent = 'Play again or add more songs';
-					this.playerCover.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
+					this.playerCoverSmall.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
+					this.playerCoverLarge.classList.add('d-none');
 				}
 				this.updateQueueDisplay();
 			}
@@ -390,7 +417,8 @@
 						this.currentIndex = -1;
 						this.playerTitle.textContent = 'No song selected';
 						this.playerArtist.textContent = '';
-						this.playerCover.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
+						this.playerCoverLarge.classList.add('d-none');
+						this.playerCoverSmall.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
 					} else {
 						// Adjust current index and play next available song
 						if (this.currentIndex >= this.queue.length) {
