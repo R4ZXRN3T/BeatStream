@@ -2,96 +2,96 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 	<title></title></head>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-	<div class="container-fluid">
-		<!-- Account Info -->
-		<a class="navbar-brand" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/">
-			<img src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/logo_white.webp" alt="BeatStream Logo"
-				 class="d-inline-block align-text-top"
-				 style="width: 276px; height: 40px; object-fit: fill;">
-		</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"
+<div class="container-fluid">
+	<!-- Account Info -->
+	<a class="navbar-brand" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/">
+		<img src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/logo_white.webp" alt="BeatStream Logo"
+			 class="d-inline-block align-text-top"
+			 style="width: 276px; height: 40px; object-fit: fill;">
+	</a>
 
-		<div class="ms-auto d-flex align-items-center">
-			<button id="audioFormatToggle" class="btn btn-secondary me-2" title="Toggle Audio Format"
-					style="background-color: transparent; border: none;">
-				<img id="audioFormatImage" class="codec-image"
-					 src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/opus_logo.webp" alt="opus">
-			</button>
-			<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode"
-					style="background-color: transparent; border: none;">
-				<i class="bi bi-moon fs-4"></i>
-			</button>
-			<?php if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true): ?>
-				<div class="dropdown ms-auto">
-					<button class="btn d-flex align-items-center dropdown-toggle p-0 bg-transparent border-0"
-							type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-						<div class="text-end">
-							<div class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
-							<div class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
-						</div>
-						<img src="<?php echo $_SESSION['imageName'] ? "{$GLOBALS['PROJECT_ROOT']}/images/user/thumbnail/" . $_SESSION['imageName'] : "{$GLOBALS['PROJECT_ROOT']}/images/defaultUser.webp"; ?>"
-							 alt="Profile" class="rounded-circle me-2"
-							 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
-					</button>
-					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-						<li><a class="dropdown-item" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/profile.php">View
-								Profile</a></li>
-						<li>
-							<hr class="dropdown-divider">
-						</li>
-						<li><a class="dropdown-item text-danger"
-							   href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/logout.php">Log Out</a></li>
-					</ul>
-				</div>
-			<?php else: ?>
-				<div class="ms-auto d-flex">
-					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php"
-					   class="btn btn-outline-light me-2">Login</a>
-					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php" class="btn btn-primary">Sign Up</a>
-				</div>
-			<?php endif; ?>
-		</div>
+	<div class="ms-auto d-flex align-items-center">
+		<button id="audioFormatToggle" class="btn btn-secondary me-2" title="Toggle Audio Format"
+				style="background-color: transparent; border: none;">
+			<img id="audioFormatImage" class="codec-image"
+				 src="<?= $GLOBALS['PROJECT_ROOT'] ?>/images/opus_logo.webp" alt="opus">
+		</button>
+		<button id="darkModeToggle" class="btn btn-secondary me-2" title="Toggle Dark Mode"
+				style="background-color: transparent; border: none;">
+			<i class="bi bi-moon fs-4"></i>
+		</button>
+		<?php if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true): ?>
+			<div class="dropdown ms-auto">
+				<button class="btn d-flex align-items-center dropdown-toggle p-0 bg-transparent border-0"
+						type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+					<div class="text-end">
+						<div class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
+						<div class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
+					</div>
+					<img src="<?php echo $_SESSION['imageName'] ? "{$GLOBALS['PROJECT_ROOT']}/images/user/thumbnail/" . $_SESSION['imageName'] : "{$GLOBALS['PROJECT_ROOT']}/images/defaultUser.webp"; ?>"
+						 alt="Profile" class="rounded-circle me-2"
+						 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
+				</button>
+				<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+					<li><a class="dropdown-item" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/profile.php">View
+							Profile</a></li>
+					<li>
+						<hr class="dropdown-divider">
+					</li>
+					<li><a class="dropdown-item text-danger"
+						   href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/logout.php">Log Out</a></li>
+				</ul>
+			</div>
+		<?php else: ?>
+			<div class="ms-auto d-flex">
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/login.php"
+				   class="btn btn-outline-light me-2">Login</a>
+				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/signup.php" class="btn btn-primary">Sign Up</a>
+			</div>
+		<?php endif; ?>
 	</div>
-	<script>
-		const toggle = document.getElementById('darkModeToggle');
-		const body = document.body;
-		// Load preference
-		if (localStorage.getItem('darkMode') === 'enabled') {
-			body.classList.add('dark-mode');
+</div>
+<script>
+	const toggle = document.getElementById('darkModeToggle');
+	const body = document.body;
+	// Load preference
+	if (localStorage.getItem('darkMode') === 'enabled') {
+		body.classList.add('dark-mode');
+	}
+	toggle.onclick = function () {
+		body.classList.toggle('dark-mode');
+		if (body.classList.contains('dark-mode')) {
+			localStorage.setItem('darkMode', 'enabled');
+		} else {
+			localStorage.setItem('darkMode', 'disabled');
 		}
-		toggle.onclick = function () {
-			body.classList.toggle('dark-mode');
-			if (body.classList.contains('dark-mode')) {
-				localStorage.setItem('darkMode', 'enabled');
-			} else {
-				localStorage.setItem('darkMode', 'disabled');
-			}
-		}
+	}
 
-		const audioToggle = document.getElementById('audioFormatToggle');
-		const audioFormatImage = document.getElementById('audioFormatImage');
+	const audioToggle = document.getElementById('audioFormatToggle');
+	const audioFormatImage = document.getElementById('audioFormatImage');
 
-		if (localStorage.getItem('audioFormat') === null) {
-			localStorage.setItem('audioFormat', 'opus');
-		}
+	if (localStorage.getItem('audioFormat') === null) {
+		localStorage.setItem('audioFormat', 'opus');
+	}
 
-		// Load preference
-		const savedFormat = localStorage.getItem('audioFormat') || 'opus';
-		audioFormatImage.src = `<?= $GLOBALS['PROJECT_ROOT'] ?>/images/${savedFormat}_logo.webp`;
-		audioFormatImage.alt = savedFormat.toUpperCase();
+	// Load preference
+	const savedFormat = localStorage.getItem('audioFormat') || 'opus';
+	audioFormatImage.src = `<?= $GLOBALS['PROJECT_ROOT'] ?>/images/${savedFormat}_logo.webp`;
+	audioFormatImage.alt = savedFormat.toUpperCase();
 
-		audioToggle.onclick = function () {
-			const currentFormat = localStorage.getItem('audioFormat') || 'opus';
-			const newFormat = currentFormat === 'flac' ? 'opus' : 'flac';
+	audioToggle.onclick = function () {
+		const currentFormat = localStorage.getItem('audioFormat') || 'opus';
+		const newFormat = currentFormat === 'flac' ? 'opus' : 'flac';
 
-			localStorage.setItem('audioFormat', newFormat);
-			audioFormatImage.src = `<?= $GLOBALS['PROJECT_ROOT'] ?>/images/${newFormat}_logo.webp`;
-			audioFormatImage.alt = newFormat.toUpperCase();
+		localStorage.setItem('audioFormat', newFormat);
+		audioFormatImage.src = `<?= $GLOBALS['PROJECT_ROOT'] ?>/images/${newFormat}_logo.webp`;
+		audioFormatImage.alt = newFormat.toUpperCase();
 
-			// Trigger custom event for other parts of your app to listen to
-			document.dispatchEvent(new CustomEvent('audioFormatChanged', {
-				detail: {format: newFormat}
-			}));
-		};
-	</script>
+		// Trigger custom event for other parts of your app to listen to
+		document.dispatchEvent(new CustomEvent('audioFormatChanged', {
+			detail: {format: newFormat}
+		}));
+	};
+</script>
 </nav>

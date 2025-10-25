@@ -20,8 +20,7 @@ $showDuration = $options['showDuration'] ?? true;
 $showArtistLinks = $options['showArtistLinks'] ?? true;
 $index = $options['index'] ?? 0;
 $containerClass = $options['containerClass'] ?? 'col-12 col-md-6';
-$albumView = $options['albumView'] ?? false; // Use album image if true
-$albumImageName = $options['albumImageName'] ?? "../../defaultSong.webp"; // Default album image
+$albumView = $options['albumView'] ?? false;
 
 $artistDisplay = '';
 if ($showArtistLinks && !empty($song->getArtists())) {
@@ -47,11 +46,9 @@ if ($showArtistLinks && !empty($song->getArtists())) {
 }
 
 // Optimize image source
-$imageSrc = $albumView
-		? "{$GLOBALS['PROJECT_ROOT']}/images/album/thumbnail/" . $albumImageName
-		: ($song->getImageName()
-				? "{$GLOBALS['PROJECT_ROOT']}/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
-				: "../images/defaultSong.webp");
+$imageSrc = $song->getImageName()
+		? "{$GLOBALS['PROJECT_ROOT']}/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
+		: "../images/defaultSong.webp";
 
 $songData = htmlspecialchars(json_encode($songQueueData));
 ?>
@@ -63,10 +60,16 @@ $songData = htmlspecialchars(json_encode($songQueueData));
 			 data-song-queue='<?= $songData ?>'>
 
 			<div class="position-relative me-3">
-				<img src="<?= $imageSrc ?>"
-					 class="rounded song-image"
-					 alt="<?= htmlspecialchars($song->getTitle()) ?>"
-					 loading="lazy">
+				<?php if ($albumView): ?>
+					<div class="song-cover-index-container">
+						<p class="song-cover-index"><?= $index + 1 ?></p>
+					</div>
+				<?php else: ?>
+					<img src="<?= $imageSrc ?>"
+						 class="rounded song-image"
+						 alt="<?= htmlspecialchars($song->getTitle()) ?>"
+						 loading="lazy">
+				<?php endif; ?>
 
 				<?php if ($showIndex): ?>
 					<div class="position-absolute song-index">

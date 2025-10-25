@@ -248,13 +248,13 @@ class AlbumController
 		// Then get all data for those albums
 		$placeholders = str_repeat('?,', count($albumIDs) - 1) . '?';
 		$stmt = DBConn::getConn()->prepare("
-        SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID, album.isSingle
-        FROM album, artist, releases_album
-        WHERE releases_album.artistID = artist.artistID
-        AND album.albumID = releases_album.albumID
-        AND album.albumID IN ($placeholders)
-        ORDER BY album.albumID, releases_album.artistIndex;
-    ");
+			SELECT album.albumID, title, name, album.imageName, album.thumbnailName, length, duration, album.releaseDate, artist.artistID, album.isSingle
+			FROM album, artist, releases_album
+			WHERE releases_album.artistID = artist.artistID
+			AND album.albumID = releases_album.albumID
+			AND album.albumID IN ($placeholders)
+			ORDER BY album.albumID, releases_album.artistIndex;
+		");
 		$stmt->bind_param(str_repeat('i', count($albumIDs)), ...$albumIDs);
 		$stmt->execute();
 		$result = $stmt->get_result();

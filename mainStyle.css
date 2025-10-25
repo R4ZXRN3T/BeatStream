@@ -46,6 +46,8 @@ body {
 	min-height: 100vh;
 	padding: 20px;
 	width: var(--sidebar-width);
+	box-shadow: #000000 0 0 15px;
+	z-index: 1000;
 }
 
 .sidebar a {
@@ -82,6 +84,12 @@ body {
 .nav-tabs .nav-link.active {
 	background-color: var(--primary-dark);
 	color: white;
+}
+
+.navbar {
+	z-index: 1100;
+	box-shadow: #000000 0 0 15px;
+	border-bottom: #495057 2px solid
 }
 
 /* =========================
@@ -198,6 +206,22 @@ tr:nth-child(even) {
 	width: 64px;
 	height: 64px;
 	object-fit: cover;
+}
+
+.song-cover-index-container {
+	width: 64px;
+	height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.song-cover-index {
+	font-size: 20px;
+	margin: 0;
+	line-height: 1;
+	user-select: none;
+	font-weight: bold;
 }
 
 .song-index {

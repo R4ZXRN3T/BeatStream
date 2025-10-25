@@ -13,8 +13,7 @@ $showDuration = $options['showDuration'] ?? true;
 $showArtistLinks = $options['showArtistLinks'] ?? true;
 $containerClass = $options['containerClass'] ?? 'col-12 col-md-6';
 $emptyMessage = $options['emptyMessage'] ?? 'No songs available.';
-$albumView = $options['albumView'] ?? false; // Use album image if true
-$albumImageName = $options['albumImageName'] ?? "../../defaultSong.webp"; // Default album image
+$albumView = $options['albumView'] ?? false;
 ?>
 
 <div class="row g-3">
@@ -27,8 +26,7 @@ $albumImageName = $options['albumImageName'] ?? "../../defaultSong.webp"; // Def
 					'showArtistLinks' => $showArtistLinks,
 					'index' => $index,
 					'containerClass' => $containerClass,
-					'albumView' => $albumView,
-					'albumImageName' => $albumImageName
+					'albumView' => $albumView
 			];
 			// Pass required variables to song-card.php
 			include('song-card.php');
