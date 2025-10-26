@@ -105,6 +105,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				if ($imageResult['success']) {
 					$imageName = $imageResult['large_filename'];
 					$thumbnailName = $imageResult['thumbnail_filename'];
+					$originalImageName = $imageResult['original_filename'];
 				} else {
 					$isValid = false;
 					$errorMessage = $imageResult['error'];
@@ -141,7 +142,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 							$albumLength,
 							$totalMilliSeconds,
 							$releaseDate,
-							$isSingle
+							$isSingle,
+							$originalImageName ?? ""
 					));
 					$successMessage = "Album successfully added!";
 				} catch (Exception $e) {
@@ -224,7 +226,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	<script>
 		function updateRemoveButtons() {
 			const fields = document.querySelectorAll('#artistFields .artist-field');
-			fields.forEach((field, idx) => {
+			fields.forEach((field) => {
 				const btn = field.querySelector('.remove-artist');
 				btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
 			});

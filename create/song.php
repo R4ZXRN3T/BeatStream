@@ -51,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 	$imageName = "";
 	$thumbnailName = "";
+	$originalImageName = "";
 	$flacFileName = "";
 	$opusFileName = "";
 	$duration = 0;
@@ -61,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		if ($imageResult['success']) {
 			$imageName = $imageResult['large_filename'];
 			$thumbnailName = $imageResult['thumbnail_filename'];
+			$originalImageName = $imageResult['original_filename'];
 		} else {
 			$isValid = false;
 			$errorMessage = "Image upload failed: " . $imageResult['error'];
@@ -100,7 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					$flacFileName,
 					$opusFileName,
 					$imageName,
-					$thumbnailName
+					$thumbnailName,
+					$originalImageName ?? ""
 			));
 			$successMessage = "Song uploaded successfully!";
 		} catch (Exception $e) {
@@ -212,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			<script>
 				function updateRemoveButtons() {
 					const fields = document.querySelectorAll('#artistFields .artist-field');
-					fields.forEach((field, idx) => {
+					fields.forEach((field) => {
 						const btn = field.querySelector('.remove-artist');
 						btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
 					});
@@ -240,3 +243,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
