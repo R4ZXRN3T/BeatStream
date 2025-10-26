@@ -7,3 +7,4 @@ config.php
 audio/flac/*.flac
 audio/opus/*.opus
 images/**/**/*.webp
+images/**/**/*.png
