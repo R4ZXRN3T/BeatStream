@@ -16,12 +16,13 @@ class SongController
 		$releaseDate = $song->getReleaseDate()->format("Y-m-d");
 		$imageName = $song->getImageName();
 		$thumbnailName = $song->getThumbnailName();
+		$originalImageName = $song->getOriginalImageName();
 		$songLength = $song->getSongLength();
 		$flacFileName = $song->getFlacFileName();
 		$opusFileName = $song->getOpusFileName();
 
-		$stmt = DBConn::getConn()->prepare("INSERT INTO song VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("isssssiss", $newSongID, $title, $genre, $releaseDate, $imageName, $thumbnailName, $songLength, $flacFileName, $opusFileName);
+		$stmt = DBConn::getConn()->prepare("INSERT INTO song VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("issssssiss", $newSongID, $title, $genre, $releaseDate, $imageName, $thumbnailName, $originalImageName, $songLength, $flacFileName, $opusFileName);
 		$stmt->execute();
 		$stmt->close();
 
@@ -73,7 +74,7 @@ class SongController
 				$songList[$songID] = new Song(
 					$row["songID"], $row["title"], [$row["name"]], [$row["artistID"]],
 					$row["genre"], $row["releaseDate"], $row["songLength"],
-					$row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]
+					$row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"], $row["originalImageName"] ?? ""
 				);
 			} else {
 				$songList[$songID]->setArtists(array_merge($songList[$songID]->getArtists(), [$row["name"]]));
@@ -197,7 +198,7 @@ class SongController
 		$song = null;
 		while ($row = $result->fetch_assoc()) {
 			if ($song === null) {
-				$song = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"]);
+				$song = new Song($row["songID"], $row["title"], array($row["name"]), array($row["artistID"]), $row["genre"], $row["releaseDate"], $row["songLength"], $row["flacFilename"], $row["opusFilename"], $row["imageName"], $row["thumbnailName"], $row["originalImageName"] ?? "");
 			} else {
 				$song->setArtists(array_merge($song->getArtists(), array($row["name"])));
 				$song->setArtistIDs(array_merge($song->getArtistIDs(), array($row["artistID"])));
@@ -327,3 +328,4 @@ class SongController
 		return $songList;
 	}
 }
+

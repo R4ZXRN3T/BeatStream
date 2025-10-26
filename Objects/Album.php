@@ -9,12 +9,13 @@ class Album
 	private array $artistIDs;
 	private string $imageName;
 	private string $thumbnailName;
+	private string $originalImageName;
 	private int $length;
 	private int $duration;
 	private DateTime $releaseDate; // Add releaseDate property
 	private bool $isSingle;
 
-	public function __construct(int $albumID, string $name, array $songIDs, array $artists, array $artistIds, string $imageName, string $thumbnailName, int $length, int $duration, string $releaseDate, bool $isSingle = false)
+	public function __construct(int $albumID, string $name, array $songIDs, array $artists, array $artistIds, string $imageName, string $thumbnailName, int $length, int $duration, string $releaseDate, bool $isSingle = false, string $originalImageName = "")
 	{
 		$this->albumID = $albumID;
 		$this->name = $name;
@@ -23,6 +24,7 @@ class Album
 		$this->artistIDs = $artistIds;
 		$this->imageName = $imageName;
 		$this->thumbnailName = $thumbnailName;
+		$this->originalImageName = $originalImageName;
 		$this->length = $length;
 		$this->duration = $duration;
 		try {
@@ -120,7 +122,10 @@ class Album
 
 	public function setReleaseDate(string $releaseDate): void
 	{
-		$this->releaseDate = new DateTime($releaseDate);
+		try {
+			$this->releaseDate = new DateTime($releaseDate);
+		} catch (Exception) {
+		}
 	}
 
 	public function isSingle(): bool
@@ -131,5 +136,10 @@ class Album
 	public function setIsSingle(bool $isSingle): void
 	{
 		$this->isSingle = $isSingle;
+	}
+
+	public function getOriginalImageName(): string
+	{
+		return $this->originalImageName;
 	}
 }

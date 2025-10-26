@@ -6,6 +6,7 @@ CREATE TABLE song
 	releaseDate   DATE,
 	imageName     VARCHAR(255),
 	thumbnailName VARCHAR(255),
+	originalImageName VARCHAR(255),
 	songLength    INT,
 
 	flacFileName  VARCHAR(255),
@@ -18,6 +19,7 @@ CREATE TABLE album
 	title         VARCHAR(255),
 	imageName     VARCHAR(255),
 	thumbnailName VARCHAR(255),
+	originalImageName VARCHAR(255),
 	length        INT,
 	duration      INT,
 	releaseDate   DATE,

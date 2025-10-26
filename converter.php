@@ -100,14 +100,6 @@ class Converter
 		}
 	}
 
-	static public function isWindows(): bool
-	{
-		return match (true) {
-			stristr(PHP_OS, 'WIN') => true,
-			default => false,
-		};
-	}
-
 	public static function uploadImage($image, ImageType $imageType): array
 	{
 		if (!extension_loaded('imagick')) {
@@ -115,6 +107,7 @@ class Converter
 		}
 
 		$imageUploadDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/images/" . $imageType->value . "/";
+		$originalDir = $imageUploadDir . "original/";
 		$largeDir = $imageUploadDir . "large/";
 		$thumbnailDir = $imageUploadDir . "thumbnail/";
 
@@ -122,16 +115,34 @@ class Converter
 			return ['success' => false, 'error' => 'No image file provided or upload error'];
 		}
 
+		if (!is_dir($originalDir)) mkdir($originalDir, 0777, true);
 		if (!is_dir($largeDir)) mkdir($largeDir, 0777, true);
 		if (!is_dir($thumbnailDir)) mkdir($thumbnailDir, 0777, true);
 
 		$uniqueId = uniqid();
+		$originalFileName = $uniqueId . '.png';
 		$largeFileName = $uniqueId . '.webp';
 		$thumbnailFileName = $uniqueId . '.webp';
 
 		try {
 			$imagick = new Imagick($image['tmp_name']);
-			$imagick->stripImage(); // Remove metadata
+			$imagick->stripImage();
+
+			// Create original PNG version (max 3000x3000)
+			$original = clone $imagick;
+
+			// Save original only for SONGs and ALBUMs
+			if ($imageType === ImageType::SONG || $imageType === ImageType::ALBUM) {
+				$width = $original->getImageWidth();
+				$height = $original->getImageHeight();
+
+				if ($width > 3000 || $height > 3000) {
+					$original->resizeImage(3000, 3000, Imagick::FILTER_LANCZOS, 1, true);
+				}
+
+				$original->setImageFormat('png');
+				$original->writeImage($originalDir . $originalFileName);
+			}
 
 			// Create 640x640 version
 			$large = clone $imagick;
@@ -148,11 +159,15 @@ class Converter
 			$thumbnail->writeImage($thumbnailDir . $thumbnailFileName);
 
 			$imagick->clear();
+			if ($imageType === ImageType::SONG || $imageType === ImageType::ALBUM) {
+				$original->clear();
+			}
 			$large->clear();
 			$thumbnail->clear();
 
 			return [
 				'success' => true,
+				'original_filename' => $originalFileName,
 				'large_filename' => $largeFileName,
 				'thumbnail_filename' => $thumbnailFileName
 			];

@@ -109,6 +109,7 @@ include_once($GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
 					if ($result['success']) {
 						$imageName = $result['large_filename'];
 						$thumbnailName = $result['thumbnail_filename'];
+						$originalImageName = $result['original_filename'];
 					} else {
 						$isValid = false;
 						$errorMessage = $result['error'];
@@ -139,7 +140,8 @@ include_once($GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
 							$flacFilename,
 							$opusFilename,
 							$imageName,
-							$thumbnailName
+							$thumbnailName,
+							$originalImageName ?? ""
 					));
 				}
 			}
@@ -216,7 +218,7 @@ include_once($GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
 			<script>
 				function updateRemoveButtons() {
 					const fields = document.querySelectorAll('#artistFields .artist-field');
-					fields.forEach((field, idx) => {
+					fields.forEach((field) => {
 						const btn = field.querySelector('.remove-artist');
 						btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
 					});

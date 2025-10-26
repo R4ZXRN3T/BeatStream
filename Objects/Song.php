@@ -13,8 +13,9 @@ class Song
 	private string $opusFileName;
 	private string $imageName;
 	private string $thumbnailName;
+	private string $originalImageName;
 
-	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, int $songLength, string $flacFileName, $opusFileName, string $imageName, string $thumbnailName)
+	function __construct(int $songID, string $title, array $artists, array $artistIDs, string $genre, string $releaseDate, int $songLength, string $flacFileName, $opusFileName, string $imageName, string $thumbnailName, string $originalImageName = "")
 	{
 		$this->songID = $songID;
 		$this->title = $title;
@@ -31,6 +32,7 @@ class Song
 		$this->opusFileName = $opusFileName;
 		$this->imageName = $imageName;
 		$this->thumbnailName = $thumbnailName;
+		$this->originalImageName = $originalImageName;
 	}
 
 	// getter methods
@@ -109,5 +111,10 @@ class Song
 	public function getThumbnailName(): string
 	{
 		return $this->thumbnailName;
+	}
+
+	public function getOriginalImageName(): string
+	{
+		return $this->originalImageName;
 	}
 }

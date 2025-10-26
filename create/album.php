@@ -49,6 +49,7 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 
 	$imageName = "";
 	$thumbnailName = "";
+	$originalImageName = "";
 
 	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] === UPLOAD_ERR_OK) {
 		$imageResult = Converter::uploadImage($_FILES['imageFileInput'], ImageType::ALBUM);
@@ -56,6 +57,7 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 		if ($imageResult['success']) {
 			$imageName = $imageResult['large_filename'];
 			$thumbnailName = $imageResult['thumbnail_filename'];
+			$originalImageName = $imageResult['original_filename'];
 		} else {
 			$isValid = false;
 			$errorMessage = $imageResult['error'];
@@ -88,7 +90,8 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 			count($_POST['songInput']),
 			$totalMilliSeconds,
 			$releaseDate,
-			$isSingle
+			$isSingle,
+			$originalImageName ?? ""
 	));
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
@@ -185,7 +188,7 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <script>
 	function updateRemoveButtons() {
 		const fields = document.querySelectorAll('#artistFields .artist-field');
-		fields.forEach((field, idx) => {
+		fields.forEach((field) => {
 			const btn = field.querySelector('.remove-artist');
 			btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
 		});
@@ -238,3 +241,4 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
