@@ -245,6 +245,7 @@ class SongController
 			try {
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/large/" . $result['imageName']);
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/thumbnail/" . $result['thumbnailName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/song/original/" . $result['originalImageName']);
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/audio/flac/" . $result['flacFilename']);
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/audio/opus/" . $result['opusFilename']);
 			} catch (Exception) {
