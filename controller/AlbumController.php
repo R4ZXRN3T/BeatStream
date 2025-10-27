@@ -320,6 +320,7 @@ class AlbumController
 			try {
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/large/" . $result['imageName']);
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/thumbnail/" . $result['thumbnailName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/orginal/" . $result['originalImageName']);
 			} catch (Exception) {
 			}
 		}
