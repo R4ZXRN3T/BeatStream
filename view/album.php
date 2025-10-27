@@ -85,6 +85,9 @@ $songQueueData = array_map(function ($song) use ($album) {
 						<?php endif; ?>
 					</div>
 					<div class="col-md-8">
+						<?php if ($album->isSingle()): ?>
+							<h4 class="text mb-2" style="color: #7c8991">Single</h4>
+						<?php endif; ?>
 						<h1 class="mb-2"><?php echo htmlspecialchars($album->getName()); ?></h1>
 						<p class="text mb-2" style="color: #6c757d; font-size: 20px"><?php
 							$artistLinks = [];
