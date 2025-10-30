@@ -203,11 +203,11 @@ class AlbumController
 
 		// Get song IDs for this album
 		$stmt = DBConn::getConn()->prepare("
-        SELECT songID 
-        FROM in_album 
-        WHERE albumID = ? 
-        ORDER BY songIndex
-    ");
+			SELECT songID 
+			FROM in_album 
+			WHERE albumID = ? 
+			ORDER BY songIndex
+		");
 
 		$stmt->bind_param("i", $albumID);
 		$stmt->execute();
