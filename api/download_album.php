@@ -103,6 +103,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 	$title = $song->getTitle();
 	$trackArtists = implode(', ', $song->getArtists());
 	$trackNumber = (string)$trackNo;
+	$genre = $song->getGenre();
 
 	// ffmpeg command to attach cover and write metadata while copying streams
 	$cmd = sprintf(
@@ -111,6 +112,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 		'-metadata ARTIST=%s ' .
 		'-metadata ALBUM=%s ' .
 		'-metadata ALBUMARTIST=%s ' .
+		'-metadata GENRE=%s ' .
 		'-metadata TRACK=%s ' .
 		'-metadata DATE=%s ' .
 		'-metadata:s:v title="Cover" -metadata:s:v comment="Cover (front)" ' .
@@ -121,6 +123,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 		escapeshellarg($trackArtists),
 		escapeshellarg($albumTitle),
 		escapeshellarg($albumArtistsStr),
+		escapeshellarg($genre),
 		escapeshellarg($trackNumber),
 		escapeshellarg($albumDate),
 		escapeshellarg($tmpOut)

@@ -103,10 +103,8 @@ $songQueueData = array_map(function ($song) use ($album) {
 						<p><?php echo count($albumSongs); ?> songs ·
 							<?php echo $album->getFormattedDuration(); ?>
 						</p>
-						<button class="button"
-								onclick="window.location.href='<?= $GLOBALS['PROJECT_ROOT'] ?>/api/download_album.php?id=<?= $albumId ?>'">
-							Download
-						</button>
+						<a class="btn btn-primary"
+						   href="<?= $GLOBALS['PROJECT_ROOT'] ?>/api/download_album.php?id=<?= $albumId ?>">Download</a>
 					</div>
 				</div>
 			</div>

@@ -1,29 +1,29 @@
 CREATE TABLE song
 (
-	songID        INT PRIMARY KEY,
-	title         VARCHAR(255) NOT NULL,
-	genre         VARCHAR(255),
-	releaseDate   DATE,
-	imageName     VARCHAR(255),
-	thumbnailName VARCHAR(255),
+	songID            INT PRIMARY KEY,
+	title             VARCHAR(255) NOT NULL,
+	genre             VARCHAR(255),
+	releaseDate       DATE,
+	imageName         VARCHAR(255),
+	thumbnailName     VARCHAR(255),
 	originalImageName VARCHAR(255),
-	songLength    INT,
+	songLength        INT,
 
-	flacFileName  VARCHAR(255),
-	opusFileName  VARCHAR(255)
+	flacFileName      VARCHAR(255),
+	opusFileName      VARCHAR(255)
 );
 
 CREATE TABLE album
 (
-	albumID       INT PRIMARY KEY,
-	title         VARCHAR(255),
-	imageName     VARCHAR(255),
-	thumbnailName VARCHAR(255),
+	albumID           INT PRIMARY KEY,
+	title             VARCHAR(255),
+	imageName         VARCHAR(255),
+	thumbnailName     VARCHAR(255),
 	originalImageName VARCHAR(255),
-	length        INT,
-	duration      INT,
-	releaseDate   DATE,
-	isSingle      BOOLEAN NOT NULL DEFAULT FALSE
+	length            INT,
+	duration          INT,
+	releaseDate       DATE,
+	isSingle          BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE user
