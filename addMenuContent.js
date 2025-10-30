@@ -72,6 +72,12 @@ document.querySelectorAll('.song-card .song-menu-container').forEach(function (c
 });
 
 // ----- Modal helpers -----
+
+function redirectToLogin(projectRoot) {
+	const url = `${projectRoot}/account/login.php?redirect=${encodeURIComponent(location.href)}`;
+	window.location.assign(url);
+}
+
 function ensureAddToPlaylistModal(projectRoot) {
 	if (document.getElementById('addToPlaylistModal')) return;
 
@@ -82,7 +88,7 @@ function ensureAddToPlaylistModal(projectRoot) {
 		background: rgba(0,0,0,0.4); z-index: 1050;
 	`;
 	modal.innerHTML = `
-		<div style="background:#fff; min-width:320px; max-width:90vw; border-radius:8px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.2);">
+		<div style="background:#787878; min-width:320px; max-width:90vw; border-radius:8px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.2);">
 			<div style="padding:12px 16px; font-weight:600; border-bottom:1px solid #eee;">Add to Playlist</div>
 			<div style="padding:16px;">
 				<div style="margin-bottom:12px;">
@@ -107,6 +113,7 @@ function ensureAddToPlaylistModal(projectRoot) {
 	});
 
 	// Save action
+	// In ensureAddToPlaylistModal(projectRoot) -> save button click handler:
 	modal.querySelector('#saveToPlaylistBtn').addEventListener('click', async function () {
 		const songId = document.getElementById('addToPlaylistSongId').value;
 		const select = document.getElementById('playlistSelect');
@@ -125,9 +132,16 @@ function ensureAddToPlaylistModal(projectRoot) {
 			const res = await fetch(`${projectRoot}/api/add_song_to_playlist.php`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+				credentials: 'same-origin',
 				body: new URLSearchParams({songID: songId, playlistID: playlistId})
 			});
+
+			if (res.status === 401) {
+				redirectToLogin(projectRoot);
+				return;
+			}
 			if (!res.ok) throw new Error('Request failed');
+
 			const data = await res.json().catch(() => ({}));
 			if (data && data.error) {
 				err.textContent = data.error;
@@ -135,13 +149,14 @@ function ensureAddToPlaylistModal(projectRoot) {
 				return;
 			}
 			closeAddToPlaylistModal();
-		} catch (e) {
+		} catch (_) {
 			err.textContent = 'Failed to add to playlist.';
 			err.style.display = 'block';
 		}
 	});
 }
 
+// In openAddToPlaylistModal(projectRoot, songId):
 function openAddToPlaylistModal(projectRoot, songId) {
 	const modal = document.getElementById('addToPlaylistModal');
 	const select = document.getElementById('playlistSelect');
@@ -152,9 +167,15 @@ function openAddToPlaylistModal(projectRoot, songId) {
 	select.innerHTML = '<option value="">Loading…</option>';
 	modal.style.display = 'flex';
 
-	// Load playlists owned by current user
 	fetch(`${projectRoot}/api/list_playlists.php`, {credentials: 'same-origin'})
-		.then(r => r.ok ? r.json() : Promise.reject())
+		.then(r => {
+			if (r.status === 401) {
+				redirectToLogin(projectRoot);
+				throw new Error('unauthorized');
+			}
+			if (!r.ok) throw new Error('bad');
+			return r.json();
+		})
 		.then(list => {
 			select.innerHTML = '';
 			if (!Array.isArray(list) || list.length === 0) {
@@ -169,7 +190,8 @@ function openAddToPlaylistModal(projectRoot, songId) {
 			}
 		})
 		.catch(() => {
-			select.innerHTML = '<option value="">Failed to load</option>';
+			// If not redirected already, show a friendly message
+			if (select) select.innerHTML = '<option value="">Failed to load</option>';
 		});
 }
 
