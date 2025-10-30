@@ -61,7 +61,7 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 					<!-- Profile Info -->
 					<div class="col-md-4">
 						<div class="card">
-							<img src="<?= htmlspecialchars("/BeatStream/images/user/large/" . ($user->getImageName() ?: 'defaultUser.webp')) ?>"
+							<img src="<?= htmlspecialchars("{$GLOBALS['PROJECT_ROOT']}/images/user/large/" . ($user->getImageName() ?: 'defaultUser.webp')) ?>"
 								 class="card-img-top" alt="Profile Image"
 								 style="object-fit: cover; height: 300px; width: 100%;">
 							<div class="card-body">
