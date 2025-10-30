@@ -88,10 +88,11 @@ $songData = htmlspecialchars(json_encode($songQueueData));
 			</div>
 
 			<?php if ($showDuration): ?>
-				<div class="ms-auto">
+				<div class="ms-auto position-relative song-duration-menu-container">
 					<p class="card-text mb-0 song-duration">
 						<?= $song->getFormattedDuration() ?>
 					</p>
+					<div class="song-menu-container"></div>
 				</div>
 			<?php endif; ?>
 		</div>

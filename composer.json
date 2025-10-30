@@ -1,5 +1,7 @@
 {
   "require": {
-	"ext-mysqli": "*"
+	"ext-mysqli": "*",
+	"ext-imagick": "*",
+	"ext-fileinfo": "*"
   }
 }

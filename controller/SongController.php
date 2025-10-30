@@ -2,6 +2,7 @@
 
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Song.php";
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/Album.php";
 
 class SongController
 {
@@ -48,7 +49,7 @@ class SongController
 
 	public static function getSongList(string $sortBy = "song.title ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
   		FROM song, artist, releases_song
   		WHERE song.songID = releases_song.songID
   		AND artist.artistID = releases_song.artistID
@@ -110,7 +111,7 @@ class SongController
 		}
 		$orderByCase .= "END";
 
-		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+		$stmt = DBConn::getConn()->prepare("SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
     	FROM song, artist, releases_song
    		WHERE song.songID = releases_song.songID
     	AND artist.artistID = releases_song.artistID
@@ -134,7 +135,7 @@ class SongController
 	{
 		$stmt = DBConn::getConn()->prepare("
         SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
-               song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+               song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
         FROM song, artist, releases_song, in_album
         WHERE song.songID = releases_song.songID
         AND artist.artistID = releases_song.artistID
@@ -157,7 +158,7 @@ class SongController
 	{
 		$stmt = DBConn::getConn()->prepare("
 			SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
-				song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+				song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
 			FROM song, artist, releases_song
 			WHERE song.songID = releases_song.songID
 			AND artist.artistID = releases_song.artistID
@@ -183,7 +184,7 @@ class SongController
 	{
 		$stmt = DBConn::getConn()->prepare("
 		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
-			   song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+			   song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
 		FROM song, artist, releases_song
 		WHERE song.songID = releases_song.songID
 		AND artist.artistID = releases_song.artistID
@@ -213,7 +214,7 @@ class SongController
 	{
 		$stmt = DBConn::getConn()->prepare("
 		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
-			   song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+			   song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
 		FROM song, artist, releases_song, in_playlist
 		WHERE song.songID = releases_song.songID
 		AND artist.artistID = releases_song.artistID
@@ -237,7 +238,7 @@ class SongController
 		$conn = DBConn::getConn();
 
 		// Get image and audio file names for deletion
-		$stmt = $conn->prepare("SELECT imageName, song.thumbnailName, flacFilename, opusFilename FROM song WHERE songID = ?");
+		$stmt = $conn->prepare("SELECT imageName, thumbnailName, originalImageName, flacFilename, opusFilename FROM song WHERE songID = ?");
 		$stmt->bind_param("i", $songID);
 		$stmt->execute();
 		$result = $stmt->get_result()->fetch_assoc();
@@ -313,7 +314,7 @@ class SongController
 		$types2 = str_repeat('i', count($songIDs));
 		$stmt = DBConn::getConn()->prepare("
 			SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
-				song.releaseDate, song.imageName, song.thumbnailName, song.songLength, song.flacFilename, song.opusFilename
+				song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
 			FROM song
 			JOIN releases_song ON song.songID = releases_song.songID
 			JOIN artist ON artist.artistID = releases_song.artistID
@@ -327,6 +328,56 @@ class SongController
 		$songList = self::mergeSongRowsToList($result);
 		$stmt->close();
 		return $songList;
+	}
+
+	public static function getSongAlbum(int $songID): ?array
+	{
+		$stmt = DBConn::getConn()->prepare("
+			SELECT album.albumID, album.title, album.imageName, album.thumbnailName, album.originalImageName, album.length, album.duration, album.releaseDate, album.isSingle, in_album.songIndex
+			FROM album
+			JOIN in_album ON album.albumID = in_album.albumID
+			WHERE in_album.songID = ?
+			ORDER BY album.releaseDate
+			LIMIT 1
+		");
+		$stmt->bind_param("i", $songID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		if ($row = $result->fetch_assoc()) {
+			// Get artists for this album
+			$artistStmt = DBConn::getConn()->prepare("
+				SELECT artist.name, artist.artistID
+				FROM artist
+				JOIN releases_album ON artist.artistID = releases_album.artistID
+				WHERE releases_album.albumID = ?
+				ORDER BY releases_album.artistIndex
+			");
+			$artistStmt->bind_param("i", $row["albumID"]);
+			$artistStmt->execute();
+			$artistResult = $artistStmt->get_result();
+
+			$artists = [];
+			$artistIDs = [];
+			while ($artistRow = $artistResult->fetch_assoc()) {
+				$artists[] = $artistRow["name"];
+				$artistIDs[] = $artistRow["artistID"];
+			}
+			$artistStmt->close();
+
+			$finalAlbum = new Album(
+				$row["albumID"], $row["title"], [], $artists, $artistIDs,
+				$row["imageName"], $row["thumbnailName"], $row["length"], $row["duration"],
+				$row["releaseDate"], (bool)$row["isSingle"], $row["originalImageName"] ?? ""
+			);
+
+			$index = (int)$row["songIndex"];
+			$stmt->close();
+
+			return ["album" => $finalAlbum, "index" => $index];
+		}
+		$stmt->close();
+		return null;
 	}
 }
 
