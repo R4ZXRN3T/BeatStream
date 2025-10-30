@@ -23,6 +23,8 @@ document.querySelectorAll('.song-card .song-menu-container').forEach(function (c
 	// Add "Add to Playlist…" button
 	const divider = document.createElement('div');
 	divider.className = 'dropdown-divider';
+	const divider2 = document.createElement('div');
+	divider2.className = 'dropdown-divider';
 	const addBtn = document.createElement('button');
 	addBtn.className = 'dropdown-item';
 	addBtn.textContent = 'Add to Playlist…';
@@ -38,6 +40,31 @@ document.querySelectorAll('.song-card .song-menu-container').forEach(function (c
 
 	menu.appendChild(divider);
 	menu.appendChild(addBtn);
+	menu.appendChild(divider2);
+
+	const viewAlbumButton = document.createElement('button');
+	viewAlbumButton.className = 'dropdown-item';
+	viewAlbumButton.textContent = 'View Album';
+	viewAlbumButton.addEventListener('click', async function (e) {
+		e.stopPropagation();
+		try {
+			const res = await fetch(`${projectRoot}/api/get_song_album_id.php?id=${encodeURIComponent(songId)}`, {
+				credentials: 'same-origin'
+			});
+			if (!res.ok) throw new Error('not found');
+
+			const data = await res.json();
+			if (!data || !data.albumID) throw new Error('invalid');
+
+			// Optional: if you want to keep track index, you could add a hash or query param.
+			// const target = `${projectRoot}/view/album.php?id=${encodeURIComponent(data.albumID)}#track-${data.index}`;
+			window.location.href = `${projectRoot}/view/album.php?id=${encodeURIComponent(data.albumID)}`;
+		} catch (_) {
+			alert('Album not found for this song.');
+		}
+	});
+
+	menu.appendChild(viewAlbumButton);
 
 	menuBtn.addEventListener('click', function (e) {
 		e.stopPropagation();
