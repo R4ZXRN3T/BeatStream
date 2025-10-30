@@ -211,6 +211,10 @@ tr:nth-child(even) {
 	display: block;
 }
 
+.song-menu-container.menu-open {
+	display: block !important;
+}
+
 /* --- Song card elements --- */
 .song-image {
 	width: 64px;
@@ -278,6 +282,19 @@ tr:nth-child(even) {
 
 .song-card:hover .song-duration-menu-container .song-menu-container {
 	display: block;
+}
+
+/* When the three-dot menu is open, hide duration and keep menu/button visible */
+.song-duration-menu-container.menu-open .song-duration {
+	display: none;
+}
+
+.song-duration-menu-container.menu-open .song-menu-container {
+	display: block;
+}
+
+.song-duration-menu-container.menu-open .song-menu-btn {
+	opacity: 1;
 }
 
 .song-info-container {
