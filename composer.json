@@ -2,6 +2,7 @@
   "require": {
 	"ext-mysqli": "*",
 	"ext-imagick": "*",
-	"ext-fileinfo": "*"
+	"ext-fileinfo": "*",
+	"ext-zip": "*"
   }
 }
