@@ -21,6 +21,8 @@ if (!(isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === 
 <body>
 
 <?php
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
+
 $stmt = DBConn::getConn()->prepare("SELECT isArtist FROM user WHERE userID = ?;");
 $stmt->bind_param("i", $_SESSION['userID']);
 $stmt->execute();

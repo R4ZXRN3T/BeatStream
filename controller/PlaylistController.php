@@ -42,36 +42,44 @@ class PlaylistController
 
 	public static function getPlaylistList(string $sortBy = "playlist.name ASC"): array
 	{
-		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, length, duration, creatorID, user.username, song.songID, songIndex
-		FROM playlist, in_playlist, song, user
-		WHERE song.songID = in_playlist.songID
-  		AND playlist.playlistID = in_playlist.playlistID
-		AND playlist.creatorID = user.userID
-		ORDER BY " . $sortBy . ", in_playlist.songIndex;");
+		$stmt = DBConn::getConn()->prepare("
+			SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, playlist.length,
+			       playlist.duration, playlist.creatorID, user.username, song.songID, in_playlist.songIndex
+			FROM playlist
+			LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID 
+			LEFT JOIN song ON song.songID = in_playlist.songID
+			LEFT JOIN user ON playlist.creatorID = user.userID
+			ORDER BY $sortBy, in_playlist.songIndex;
+		");
 
 		$stmt->execute();
 		$result = $stmt->get_result();
 
-		$playlistList = array();
+		$playlistList = [];
 		while ($row = $result->fetch_assoc()) {
 			$alreadyExists = false;
-			$newPlaylist = new Playlist($row["playlistID"], $row["name"], array($row["songID"]), $row["duration"], $row["length"], $row['imageName'], $row["thumbnailName"], $row["creatorID"], $row["username"]);
+
+			// Start with empty songs if there is no song for this playlist
+			$songIds = $row["songID"] ? [$row["songID"]] : [];
+
+			$newPlaylist = new Playlist($row["playlistID"], $row["name"], $songIds, $row["duration"], $row["length"],
+				$row["imageName"], $row["thumbnailName"], $row["creatorID"], $row["username"] ?? "Unknown");
 
 			for ($i = 0; $i < count($playlistList); $i++) {
 				if ($playlistList[$i]->getPlaylistID() == $newPlaylist->getPlaylistID()) {
 					$alreadyExists = true;
-					$playlistList[$i]->setSongIDs(array_merge($playlistList[$i]->getSongIDs(), $newPlaylist->getSongIDs()));
+					if ($row["songID"]) $playlistList[$i]->setSongIDs(array_merge($playlistList[$i]->getSongIDs(), $newPlaylist->getSongIDs()));
+					break;
 				}
 			}
-			if (!$alreadyExists) {
-				$playlistList[] = $newPlaylist;
-			}
+
+			if (!$alreadyExists) $playlistList[] = $newPlaylist;
 		}
 
 		$stmt->close();
-
 		return $playlistList;
 	}
+
 
 	public static function deletePlaylist(int $playlistID): void
 	{

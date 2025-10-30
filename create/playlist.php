@@ -1,7 +1,3 @@
-<?php
-session_start();
-?>
-
 <!Doctype html>
 <html lang="en">
 <head>
@@ -15,43 +11,56 @@ session_start();
 
 <body>
 <?php
+session_start();
+
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/PlaylistController.php";
 $songList = SongController::getSongList();
 
-$isValid = true;
-
-if (!isset($_POST['playlistName']) && !isset($_POST['songInput'])) {
-	$isValid = false;
-}
+$isValid = ($_SERVER['REQUEST_METHOD'] === 'POST') && isset($_POST['playlistName']) && trim($_POST['playlistName']) !== '';
 
 if ($isValid) {
 	$imageName = "";
 	$thumbnailName = "";
 
-	// Handle image upload using converter
-	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] == UPLOAD_ERR_OK) {
+	// Optional image upload
+	if (isset($_FILES['imageFileInput']) && $_FILES['imageFileInput']['error'] === UPLOAD_ERR_OK) {
 		require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
 		$imageResult = Converter::uploadImage($_FILES['imageFileInput'], ImageType::PLAYLIST);
 		if ($imageResult['success']) {
 			$imageName = $imageResult['large_filename'];
 			$thumbnailName = $imageResult['thumbnail_filename'];
 		} else {
-			echo "<div class='alert alert-danger'>Failed to upload image: " . $imageResult['error'] . "</div>";
+			echo "<div class='alert alert-danger'>Failed to upload image: " . htmlspecialchars($imageResult['error']) . "</div>";
 		}
 	}
 
-	$totalDuration = 0; // Duration in milliseconds
-	foreach ($_POST['songInput'] as $selectedSongID) {
-		$totalDuration += SongController::getSongByID($selectedSongID)->getSongLength();
+	// Build song IDs array from POST, allowing empty submission
+	$songIDs = [];
+	if (isset($_POST['songInput']) && is_array($_POST['songInput'])) {
+		// Keep only positive integers, drop empty/invalid values
+		$songIDs = array_values(array_filter(
+				array_map('intval', $_POST['songInput']),
+				fn(int $id) => $id > 0
+		));
 	}
 
+	// Compute total duration from selected songs (ms)
+	$totalDuration = 0;
+	foreach ($songIDs as $selectedSongID) {
+		$song = SongController::getSongByID($selectedSongID);
+		if ($song) {
+			$totalDuration += (int)$song->getSongLength();
+		}
+	}
+
+	// Insert playlist (works with zero songs)
 	PlaylistController::insertPlaylist(new Playlist(
 			0,
 			$_POST['playlistName'],
-			$_POST['songInput'],
+			$songIDs,
 			$totalDuration,
-			count($_POST['songInput']),
+			count($songIDs),
 			$imageName,
 			$thumbnailName,
 			$_SESSION['userID'],
@@ -89,7 +98,7 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 						<label for="songFields">Add Songs:</label>
 						<div id="songFields">
 							<div class="song-field d-flex mb-2">
-								<select name="songInput[]" class="form-control me-2" required>
+								<select name="songInput[]" class="form-control me-2">
 									<option value="">--Please Select--</option>
 									<?php
 									foreach ($songList as $song) {
@@ -141,8 +150,6 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 
 	document.addEventListener('DOMContentLoaded', updateRemoveButtons);
 </script>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
