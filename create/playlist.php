@@ -128,7 +128,7 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <script>
 	function updateRemoveButtons() {
 		const fields = document.querySelectorAll('#songFields .song-field');
-		fields.forEach((field, idx) => {
+		fields.forEach((field) => {
 			const btn = field.querySelector('.remove-song');
 			btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
 		});

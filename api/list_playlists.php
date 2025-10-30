@@ -20,7 +20,7 @@ if ($userID <= 0) $response(401, ['error' => 'Invalid session']);
 
 try {
 	$conn = DBConn::getConn();
-	$stmt = $conn->prepare("SELECT playlistID, name FROM playlist WHERE creatorID = ? ORDER BY name ASC");
+	$stmt = $conn->prepare("SELECT playlistID, name FROM playlist WHERE creatorID = ? ORDER BY name ");
 	$stmt->bind_param('i', $userID);
 	$stmt->execute();
 	$result = $stmt->get_result();
