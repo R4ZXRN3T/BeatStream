@@ -10,9 +10,7 @@ class Converter
 		$flacUploadDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/flac/";
 		$opusUploadDir = $GLOBALS['PROJECT_ROOT_DIR'] . "/audio/opus/";
 
-		if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
-			return ['success' => false, 'error' => 'No audio file provided or upload error'];
-		}
+		if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) return ['success' => false, 'error' => 'No audio file provided or upload error'];
 
 		$extension = pathinfo($file['name'], PATHINFO_EXTENSION);
 		$allowedExtensions = [
@@ -22,22 +20,14 @@ class Converter
 			'ra', 'rm', 'shn', 'mlp', 'truehd', 'atrac', 'vqf', 'spx', 'mka', 'mpc', 'mp2', 'mp1', 'mpga'
 		];
 
-		if (!in_array(strtolower($extension), $allowedExtensions)) {
-			return ['success' => false, 'error' => 'Invalid audio file format'];
-		}
+		if (!in_array(strtolower($extension), $allowedExtensions)) return ['success' => false, 'error' => 'Invalid audio file format'];
 
 		$losslessFormats = ['wav', 'flac', 'caf', 'aiff', 'aif', 'ape', 'wv', 'tta', 'shn', 'pcm', 'au', 'snd', 'w64', 'rf64', 'bwf', 'tak', 'als'];
 
-		if (!in_array(strtolower($extension), $losslessFormats)) {
-			return ['success' => false, 'error' => 'Error: You are uploading a lossy audio format (' . strtoupper($extension) . '). In order to keep up our quality standard, you must upload lossless files such as FLAC or WAV.'];
-		}
+		if (!in_array(strtolower($extension), $losslessFormats)) return ['success' => false, 'error' => 'Error: You are uploading a lossy audio format (' . strtoupper($extension) . '). In order to keep up our quality standard, you must upload lossless files such as FLAC or WAV.'];
 
-		if (!is_dir($flacUploadDir)) {
-			mkdir($flacUploadDir, 0777, true);
-		}
-		if (!is_dir($opusUploadDir)) {
-			mkdir($opusUploadDir, 0777, true);
-		}
+		if (!is_dir($flacUploadDir)) mkdir($flacUploadDir, 0777, true);
+		if (!is_dir($opusUploadDir)) mkdir($opusUploadDir, 0777, true);
 
 		$uniqueId = uniqid();
 		$flacFileName = $uniqueId . '.flac';
@@ -89,12 +79,8 @@ class Converter
 			];
 
 		} catch (Exception $e) {
-			if (file_exists($flacPath)) {
-				unlink($flacPath);
-			}
-			if (file_exists($opusPath)) {
-				unlink($opusPath);
-			}
+			if (file_exists($flacPath)) unlink($flacPath);
+			if (file_exists($opusPath)) unlink($opusPath);
 
 			return ['success' => false, 'error' => 'Audio conversion failed: ' . $e->getMessage()];
 		}
@@ -111,9 +97,8 @@ class Converter
 		$largeDir = $imageUploadDir . "large/";
 		$thumbnailDir = $imageUploadDir . "thumbnail/";
 
-		if (!isset($image) || $image['error'] !== UPLOAD_ERR_OK) {
-			return ['success' => false, 'error' => 'No image file provided or upload error'];
-		}
+		if (!isset($image) || $image['error'] !== UPLOAD_ERR_OK) return ['success' => false, 'error' => 'No image file provided or upload error'];
+
 
 		if (!is_dir($originalDir)) mkdir($originalDir, 0777, true);
 		if (!is_dir($largeDir)) mkdir($largeDir, 0777, true);
@@ -159,9 +144,7 @@ class Converter
 			$thumbnail->writeImage($thumbnailDir . $thumbnailFileName);
 
 			$imagick->clear();
-			if ($imageType === ImageType::SONG || $imageType === ImageType::ALBUM) {
-				$original->clear();
-			}
+			if ($imageType === ImageType::SONG || $imageType === ImageType::ALBUM) $original->clear();
 			$large->clear();
 			$thumbnail->clear();
 
@@ -176,6 +159,8 @@ class Converter
 			return ['success' => false, 'error' => 'Image conversion failed: ' . $e->getMessage()];
 		}
 	}
+
+
 }
 
 enum ImageType: string

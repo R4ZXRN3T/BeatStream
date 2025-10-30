@@ -269,5 +269,6 @@ if (!empty($_GET['q'])) {
 		});
 	});
 </script>
+<script src="<?= $GLOBALS['PROJECT_ROOT'] ?>/addMenuContent.js"></script>
 </body>
 </html>

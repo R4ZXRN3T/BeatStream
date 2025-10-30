@@ -170,6 +170,16 @@ tr:nth-child(even) {
 	opacity: 0;
 	transition: opacity 0.2s;
 	font-size: 1.5rem;
+	background: none;
+	border: none;
+	box-shadow: none;
+}
+
+.song-menu-btn:hover {
+	color: #96a3af;
+	background: none;
+	border: none;
+	box-shadow: none;
 }
 
 .song-card {
@@ -252,6 +262,22 @@ tr:nth-child(even) {
 .song-duration {
 	font-size: 0.8rem;
 	color: #6c757d;
+}
+
+.song-duration-menu-container .song-menu-container {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: -24px;
+	z-index: 10;
+}
+
+.song-card:hover .song-duration-menu-container .song-duration {
+	display: none;
+}
+
+.song-card:hover .song-duration-menu-container .song-menu-container {
+	display: block;
 }
 
 .song-info-container {
@@ -626,4 +652,16 @@ body.dark-mode .form-control::file-selector-button {
 body.dark-mode .form-control::file-selector-button:hover {
 	background-color: var(--border-color) !important;
 	color: #e0e0e0 !important;
+}
+
+/* Dark mode: Song menu button */
+body.dark-mode .song-menu-btn {
+	color: #b0b8c1;
+	background: none;
+}
+
+body.dark-mode .song-menu-btn:hover,
+body.dark-mode .song-menu-btn:focus {
+	color: #e0e0e0;
+	background: none;
 }

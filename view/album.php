@@ -141,5 +141,6 @@ $songQueueData = array_map(function ($song) use ($album) {
 		});
 	});
 </script>
+<script src="<?= $GLOBALS['PROJECT_ROOT'] ?>/addMenuContent.js"></script>
 </body>
 </html>
