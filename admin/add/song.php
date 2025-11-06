@@ -34,8 +34,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 <body>
 <?php
-include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
-include_once($GLOBALS['PROJECT_ROOT_DIR'] . "/mp3file.class.php")
+require $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
 ?>
 
 <div class="container-fluid">
