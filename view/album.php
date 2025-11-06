@@ -103,8 +103,18 @@ $songQueueData = array_map(function ($song) use ($album) {
 						<p><?php echo count($albumSongs); ?> songs ·
 							<?php echo $album->getFormattedDuration(); ?>
 						</p>
-						<a class="btn btn-primary"
-						   href="<?= $GLOBALS['PROJECT_ROOT'] ?>/api/download_album.php?id=<?= $albumId ?>">Download</a>
+						<button class="btn btn-primary" id="downloadAlbumBtn" data-album-id="<?= $albumId ?>">Download
+						</button>
+						<div id="downloadProgress" class="mt-3" style="display: none;">
+							<div class="progress" style="height: 10px !important; width: 50%;">
+								<div class="progress-bar progress-bar-striped progress-bar-animated"
+									 role="progressbar"
+									 id="downloadProgressBar"
+									 style="width: 0; font-size: 10px; line-height: 50px;">0%
+								</div>
+							</div>
+							<small class="text" id="downloadStatus">Preparing download...</small>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -144,5 +154,88 @@ $songQueueData = array_map(function ($song) use ($album) {
 	});
 </script>
 <script src="<?= $GLOBALS['PROJECT_ROOT'] ?>/addMenuContent.js"></script>
+<script>
+	document.getElementById('downloadAlbumBtn').addEventListener('click', async function () {
+		const albumId = this.dataset.albumId;
+		const progressContainer = document.getElementById('downloadProgress');
+		const progressBar = document.getElementById('downloadProgressBar');
+		const statusText = document.getElementById('downloadStatus');
+		const btn = this;
+
+		btn.disabled = true;
+		progressContainer.style.display = 'block';
+		progressBar.style.width = '0%';
+		progressBar.textContent = '0%';
+		statusText.textContent = 'Preparing download...';
+
+		try {
+			const response = await fetch(`<?= $GLOBALS['PROJECT_ROOT'] ?>/api/download_album.php?id=${albumId}`);
+
+			if (!response.ok) {
+				throw new Error('Download failed');
+			}
+
+			const contentLength = response.headers.get('content-length');
+			const total = parseInt(contentLength, 10);
+			let loaded = 0;
+
+			const reader = response.body.getReader();
+			const chunks = [];
+
+			while (true) {
+				const {done, value} = await reader.read();
+
+				if (done) break;
+
+				chunks.push(value);
+				loaded += value.length;
+
+				if (total) {
+					const progress = Math.round((loaded / total) * 100);
+					progressBar.style.width = progress + '%';
+					progressBar.textContent = progress + '%';
+					statusText.textContent = `Downloading... ${(loaded / 1024 / 1024).toFixed(2)} MB / ${(total / 1024 / 1024).toFixed(2)} MB`;
+				}
+			}
+
+			const blob = new Blob(chunks);
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+
+			const disposition = response.headers.get('content-disposition');
+			let filename = 'album.zip';
+			if (disposition) {
+				const matches = /filename="?([^"]+)"?/.exec(disposition);
+				if (matches) filename = matches[1];
+			}
+
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			window.URL.revokeObjectURL(url);
+			document.body.removeChild(a);
+
+			progressBar.classList.remove('progress-bar-animated');
+			progressBar.classList.add('bg-success');
+			statusText.textContent = 'Download complete!';
+
+			setTimeout(() => {
+				progressContainer.style.display = 'none';
+				btn.disabled = false;
+			}, 2000);
+
+		} catch (error) {
+			progressBar.classList.remove('progress-bar-animated');
+			progressBar.classList.add('bg-danger');
+			statusText.textContent = 'Download failed. Please try again.';
+			btn.disabled = false;
+
+			setTimeout(() => {
+				progressContainer.style.display = 'none';
+			}, 3000);
+		}
+	});
+</script>
 </body>
 </html>
