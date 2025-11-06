@@ -49,12 +49,15 @@ $albumResult = SongController::getSongAlbum($songID);
 $album = $albumResult["album"];
 $albumTitle = $album ? $album->getName() : 'Unknown Album';
 $albumArtists = $album ? implode(', ', $album->getArtists()) : $artist;
-$trackNumber = $albumResult["index"] + 1;
+$digits = max(2, strlen((string)$album->getLength()));
+$totalTracks = str_pad((string)$album->getLength(), $digits, '0', STR_PAD_LEFT);
+$trackNumber = str_pad((string)($albumResult['index'] + 1), $digits, '0', STR_PAD_LEFT);
+
 
 // Use ffmpeg to embed image and metadata
 $outputFlacPath = sys_get_temp_dir() . '/' . uniqid('out_') . '.flac';
 $ffmpegCmd = sprintf(
-	'ffmpeg -y -i %s -i %s -map 0 -map 1 -c copy -metadata TITLE=%s -metadata ARTIST=%s -metadata ALBUM=%s -metadata ALBUMARTIST=%s -metadata TRACK=%s -metadata GENRE=%s -metadata DATE=%s -metadata:s:v title="Cover" -metadata:s:v comment="Cover (front)" -disposition:v:0 attached_pic %s 2>&1',
+	'ffmpeg -y -i %s -i %s -map 0 -map 1 -c copy -metadata TITLE=%s -metadata ARTIST=%s -metadata ALBUM=%s -metadata ALBUMARTIST=%s -metadata TRACK=%s -metadata TRACKTOTAL=%s -metadata GENRE=%s -metadata DATE=%s -metadata:s:v title="Cover" -metadata:s:v comment="Cover (front)" -disposition:v:0 attached_pic %s 2>&1',
 	escapeshellarg($tempFlacPath),
 	escapeshellarg($tempImagePath),
 	escapeshellarg($title),
@@ -62,6 +65,7 @@ $ffmpegCmd = sprintf(
 	escapeshellarg($albumTitle),
 	escapeshellarg($albumArtists),
 	escapeshellarg($trackNumber),
+	escapeshellarg($totalTracks),
 	escapeshellarg($genre),
 	escapeshellarg($date),
 	escapeshellarg($outputFlacPath)
@@ -79,7 +83,7 @@ if ($returnCode !== 0 || !file_exists($outputFlacPath)) {
 // Send the FLAC file as download
 header('Content-Type: audio/flac');
 $forbidden = '/[\/:*?"<>|]/';
-$filename = preg_replace($forbidden, '_', $artist . ' - ' . $title) . '.flac';
+$filename = preg_replace($forbidden, '', $artist . ' - ' . $title) . '.flac';
 header('Content-Disposition: attachment; filename="' . $filename . '"');
 readfile($outputFlacPath);
 

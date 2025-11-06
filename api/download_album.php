@@ -1,4 +1,5 @@
 <?php
+session_start();
 // File: api/download_album.php
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
@@ -48,6 +49,15 @@ $cleanup = function () use ($workDir) {
 	@rmdir($workDir);
 };
 
+// Helper to flush output chunks for progress tracking
+function flushChunk()
+{
+	if (ob_get_level() > 0) {
+		@ob_flush();
+	}
+	@flush();
+}
+
 // Build scaled cover (640x640 JPEG) for embedding
 $scaledCoverPath = $workDir . DIRECTORY_SEPARATOR . 'cover_640.jpg';
 try {
@@ -74,6 +84,10 @@ $songList = SongController::getAlbumSongs($album->getAlbumID());
 $albumTitle = $album->getName();
 $albumArtistsStr = implode(', ', $album->getArtists());
 $albumDate = $album->getReleaseDate()->format('Y');
+
+// Decide padding width (at least 2, grows if album has >= 100 tracks)
+$digits = max(2, strlen((string)count($songIDs)));
+$totalTracks = str_pad((string)count($songIDs), $digits, '0', STR_PAD_LEFT);
 
 // Process each song: embed cover + album metadata, export to tracksDir
 $processedFiles = [];
@@ -102,7 +116,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 	// Build metadata
 	$title = $song->getTitle();
 	$trackArtists = implode(', ', $song->getArtists());
-	$trackNumber = (string)$trackNo;
+	$trackNumber = str_pad((string)$trackNo, $digits, '0', STR_PAD_LEFT);
 	$genre = $song->getGenre();
 
 	// ffmpeg command to attach cover and write metadata while copying streams
@@ -114,6 +128,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 		'-metadata ALBUMARTIST=%s ' .
 		'-metadata GENRE=%s ' .
 		'-metadata TRACK=%s ' .
+		'-metadata TRACKTOTAL=%s ' .
 		'-metadata DATE=%s ' .
 		'-metadata:s:v title="Cover" -metadata:s:v comment="Cover (front)" ' .
 		'-disposition:v:0 attached_pic %s 2>&1',
@@ -125,6 +140,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 		escapeshellarg($albumArtistsStr),
 		escapeshellarg($genre),
 		escapeshellarg($trackNumber),
+		escapeshellarg($totalTracks),
 		escapeshellarg($albumDate),
 		escapeshellarg($tmpOut)
 	);
@@ -139,7 +155,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 
 	// Final name: "%TRACK% - %TITLE%.flac" (track padded to 2 digits)
 	$forbidden = '/[\/:*?"<>|]/';
-	$safeTitle = preg_replace($forbidden, '_', $title);
+	$safeTitle = preg_replace($forbidden, '', $title);
 	$finalName = sprintf('%02d - %s.flac', $trackNo, $safeTitle);
 	$finalPath = $tracksDir . DIRECTORY_SEPARATOR . $finalName;
 
@@ -154,7 +170,7 @@ for ($i = 0; $i < count($songIDs); $i++) {
 }
 
 // Build zip
-$zipName = preg_replace('/[\/:*?"<>|]/', '_', $albumArtistsStr . ' - ' . $albumTitle) . '.zip';
+$zipName = preg_replace('/[\/:*?"<>|]/', '', $albumArtistsStr . ' - ' . $albumTitle) . '.zip';
 $zipPath = $workDir . DIRECTORY_SEPARATOR . $zipName;
 
 $zip = new ZipArchive();
@@ -181,13 +197,14 @@ $zip->close();
 if (function_exists('ini_set')) {
 	@ini_set('zlib.output_compression', '0');
 	@ini_set('output_buffering', '0');
+	@ini_set('implicit_flush', '1');
 }
 while (ob_get_level() > 0) {
 	@ob_end_clean();
 }
-@header_remove('Content-Encoding'); // prevent gzhandler interference
+@header_remove('Content-Encoding');
 
-// Send zip
+// Send zip with chunked output for progress
 clearstatcache(true, $zipPath);
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="' . $zipName . '"');
@@ -198,7 +215,11 @@ if ($size !== false) {
 
 $fh = fopen($zipPath, 'rb');
 if ($fh) {
-	fpassthru($fh);
+	$chunkSize = 1024 * 1024; // 1MB chunks
+	while (!feof($fh)) {
+		echo fread($fh, $chunkSize);
+		flushChunk();
+	}
 	fclose($fh);
 }
 
