@@ -48,7 +48,7 @@ document.querySelectorAll('.song-card .song-menu-container').forEach(function (c
 	viewAlbumButton.addEventListener('click', async function (e) {
 		e.stopPropagation();
 		try {
-			const res = await fetch(`${projectRoot}/api/get_song_album_id.php?id=${encodeURIComponent(songId)}`, {
+			const res = await fetch(`${projectRoot}/api/get_song_album.php?id=${encodeURIComponent(songId)}`, {
 				credentials: 'same-origin'
 			});
 			if (!res.ok) throw new Error('not found');

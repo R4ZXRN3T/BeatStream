@@ -18,5 +18,6 @@ if ($albumData === null) {
 header('Content-Type: application/json');
 echo json_encode([
 	'index' => $albumData['index'],
-	'albumID' => $albumData['album']->getAlbumID()
+	'albumID' => $albumData['album']->getAlbumID(),
+	'albumName' => $albumData['album']->getName()
 ]);

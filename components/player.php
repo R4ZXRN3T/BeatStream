@@ -105,14 +105,16 @@
 	document.addEventListener('DOMContentLoaded', function () {
 		class MusicPlayer {
 			constructor() {
-				this.originalTitle = document.title;
 
+				<?php require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/SongController.php'; ?>
+
+				this.originalTitle = document.title;
 				this.basePath = '<?= $GLOBALS['PROJECT_ROOT'] ?>';
 				this.audioBasePath = `${this.basePath}/audio/${localStorage.getItem('audioFormat')}/`;
 				this.imageBasePath = `${this.basePath}/images/song/thumbnail/`;
 				this.largeImagePath = `${this.basePath}/images/song/large/`;
 
-				// Core elements only
+				// Cached DOM
 				this.playerUI = document.getElementById('musicPlayer');
 				this.audio = document.getElementById('audioPlayer');
 				this.playPauseBtn = document.getElementById('playPauseBtn');
@@ -133,10 +135,14 @@
 				this.queuePanel = document.getElementById('queuePanel');
 				this.queueList = document.getElementById('queueList');
 				this.clearQueueBtn = document.getElementById('clearQueueBtn');
+				this.coverPanel = document.getElementById('coverPanel');
 
 				this.queue = [];
 				this.currentIndex = -1;
-				this.history = [];
+
+				// Throttle / save control
+				this._lastSave = 0;
+				this._saveIntervalMs = 5000;
 
 				this.init();
 			}
@@ -145,7 +151,6 @@
 				this.audio.volume = this.volumeControl.value / 100;
 				this.playerUI.classList.add('d-none');
 				this.setupEventListeners();
-				this.setupSongCardListeners();
 				this.restoreState();
 			}
 
@@ -161,7 +166,14 @@
 				this.clearQueueBtn.addEventListener('click', () => this.clearQueue());
 
 				this.audio.addEventListener('ended', () => this.playNext());
-				this.audio.addEventListener('timeupdate', () => this.updateProgress());
+				this.audio.addEventListener('timeupdate', () => {
+					this.updateProgress();
+					const now = Date.now();
+					if (now - this._lastSave > this._saveIntervalMs) {
+						this.saveState();
+						this._lastSave = now;
+					}
+				});
 				this.audio.addEventListener('loadedmetadata', () => this.updateTotalTime());
 				this.audio.addEventListener('play', () => {
 					this.playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
@@ -174,14 +186,31 @@
 				this.volumeControl.addEventListener('input', () => {
 					this.audio.volume = this.volumeControl.value / 100;
 					this.updateVolumeIcon();
+					this.saveState();
 				});
 				this.volumeIcon.addEventListener('click', () => this.toggleMute());
-
 				this.killPlayerBtn.addEventListener('click', () => this.killPlayer());
 
+				// Event delegation for song cards - handles dynamic content
 				document.addEventListener('click', (e) => {
-					if (!this.queuePanel.contains(e.target) && e.target !== this.queueBtn) {
-						this.queuePanel.classList.add('d-none');
+					const card = e.target.closest('.card-body[data-song-id]');
+					if (card) {
+						e.preventDefault();
+						const songId = card.dataset.songId;
+						try {
+							if (card.dataset.songQueue) {
+								this.loadQueueFromData(JSON.parse(card.dataset.songQueue), songId);
+							} else {
+								this.loadSingleSong(songId);
+							}
+						} catch (err) {
+							this.loadSingleSong(songId);
+						}
+					} else {
+						// Hide queue when clicking outside
+						if (!this.queuePanel.contains(e.target) && e.target !== this.queueBtn) {
+							this.queuePanel.classList.add('d-none');
+						}
 					}
 				});
 
@@ -200,53 +229,40 @@
 					}
 				});
 
-				this.startAutoSave();
-			}
-
-			setupSongCardListeners() {
-				document.querySelectorAll('.card-body[data-song-id]').forEach(card => {
-					card.addEventListener('click', () => {
-						const songId = card.dataset.songId;
-						try {
-							if (card.dataset.songQueue) {
-								this.loadQueueFromData(JSON.parse(card.dataset.songQueue), songId);
-							} else {
-								this.loadSingleSong(songId);
-							}
-						} catch (error) {
-							this.loadSingleSong(songId);
-						}
-					});
-				});
-			}
-
-			startAutoSave() {
-				if (this.autoSaveInterval) clearInterval(this.autoSaveInterval);
-				this.autoSaveInterval = setInterval(() => {
-					this.saveState();
-				}, 2000); // 5000 ms = 5 seconds
+				// Save on unload to keep state consistent
+				window.addEventListener('beforeunload', () => this.saveState());
 			}
 
 			saveState() {
-				const state = {
-					queue: this.queue,
-					currentIndex: this.currentIndex,
-					currentTime: this.audio.currentTime
-				};
-				localStorage.setItem('playerState', JSON.stringify(state));
+				// Save minimal state only when needed
+				try {
+					const state = {
+						queue: this.queue,
+						currentIndex: this.currentIndex,
+						currentTime: this.audio.currentTime,
+						audioFormat: localStorage.getItem('audioFormat') || 'opus'
+					};
+					localStorage.setItem('playerState', JSON.stringify(state));
+				} catch (err) {
+					// ignore quota errors
+				}
 			}
 
 			restoreState() {
-				const state = JSON.parse(localStorage.getItem('playerState'));
-				if (state && state.queue && state.queue.length > 0) {
-					this.queue = state.queue;
-					this.currentIndex = state.currentIndex;
-					this.playerUI.classList.remove('d-none');
-					this.updateQueueDisplay();
-					this.playSong(this.queue[this.currentIndex]);
-					this.audio.addEventListener('loadedmetadata', () => {
-						this.audio.currentTime = state.currentTime || 0;
-					}, {once: true});
+				try {
+					const state = JSON.parse(localStorage.getItem('playerState'));
+					if (state && state.queue && state.queue.length > 0) {
+						this.queue = state.queue;
+						this.currentIndex = Math.min(Math.max(state.currentIndex || 0, 0), this.queue.length - 1);
+						this.playerUI.classList.remove('d-none');
+						this.updateQueueDisplay();
+						this.playSong(this.queue[this.currentIndex]);
+						this.audio.addEventListener('loadedmetadata', () => {
+							this.audio.currentTime = state.currentTime || 0;
+						}, {once: true});
+					}
+				} catch (err) {
+					// ignore invalid state
 				}
 			}
 
@@ -269,81 +285,91 @@
 					songID: song.songID,
 					title: song.title,
 					artists: song.artists,
-					artistIDs: song.artistIDs || [], // Add this line
+					artistIDs: song.artistIDs || [],
 					fileName: (localStorage.getItem('audioFormat') === 'flac' ? song.flacFilename : song.opusFilename),
 					thumbnailName: song.thumbnailName || '',
-					imageName: song.imageName || '',
+					imageName: song.imageName || ''
 				}));
 
-				this.currentIndex = this.queue.findIndex(song =>
-					String(song.songID) === String(clickedSongId)
-				);
-
-				if (this.currentIndex >= 0) {
+				this.currentIndex = this.queue.findIndex(s => String(s.songID) === String(clickedSongId));
+				if (this.currentIndex < 0) this.currentIndex = 0;
+				if (this.queue.length > 0) {
 					this.playSong(this.queue[this.currentIndex]);
 					this.playerUI.classList.remove('d-none');
 					this.updateQueueDisplay();
 				}
 			}
 
+			loadSingleSong(songId) {
+				// load single song as a one-item queue via fetch or data attributes
+				// keep simple: try to find matching card data-song-json if available
+				const card = document.querySelector(`.card-body[data-song-id="${songId}"]`);
+				if (card && card.dataset.songData) {
+					try {
+						const song = JSON.parse(card.dataset.songData);
+						this.queue = [{
+							songID: song.songID,
+							title: song.title,
+							artists: song.artists,
+							artistIDs: song.artistIDs || [],
+							fileName: (localStorage.getItem('audioFormat') === 'flac' ? song.flacFilename : song.opusFilename),
+							thumbnailName: song.thumbnailName || '',
+							imageName: song.imageName || ''
+						}];
+						this.currentIndex = 0;
+						this.playSong(this.queue[0]);
+						this.playerUI.classList.remove('d-none');
+						this.updateQueueDisplay();
+						return;
+					} catch (err) { /* fallthrough */
+					}
+				}
+				// fallback: set index and call playNext which will no-op if not found
+				this.currentIndex = -1;
+			}
+
 			playSong(song) {
 				if (!song) return;
-
 				this.audio.src = `${this.audioBasePath}${song.fileName}`;
 				this.playerTitle.textContent = song.title;
-
-				// Use artist links if available
 				if (song.artistIDs && song.artistIDs.length > 0) {
 					this.playerArtist.innerHTML = this.generateArtistLinks(song.artists, song.artistIDs);
 				} else {
 					this.playerArtist.textContent = song.artists;
 				}
 
-				this.playerCoverLarge.src = song.imageName
-					? `${this.largeImagePath}${song.imageName}`
-					: `${this.basePath}/images/defaultSong.webp`;
+				this.playerCoverLarge.src = song.imageName ? `${this.largeImagePath}${song.imageName}` : `${this.basePath}/images/defaultSong.webp`;
+				this.playerCoverSmall.src = song.thumbnailName ? `${this.imageBasePath}${song.thumbnailName}` : `${this.basePath}/images/defaultSong.webp`;
 
-				this.playerCoverSmall.src = song.thumbnailName
-					? `${this.imageBasePath}${song.thumbnailName}`
-					: `${this.basePath}/images/defaultSong.webp`;
+				this.audio.play().catch(() => { /* ignore play errors */
+				});
 
-				this.audio.play().catch(error => console.error('Playback error:', error));
-				if ("mediaSession" in navigator) {
-					navigator.mediaSession.metadata = new window.MediaMetadata({
+				if ('mediaSession' in navigator) {
+					navigator.mediaSession.metadata = new MediaMetadata({
 						title: song.title,
 						artist: song.artists,
-						album: "test",
-						artwork: [{
-							src: (song.imageName
-								? `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/song/large/${song.imageName}`
-								: `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp`),
-						}]
-					});
-
+						album: fetch('<?= $GLOBALS['PROJECT_ROOT'] ?>/api/get_song_album.php?id=' + song.songID)
+							.then(response => response.json())
+							.then(data => data.albumName || '')
+							.catch(() => ''),
+						artwork: [{src: song.imageName ? `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/song/large/${song.imageName}` : `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp`}]
+					})
+					;
 					navigator.mediaSession.setActionHandler('play', () => this.togglePlayPause());
 					navigator.mediaSession.setActionHandler('pause', () => this.togglePlayPause());
 					navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
 					navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
 				}
 
-				document.dispatchEvent(new CustomEvent('songPlaying', {
-					detail: {songId: song.songID}
-				}));
+				document.dispatchEvent(new CustomEvent('songPlaying', {detail: {songId: song.songID}}));
+				this.updateCurrentlyPlaying(song.songID);
 
 				document.title = `▶ ${song.title} by ${song.artists} - BeatStream`;
 				this.saveState();
 
-				const coverPanel = document.getElementById('coverPanel');
-				const playerCoverLarge = document.getElementById('playerCoverLarge');
-
-				if (song) {
-					coverPanel.classList.remove('d-none');
-					playerCoverLarge.classList.remove('d-none');
-					playerCoverLarge.src = song.imageName
-						? `${this.largeImagePath}${song.imageName}`
-						: '<?= $GLOBALS["PROJECT_ROOT"] ?>/images/defaultSong.webp';
-				} else {
-					coverPanel.classList.add('d-none');
+				if (this.coverPanel) {
+					this.coverPanel.classList.remove('d-none');
+					this.playerCoverLarge.classList.remove('d-none');
 				}
 			}
 
@@ -373,121 +399,122 @@
 
 			playNext() {
 				if (this.queue.length === 0) return;
-
 				if (this.currentIndex < this.queue.length - 1) {
 					this.currentIndex++;
 					this.playSong(this.queue[this.currentIndex]);
 				} else {
-					// End of queue
 					this.audio.pause();
 					this.playerTitle.textContent = 'End of queue';
 					this.playerArtist.textContent = 'Play again or add more songs';
-					this.playerCoverSmall.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
+					this.playerCoverSmall.src = `${this.basePath}/images/defaultSong.webp`;
 					this.playerCoverLarge.classList.add('d-none');
 				}
 				this.updateQueueDisplay();
+				this.saveState();
 			}
 
 			playPrevious() {
 				if (this.queue.length === 0) return;
-
-				// If we're more than 3 seconds into the song, restart it
 				if (this.audio.currentTime > 3) {
 					this.audio.currentTime = 0;
 					return;
 				}
-
-				// Navigate to previous song in queue
 				if (this.currentIndex > 0) {
 					this.currentIndex--;
 					this.playSong(this.queue[this.currentIndex]);
 					this.updateQueueDisplay();
+					this.saveState();
 				}
 			}
 
 			removeFromQueue(index) {
 				if (index < 0 || index >= this.queue.length) return;
-
-				// If removing currently playing song
-				if (index === this.currentIndex) {
-					this.audio.pause();
-					this.queue.splice(index, 1);
-
+				const removingCurrent = index === this.currentIndex;
+				this.queue.splice(index, 1);
+				if (removingCurrent) {
 					if (this.queue.length === 0) {
 						this.currentIndex = -1;
+						this.audio.pause();
 						this.playerTitle.textContent = 'No song selected';
 						this.playerArtist.textContent = '';
 						this.playerCoverLarge.classList.add('d-none');
-						this.playerCoverSmall.src = '<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp';
+						this.playerCoverSmall.src = `${this.basePath}/images/defaultSong.webp`;
 					} else {
-						// Adjust current index and play next available song
-						if (this.currentIndex >= this.queue.length) {
-							this.currentIndex = 0;
-						}
+						if (this.currentIndex >= this.queue.length) this.currentIndex = 0;
 						this.playSong(this.queue[this.currentIndex]);
 					}
-				} else {
-					// Remove song and adjust current index if necessary
-					this.queue.splice(index, 1);
-					if (index < this.currentIndex) {
-						this.currentIndex--;
-					}
+				} else if (index < this.currentIndex) {
+					this.currentIndex--;
 				}
-
 				this.updateQueueDisplay();
+				this.saveState();
 			}
 
 			clearQueue() {
-				if (confirm('Clear queue?')) {
-					const currentSong = this.currentIndex >= 0 ? this.queue[this.currentIndex] : null;
-					this.queue = currentSong ? [currentSong] : [];
-					this.currentIndex = currentSong ? 0 : -1;
-					this.history = [];
-					this.updateQueueDisplay();
-				}
+				if (!confirm('Clear queue?')) return;
+				const currentSong = this.currentIndex >= 0 ? this.queue[this.currentIndex] : null;
+				this.queue = currentSong ? [currentSong] : [];
+				this.currentIndex = currentSong ? 0 : -1;
+				this.updateQueueDisplay();
+				this.saveState();
 			}
 
 			updateQueueDisplay() {
 				this.queueList.innerHTML = '';
-
 				if (this.queue.length === 0) {
 					const emptyMessage = document.createElement('li');
 					emptyMessage.className = 'list-group-item bg-dark text-white';
 					emptyMessage.textContent = 'Queue is empty';
 					this.queueList.appendChild(emptyMessage);
+					this.updateCurrentlyPlaying(null);
 					return;
 				}
 
 				this.queue.forEach((song, index) => {
 					const li = document.createElement('li');
-					li.className = `list-group-item bg-dark text-white d-flex align-items-center ${
-						index === this.currentIndex ? 'active' : ''
-					}`;
+					li.className = `list-group-item bg-dark text-white d-flex align-items-center ${index === this.currentIndex ? 'active' : ''}`;
 
-					const artistDisplay = song.artistIDs && song.artistIDs.length > 0
-						? this.generateArtistLinks(song.artists, song.artistIDs)
-						: song.artists;
+					const img = document.createElement('img');
+					img.src = song.thumbnailName ? `${this.imageBasePath}${song.thumbnailName}` : `${this.basePath}/images/defaultSong.webp`;
+					img.className = 'me-2';
+					img.style.cssText = 'width:50px;height:50px;object-fit:cover;border-radius:5px;';
+					img.alt = song.title;
 
-					li.innerHTML = `<img src="${song.thumbnailName ? `${this.imageBasePath}${song.thumbnailName}` : '../images/defaultSong.webp'}"
-									class="me-2" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" alt="${song.title}">
-									<div class="flex-grow-1">
-										<div class="text-truncate">${song.title}</div>
-										<small style="color: rgb(200, 200, 200)">${artistDisplay}</small>
-									</div>
-									<button class="btn btn-sm text-danger" onclick="event.stopPropagation(); player.removeFromQueue(${index})">
-										<i class="bi bi-x"></i>
-									</button>`;
+					const info = document.createElement('div');
+					info.className = 'flex-grow-1';
+					const titleDiv = document.createElement('div');
+					titleDiv.className = 'text-truncate';
+					titleDiv.textContent = song.title;
+					const small = document.createElement('small');
+					small.style.color = 'rgb(200,200,200)';
+					small.innerHTML = (song.artistIDs && song.artistIDs.length > 0) ? this.generateArtistLinks(song.artists, song.artistIDs) : song.artists;
 
-					li.onclick = () => this.playFromQueue(index);
+					info.appendChild(titleDiv);
+					info.appendChild(small);
+
+					const removeBtn = document.createElement('button');
+					removeBtn.className = 'btn btn-sm text-danger';
+					removeBtn.innerHTML = '<i class="bi bi-x"></i>';
+					removeBtn.addEventListener('click', (e) => {
+						e.stopPropagation();
+						this.removeFromQueue(index);
+					});
+
+					li.appendChild(img);
+					li.appendChild(info);
+					li.appendChild(removeBtn);
+
+					li.addEventListener('click', () => this.playFromQueue(index));
 					this.queueList.appendChild(li);
 				});
+
+				this.updateCurrentlyPlaying(this.currentIndex >= 0 ? this.queue[this.currentIndex].songID : null);
 			}
 
 			updateProgress() {
 				if (isNaN(this.audio.duration)) return;
 				const progress = (this.audio.currentTime / this.audio.duration) * 100;
 				this.progressBar.style.width = `${progress}%`;
-
 				const minutes = Math.floor(this.audio.currentTime / 60);
 				const seconds = Math.floor(this.audio.currentTime % 60).toString().padStart(2, '0');
 				this.currentTimeEl.textContent = `${minutes}:${seconds}`;
@@ -502,15 +529,16 @@
 
 			seekTo(event) {
 				if (isNaN(this.audio.duration)) return;
-
 				const rect = this.progressContainer.getBoundingClientRect();
-				const percent = (event.clientX - rect.left) / rect.width;
+				const percent = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
 				this.audio.currentTime = percent * this.audio.duration;
+				this.saveState();
 			}
 
 			toggleMute() {
 				this.audio.muted = !this.audio.muted;
 				this.updateVolumeIcon();
+				this.saveState();
 			}
 
 			updateVolumeIcon() {
@@ -520,20 +548,18 @@
 			}
 
 			generateArtistLinks(artistsString, artistIDs) {
-				if (!artistIDs || artistIDs.length === 0) {
-					return artistsString;
-				}
-
+				if (!artistIDs || artistIDs.length === 0) return artistsString;
 				const artists = artistsString.split(', ');
-				const artistLinks = artists.map((artist, index) => {
-					const artistID = artistIDs[index];
-					if (artistID) {
-						return `<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/view/artist.php?id=${artistID}" class="custom-link">${artist}</a>`;
-					}
-					return artist;
-				});
+				return artists.map((artist, idx) => {
+					const id = artistIDs[idx];
+					return id ? `<a href="${this.basePath}/view/artist.php?id=${id}" class="custom-link">${artist}</a>` : artist;
+				}).join(', ');
+			}
 
-				return artistLinks.join(', ');
+			updateCurrentlyPlaying(songId) {
+				document.querySelectorAll('.card-body[data-song-id]').forEach(card => {
+					card.classList.toggle('playing', String(card.dataset.songId) === String(songId));
+				});
 			}
 		}
 
