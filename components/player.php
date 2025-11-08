@@ -112,13 +112,13 @@
 				this.imageBasePath = `${this.basePath}/images/song/thumbnail/`;
 				this.largeImagePath = `${this.basePath}/images/song/large/`;
 
-				// Core elements only
-				this.playerUI = document.getElementById('musicPlayer');
-				this.audio = document.getElementById('audioPlayer');
-				this.playPauseBtn = document.getElementById('playPauseBtn');
-				this.progressBar = document.getElementById('progressBar');
-				this.progressContainer = document.querySelector('.progress');
-				this.volumeControl = document.getElementById('volumeControl');
+			// Core elements only
+			this.playerUI = document.getElementById('musicPlayer');
+			this.audio = document.getElementById('audioPlayer');
+			this.playPauseBtn = document.getElementById('playPauseBtn');
+			this.progressBar = document.getElementById('progressBar');
+			this.progressContainer = document.querySelector('#musicPlayer .progress');
+			this.volumeControl = document.getElementById('volumeControl');
 				this.volumeIcon = document.getElementById('volumeIcon');
 				this.playerCoverLarge = document.getElementById('playerCoverLarge');
 				this.playerCoverSmall = document.getElementById('playerCoverSmall');
@@ -501,7 +501,10 @@
 			}
 
 			seekTo(event) {
-				const percent = event.offsetX / this.progressContainer.offsetWidth;
+				if (isNaN(this.audio.duration)) return;
+
+				const rect = this.progressContainer.getBoundingClientRect();
+				const percent = (event.clientX - rect.left) / rect.width;
 				this.audio.currentTime = percent * this.audio.duration;
 			}
 
