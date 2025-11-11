@@ -141,8 +141,10 @@
 				this.currentIndex = -1;
 
 				// Throttle / save control
-				this._lastSave = 0;
-				this._saveIntervalMs = 5000;
+				this._lastQueueSave = 0;
+				this._queueSaveIntervalMs = 20_000; // 20 seconds
+				this._lastDurationSave = 0;
+				this._durationSaveIntervalMs = 1000; // 1 second
 
 				this.init();
 			}
@@ -169,9 +171,14 @@
 				this.audio.addEventListener('timeupdate', () => {
 					this.updateProgress();
 					const now = Date.now();
-					if (now - this._lastSave > this._saveIntervalMs) {
-						this.saveState();
-						this._lastSave = now;
+					if (now - this._lastQueueSave > this._queueSaveIntervalMs) {
+						this.saveQueue();
+						this._lastQueueSave = now;
+					}
+
+					if (now - this._lastDurationSave > this._durationSaveIntervalMs) {
+						this.saveDuration();
+						this._lastDurationSave = now;
 					}
 				});
 				this.audio.addEventListener('loadedmetadata', () => this.updateTotalTime());
@@ -186,7 +193,6 @@
 				this.volumeControl.addEventListener('input', () => {
 					this.audio.volume = this.volumeControl.value / 100;
 					this.updateVolumeIcon();
-					this.saveState();
 				});
 				this.volumeIcon.addEventListener('click', () => this.toggleMute());
 				this.killPlayerBtn.addEventListener('click', () => this.killPlayer());
@@ -230,19 +236,28 @@
 				});
 
 				// Save on unload to keep state consistent
-				window.addEventListener('beforeunload', () => this.saveState());
+				window.addEventListener('beforeunload', () => this.saveQueue());
+				window.addEventListener('beforeunload', () => this.saveDuration());
 			}
 
-			saveState() {
+			saveQueue() {
 				// Save minimal state only when needed
 				try {
 					const state = {
 						queue: this.queue,
-						currentIndex: this.currentIndex,
-						currentTime: this.audio.currentTime,
-						audioFormat: localStorage.getItem('audioFormat') || 'opus'
+						currentIndex: this.currentIndex
 					};
-					localStorage.setItem('playerState', JSON.stringify(state));
+					localStorage.setItem('queueState', JSON.stringify(state));
+				} catch (err) {
+					// ignore quota errors
+				}
+			}
+
+			saveDuration() {
+				// Save minimal state only when needed
+				try {
+					const currentTime = this.audio.currentTime;
+					localStorage.setItem('currentTime', JSON.stringify(currentTime));
 				} catch (err) {
 					// ignore quota errors
 				}
@@ -250,15 +265,16 @@
 
 			restoreState() {
 				try {
-					const state = JSON.parse(localStorage.getItem('playerState'));
-					if (state && state.queue && state.queue.length > 0) {
-						this.queue = state.queue;
-						this.currentIndex = Math.min(Math.max(state.currentIndex || 0, 0), this.queue.length - 1);
+					const queueState = JSON.parse(localStorage.getItem('queueState'));
+					const currentTime = JSON.parse(localStorage.getItem('currentTime'));
+					if (queueState && queueState.queue && queueState.queue.length > 0) {
+						this.queue = queueState.queue;
+						this.currentIndex = Math.min(Math.max(queueState.currentIndex || 0, 0), this.queue.length - 1);
 						this.playerUI.classList.remove('d-none');
 						this.updateQueueDisplay();
 						this.playSong(this.queue[this.currentIndex]);
 						this.audio.addEventListener('loadedmetadata', () => {
-							this.audio.currentTime = state.currentTime || 0;
+							this.audio.currentTime = currentTime || 0;
 						}, {once: true});
 					}
 				} catch (err) {
@@ -365,7 +381,8 @@
 				this.updateCurrentlyPlaying(song.songID);
 
 				document.title = `▶ ${song.title} by ${song.artists} - BeatStream`;
-				this.saveState();
+				this.saveDuration();
+				this.saveQueue();
 
 				if (this.coverPanel) {
 					this.coverPanel.classList.remove('d-none');
@@ -394,7 +411,7 @@
 					this.audio.pause();
 					document.title = `❚❚ ${this.playerTitle.textContent} by ${this.playerArtist.textContent} - BeatStream`;
 				}
-				this.saveState();
+				this.saveDuration();
 			}
 
 			playNext() {
@@ -410,7 +427,8 @@
 					this.playerCoverLarge.classList.add('d-none');
 				}
 				this.updateQueueDisplay();
-				this.saveState();
+				this.saveQueue();
+				this.saveDuration();
 			}
 
 			playPrevious() {
@@ -423,7 +441,8 @@
 					this.currentIndex--;
 					this.playSong(this.queue[this.currentIndex]);
 					this.updateQueueDisplay();
-					this.saveState();
+					this.saveDuration();
+					this.saveQueue();
 				}
 			}
 
@@ -447,7 +466,8 @@
 					this.currentIndex--;
 				}
 				this.updateQueueDisplay();
-				this.saveState();
+				this.saveQueue();
+				this.saveDuration();
 			}
 
 			clearQueue() {
@@ -456,7 +476,8 @@
 				this.queue = currentSong ? [currentSong] : [];
 				this.currentIndex = currentSong ? 0 : -1;
 				this.updateQueueDisplay();
-				this.saveState();
+				this.saveQueue();
+				this.saveDuration();
 			}
 
 			updateQueueDisplay() {
@@ -532,13 +553,12 @@
 				const rect = this.progressContainer.getBoundingClientRect();
 				const percent = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
 				this.audio.currentTime = percent * this.audio.duration;
-				this.saveState();
+				this.saveDuration();
 			}
 
 			toggleMute() {
 				this.audio.muted = !this.audio.muted;
 				this.updateVolumeIcon();
-				this.saveState();
 			}
 
 			updateVolumeIcon() {
