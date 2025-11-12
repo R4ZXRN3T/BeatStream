@@ -137,6 +137,18 @@
 				this.clearQueueBtn = document.getElementById('clearQueueBtn');
 				this.coverPanel = document.getElementById('coverPanel');
 
+				this.icons = {
+					play: '<i class="bi bi-play-fill"></i>',
+					pause: '<i class="bi bi-pause-fill"></i>',
+					spinner: '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+				};
+				this.isLoading = false;
+				this.retryCount = 0;
+				this.maxRetries = 3;
+				this.retryDelayMs = 2000;
+				this._retryTimeout = null;
+				this.currentSongSrc = '';
+
 				this.queue = [];
 				this.currentIndex = -1;
 
@@ -182,11 +194,19 @@
 					}
 				});
 				this.audio.addEventListener('loadedmetadata', () => this.updateTotalTime());
+				// Loading state events
+				this.audio.addEventListener('loadstart', () => this.setLoading(true));
+				this.audio.addEventListener('waiting', () => this.setLoading(true));
+				this.audio.addEventListener('stalled', () => this.setLoading(true));
+				this.audio.addEventListener('canplay', () => this.setLoading(false));
+				this.audio.addEventListener('canplaythrough', () => this.setLoading(false));
+				this.audio.addEventListener('playing', () => this.setLoading(false));
+				this.audio.addEventListener('error', () => this.handleAudioError());
 				this.audio.addEventListener('play', () => {
-					this.playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+					if (!this.isLoading) this.playPauseBtn.innerHTML = this.icons.pause;
 				});
 				this.audio.addEventListener('pause', () => {
-					this.playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+					if (!this.isLoading) this.playPauseBtn.innerHTML = this.icons.play;
 				});
 
 				this.progressContainer.addEventListener('click', (e) => this.seekTo(e));
@@ -285,6 +305,10 @@
 			killPlayer() {
 				this.audio.pause();
 				this.audio.src = '';
+				// reset loading/retry state
+				this.setLoading(false);
+				clearTimeout(this._retryTimeout);
+				this.retryCount = 0;
 				this.playerUI.classList.add('d-none');
 				this.queue = [];
 				this.currentIndex = -1;
@@ -346,7 +370,12 @@
 
 			playSong(song) {
 				if (!song) return;
+				// start loading state and reset retry
+				clearTimeout(this._retryTimeout);
+				this.setLoading(true);
+				this.retryCount = 0;
 				this.audio.src = `${this.audioBasePath}${song.fileName}`;
+				this.currentSongSrc = this.audio.src;
 				this.playerTitle.textContent = song.title;
 				if (song.artistIDs && song.artistIDs.length > 0) {
 					this.playerArtist.innerHTML = this.generateArtistLinks(song.artists, song.artistIDs);
@@ -399,6 +428,8 @@
 			}
 
 			togglePlayPause() {
+				// disable toggling while loading
+				if (this.isLoading) return;
 				if (this.currentIndex < 0 && this.queue.length > 0) {
 					this.currentIndex = 0;
 					this.playSong(this.queue[0]);
@@ -416,6 +447,11 @@
 
 			playNext() {
 				if (this.queue.length === 0) return;
+				// If current track hasn't loaded yet, try to load it instead of skipping
+				if (this.isLoading || this.audio.readyState < 2) {
+					this.retryLoadCurrentSong();
+					return;
+				}
 				if (this.currentIndex < this.queue.length - 1) {
 					this.currentIndex++;
 					this.playSong(this.queue[this.currentIndex]);
@@ -580,6 +616,42 @@
 				document.querySelectorAll('.card-body[data-song-id]').forEach(card => {
 					card.classList.toggle('playing', String(card.dataset.songId) === String(songId));
 				});
+			}
+
+			// --- Loading / Retry helpers ---
+			setLoading(isLoading) {
+				this.isLoading = isLoading;
+				if (isLoading) {
+					this.playPauseBtn.innerHTML = this.icons.spinner;
+				} else {
+					// clear any pending retry when playback becomes possible
+					clearTimeout(this._retryTimeout);
+					this.playPauseBtn.innerHTML = this.audio.paused ? this.icons.play : this.icons.pause;
+				}
+			}
+
+			handleAudioError() {
+				this.retryLoadCurrentSong();
+			}
+
+			retryLoadCurrentSong() {
+				if (this.currentIndex < 0 || !this.queue[this.currentIndex]) return;
+				if (this.retryCount >= this.maxRetries) {
+					this.setLoading(false);
+					return;
+				}
+				this.retryCount++;
+				this.setLoading(true);
+				clearTimeout(this._retryTimeout);
+				this._retryTimeout = setTimeout(() => {
+					const song = this.queue[this.currentIndex];
+					// Bust cache just in case
+					this.audio.src = `${this.audioBasePath}${song.fileName}?r=${Date.now()}`;
+					this.currentSongSrc = this.audio.src;
+					this.audio.load();
+					this.audio.play().catch(() => {
+					});
+				}, this.retryDelayMs);
 			}
 		}
 
