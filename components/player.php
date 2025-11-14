@@ -645,12 +645,14 @@
 				clearTimeout(this._retryTimeout);
 				this._retryTimeout = setTimeout(() => {
 					const song = this.queue[this.currentIndex];
+					const currentTime = JSON.parse(localStorage.getItem('currentTime'));
 					// Bust cache just in case
 					this.audio.src = `${this.audioBasePath}${song.fileName}?r=${Date.now()}`;
 					this.currentSongSrc = this.audio.src;
 					this.audio.load();
 					this.audio.play().catch(() => {
 					});
+					this.audio.currentTime = currentTime || 0;
 				}, this.retryDelayMs);
 			}
 		}
