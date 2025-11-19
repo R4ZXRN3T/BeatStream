@@ -23,7 +23,7 @@ class SongController
 		$opusFileName = $song->getOpusFileName();
 
 		$stmt = DBConn::getConn()->prepare("INSERT INTO song VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("issssssiss", $newSongID, $title, $genre, $releaseDate, $imageName, $thumbnailName, $originalImageName, $songLength, $flacFileName, $opusFileName);
+		$stmt->bind_param("isssisssss", $newSongID, $title, $genre, $releaseDate, $songLength, $flacFileName, $opusFileName, $imageName, $thumbnailName, $originalImageName);
 		$stmt->execute();
 		$stmt->close();
 
