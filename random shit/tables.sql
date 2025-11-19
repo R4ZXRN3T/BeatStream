@@ -4,13 +4,12 @@ CREATE TABLE song
 	title             VARCHAR(255) NOT NULL,
 	genre             VARCHAR(255),
 	releaseDate       DATE,
+	songLength        INT,
+	flacFileName      VARCHAR(255),
+	opusFileName      VARCHAR(255),
 	imageName         VARCHAR(255),
 	thumbnailName     VARCHAR(255),
-	originalImageName VARCHAR(255),
-	songLength        INT,
-
-	flacFileName      VARCHAR(255),
-	opusFileName      VARCHAR(255)
+	originalImageName VARCHAR(255)
 );
 
 CREATE TABLE album
@@ -18,12 +17,12 @@ CREATE TABLE album
 	albumID           INT PRIMARY KEY,
 	title             VARCHAR(255),
 	imageName         VARCHAR(255),
-	thumbnailName     VARCHAR(255),
-	originalImageName VARCHAR(255),
 	length            INT,
 	duration          INT,
 	releaseDate       DATE,
-	isSingle          BOOLEAN NOT NULL DEFAULT FALSE
+	isSingle          BOOLEAN NOT NULL DEFAULT FALSE,
+	thumbnailName     VARCHAR(255),
+	originalImageName VARCHAR(255)
 );
 
 CREATE TABLE user
@@ -42,11 +41,11 @@ CREATE TABLE user
 CREATE TABLE playlist
 (
 	playlistID    INT PRIMARY KEY,
-	imageName     VARCHAR(255),
-	thumbnailName VARCHAR(255),
 	name          VARCHAR(255),
 	length        INT,
 	duration      INT,
+	imageName     VARCHAR(255),
+	thumbnailName VARCHAR(255),
 
 	creatorID     INT,
 
@@ -57,9 +56,9 @@ CREATE TABLE artist
 (
 	artistID      INT PRIMARY KEY,
 	name          VARCHAR(255) NOT NULL,
+	activeSince   DATE,
 	imageName     VARCHAR(255),
 	thumbnailName VARCHAR(255),
-	activeSince   DATE,
 
 	userID        INT,
 

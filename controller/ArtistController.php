@@ -32,7 +32,7 @@ class ArtistController
 
 		if (!UserController::IdExists($artist->getUserID())) return;
 
-		$stmt = DBConn::getConn()->prepare("INSERT INTO artist (artistID, name, imageName, thumbnailName, activeSince, userID) VALUES (?, ?, ?, ?, ?, ?)");
+		$stmt = DBConn::getConn()->prepare("INSERT INTO artist (artistID, name, activeSince, userID, imageName, thumbnailName) VALUES (?, ?, ?, ?, ?, ?)");
 
 		// Store values in variables to avoid reference errors
 		$artistName = $artist->getName();
@@ -41,7 +41,7 @@ class ArtistController
 		$activeSinceStr = $artist->getActiveSince()->format("Y-m-d");
 		$userID = $artist->getUserID();
 
-		$stmt->bind_param("issssi", $newArtistID, $artistName, $imageName, $thumbnailName, $activeSinceStr, $userID);
+		$stmt->bind_param("issssi", $newArtistID, $artistName, $activeSinceStr, $userID, $imageName, $thumbnailName);
 		$stmt->execute();
 		$stmt->close();
 

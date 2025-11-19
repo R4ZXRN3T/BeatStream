@@ -20,7 +20,7 @@ class PlaylistController
 		$duration = $playlist->getDuration();
 		$creatorID = $playlist->getCreatorID();
 
-		$stmt->bind_param("isssiis", $newPlaylistID, $imageName, $thumbnailName, $name, $length, $duration, $creatorID);
+		$stmt->bind_param("isssiis", $newPlaylistID, $name, $length, $duration, $creatorID, $imageName, $thumbnailName);
 		$stmt->execute();
 		$stmt->close();
 

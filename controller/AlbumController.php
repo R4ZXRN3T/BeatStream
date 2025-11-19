@@ -23,7 +23,7 @@ class AlbumController
 		$sqlAlbum = "INSERT INTO album VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 
-		$stmt->bind_param("isssssisi", $newAlbumID, $name, $imageName, $thumbnailName, $originalImageName, $length, $duration, $releaseDate, $isSingle);
+		$stmt->bind_param("isssssisi", $newAlbumID, $name, $length, $duration, $releaseDate, $isSingle, $imageName, $thumbnailName, $originalImageName);
 		$stmt->execute();
 		$stmt->close();
 
