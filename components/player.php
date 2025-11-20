@@ -213,6 +213,7 @@
 				this.volumeControl.addEventListener('input', () => {
 					this.audio.volume = this.volumeControl.value / 100;
 					this.updateVolumeIcon();
+					this.saveVolume();
 				});
 				this.volumeIcon.addEventListener('click', () => this.toggleMute());
 				this.killPlayerBtn.addEventListener('click', () => this.killPlayer());
@@ -283,10 +284,20 @@
 				}
 			}
 
+			saveVolume() {
+				try {
+					const volume = this.audio.volume;
+					localStorage.setItem('volume', JSON.stringify(volume))
+				} catch (err) {
+
+				}
+			}
+
 			restoreState() {
 				try {
 					const queueState = JSON.parse(localStorage.getItem('queueState'));
 					const currentTime = JSON.parse(localStorage.getItem('currentTime'));
+					const volume = JSON.parse(localStorage.getItem('volume'));
 					if (queueState && queueState.queue && queueState.queue.length > 0) {
 						this.queue = queueState.queue;
 						this.currentIndex = Math.min(Math.max(queueState.currentIndex || 0, 0), this.queue.length - 1);
@@ -296,6 +307,9 @@
 						this.audio.addEventListener('loadedmetadata', () => {
 							this.audio.currentTime = currentTime || 0;
 						}, {once: true});
+						this.audio.volume = volume;
+						this.volumeControl.value = volume * 100;
+						this.updateVolumeIcon();
 					}
 				} catch (err) {
 					// ignore invalid state
@@ -398,8 +412,7 @@
 							.then(data => data.albumName || '')
 							.catch(() => ''),
 						artwork: [{src: song.imageName ? `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/song/large/${song.imageName}` : `${location.origin}<?= $GLOBALS['PROJECT_ROOT'] ?>/images/defaultSong.webp`}]
-					})
-					;
+					});
 					navigator.mediaSession.setActionHandler('play', () => this.togglePlayPause());
 					navigator.mediaSession.setActionHandler('pause', () => this.togglePlayPause());
 					navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
@@ -595,6 +608,7 @@
 			toggleMute() {
 				this.audio.muted = !this.audio.muted;
 				this.updateVolumeIcon();
+				this.saveVolume();
 			}
 
 			updateVolumeIcon() {
