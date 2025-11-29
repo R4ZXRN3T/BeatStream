@@ -129,13 +129,13 @@
 }
 
 #queueBtn {
-	background: rgba(255, 255, 255, 0.05) !important;
-	border: 1px solid rgba(255, 255, 255, 0.15) !important;
+	background: rgba(0, 0, 0, 0) !important;
+	border: 1px solid rgba(0, 0, 0, 0) !important;
 	color: rgba(255, 255, 255, 0.9) !important;
-	border-radius: 8px !important;
-	padding: 0.5rem 0.75rem !important;
+	margin-left: 30px !important;
 	width: auto !important;
 	height: auto !important;
+	font-size: 1.3rem;
 	transition: all var(--transition-normal) !important;
 }
 
@@ -227,6 +227,27 @@
 
 #volumeControl::-webkit-slider-thumb:hover {
 	transform: scale(1.2);
+}
+
+/* three dot menu */
+#playerMenuContainer .song-dropdown-menu,
+.player-menu-container .song-dropdown-menu {
+	position: absolute;
+	bottom: 100%; /* place menu above the button */
+	right: 0; /* align to right edge */
+	top: auto; /* cancel any top from other rules */
+	margin-bottom: 4px; /* small gap between button and menu */
+	z-index: 1100; /* above the player */
+	opacity: 1 !important;
+}
+
+#playerMenuContainer,
+.player-menu-container {
+	position: relative;
+}
+
+#musicPlayer #playerMenuContainer .song-menu-btn {
+	opacity: 1 !important;
 }
 
 /* Queue panel */

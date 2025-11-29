@@ -98,6 +98,120 @@ document.querySelectorAll('.song-card .song-menu-container').forEach(function (c
 	container.appendChild(menu);
 });
 
+// Player-level three-dot menu, always visible near the queue button
+(function initPlayerMenu() {
+	const container = document.getElementById('playerMenuContainer');
+	if (!container) return;
+
+	const projectRoot = '';
+
+	const menuBtn = document.createElement('button');
+	menuBtn.className = 'btn btn-light song-menu-btn';
+	menuBtn.innerHTML = '&#x22EE;';
+
+	const menu = document.createElement('div');
+	menu.className = 'dropdown-menu song-dropdown-menu';
+	menu.style.display = 'none';
+
+	function getCurrentSongId() {
+		if (!window.player || !Array.isArray(window.player.queue)) return null;
+		const idx = window.player.currentIndex;
+		if (idx == null || idx < 0 || idx >= window.player.queue.length) return null;
+		return window.player.queue[idx].songID;
+	}
+
+	function buildMenuItems() {
+		const songId = getCurrentSongId();
+		menu.innerHTML = '';
+
+		if (!songId) {
+			const disabled = document.createElement('div');
+			disabled.className = 'dropdown-item text-muted';
+			disabled.textContent = 'No song playing';
+			menu.appendChild(disabled);
+			return;
+		}
+
+		// Download buttons
+		menu.innerHTML = `
+			<button class="dropdown-item" onclick="window.location.href='${projectRoot}/api/download_song.php?id=${songId}'; event.stopPropagation();">Download Audio</button>
+			<div class="dropdown-divider"></div>
+			<button class="dropdown-item" onclick="window.location.href='${projectRoot}/api/download_image.php?id=${songId}&res=original&type=song'; event.stopPropagation();">Download Image (Original)</button>
+			<button class="dropdown-item" onclick="window.location.href='${projectRoot}/api/download_image.php?id=${songId}&res=large&type=song'; event.stopPropagation();">Download Image (Large)</button>
+			<button class="dropdown-item" onclick="window.location.href='${projectRoot}/api/download_image.php?id=${songId}&res=thumbnail&type=song'; event.stopPropagation();">Download Image (Thumbnail)</button>
+		`;
+
+		// Add to playlist
+		const divider = document.createElement('div');
+		divider.className = 'dropdown-divider';
+		const divider2 = document.createElement('div');
+		divider2.className = 'dropdown-divider';
+		const addBtn = document.createElement('button');
+		addBtn.className = 'dropdown-item';
+		addBtn.textContent = 'Add to Playlist…';
+		addBtn.addEventListener('click', function (e) {
+			e.stopPropagation();
+			ensureAddToPlaylistModal(projectRoot);
+			openAddToPlaylistModal(projectRoot, songId);
+			menu.style.display = 'none';
+			container.classList.remove('menu-open');
+		});
+
+		menu.appendChild(divider);
+		menu.appendChild(addBtn);
+		menu.appendChild(divider2);
+
+		// View album
+		const viewAlbumButton = document.createElement('button');
+		viewAlbumButton.className = 'dropdown-item';
+		viewAlbumButton.textContent = 'View Album';
+		viewAlbumButton.addEventListener('click', async function (e) {
+			e.stopPropagation();
+			try {
+				const res = await fetch(`${projectRoot}/api/get_song_album.php?id=${encodeURIComponent(songId)}`, {
+					credentials: 'same-origin'
+				});
+				if (!res.ok) throw new Error('not found');
+				const data = await res.json();
+				if (!data || !data.albumID) throw new Error('invalid');
+				window.location.href = `${projectRoot}/view/album.php?id=${encodeURIComponent(data.albumID)}`;
+			} catch (_) {
+				alert('Album not found for this song.');
+			}
+		});
+
+		menu.appendChild(viewAlbumButton);
+	}
+
+	menuBtn.addEventListener('click', function (e) {
+		e.stopPropagation();
+		const isOpen = menu.style.display === 'block';
+		if (isOpen) {
+			menu.style.display = 'none';
+			container.classList.remove('menu-open');
+		} else {
+			buildMenuItems(); // rebuild with current song id
+			menu.style.display = 'block';
+			container.classList.add('menu-open');
+		}
+	});
+
+	menu.addEventListener('click', function (e) {
+		e.stopPropagation();
+	});
+
+	document.body.addEventListener('click', function (e) {
+		if (!container.contains(e.target)) {
+			menu.style.display = 'none';
+			container.classList.remove('menu-open');
+		}
+	});
+
+	container.appendChild(menuBtn);
+	container.appendChild(menu);
+})();
+
+
 // ----- Modal helpers -----
 
 function redirectToLogin(projectRoot) {
