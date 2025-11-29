@@ -58,8 +58,6 @@
 										class="bi bi-play-fill"></i></button>
 							<button id="nextBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
 										class="bi bi-skip-forward-fill"></i></button>
-							<button id="queueBtn" class="btn btn-sm btn-outline-light"><i
-										class="bi bi-music-note-list"></i></button>
 						</div>
 					</div>
 
@@ -74,18 +72,25 @@
 				</div>
 			</div>
 
-			<!-- Volume Control -->
-			<div class="col-md-3 text-end">
-				<div class="d-flex align-items-center justify-content-end">
-					<i id="volumeIcon" class="bi bi-volume-up me-2"></i>
-					<label for="volumeControl"></label>
-					<input type="range" class="form-range" id="volumeControl" min="0"
-						   max="100" value="100"
-						   style="width: 100px;">
-					<button id="killPlayerBtn" class="btn btn-sm btn-outline-danger me-2" title="Kill Player"
-							style="margin-left: 20px;">
-						<i class="bi bi-x-circle"></i>
-					</button>
+			<div class="col-md-3">
+				<div class="d-flex align-items-center justify-content-between">
+					<!-- Left: queue + player menu -->
+					<div class="d-flex align-items-center">
+						<button id="queueBtn" class="btn btn-sm btn-outline-light">
+							<i class="bi bi-music-note-list"></i>
+						</button>
+						<div id="playerMenuContainer" class="song-menu-container player-menu-container ms-2"></div>
+					</div>
+					<!-- Right: volume + kill -->
+					<div class="d-flex align-items-center gap-2">
+						<i id="volumeIcon" class="bi bi-volume-up me-2"></i>
+						<label for="volumeControl" class="visually-hidden">Volume</label>
+						<input type="range" class="form-range" id="volumeControl" min="0" max="100" value="100"
+							   style="width: 100px;">
+						<button id="killPlayerBtn" class="btn btn-sm btn-outline-danger" title="Kill Player">
+							<i class="bi bi-x-circle"></i>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -157,6 +162,7 @@
 				this._queueSaveIntervalMs = 20_000; // 20 seconds
 				this._lastDurationSave = 0;
 				this._durationSaveIntervalMs = 1000; // 1 second
+				localStorage.setItem('volume', JSON.stringify(1.0));
 
 				this.init();
 			}

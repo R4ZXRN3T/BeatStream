@@ -6,7 +6,7 @@
 	--primary-dark: #343a40;
 	--secondary-dark: #212529;
 	--border-color: #495057;
-	--text-muted: #6c757d;
+	--text-muted: #6c757d !important;
 	--light-bg: #f8f9fa;
 	--sidebar-width: 220px;
 	--navbar-height: 66px;
@@ -259,7 +259,7 @@ tr:nth-child(even) {
 
 .song-artist {
 	font-size: 0.9rem;
-	color: #6c757d !important;
+	color: #444b4f !important;
 	font-weight: 500;
 }
 
@@ -641,7 +641,8 @@ body.dark-mode .playlist-creator {
 
 body.dark-mode .album-artist,
 body.dark-mode .album-info,
-body.dark-mode .playlist-creator {
+body.dark-mode .playlist-creator,
+body.dark-mode .song-artist {
 	color: var(--text-muted) !important;
 }
 
@@ -673,7 +674,7 @@ body.dark-mode .form-control::file-selector-button:hover {
 
 /* Dark mode: Song menu button */
 body.dark-mode .song-menu-btn {
-	color: #b0b8c1;
+	color: var(--text-muted);
 	background: none;
 }
 
