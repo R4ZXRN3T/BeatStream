@@ -23,7 +23,7 @@ class AlbumController
 		$sqlAlbum = "INSERT INTO album VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 
-		$stmt->bind_param("isssssisi", $newAlbumID, $name, $length, $duration, $releaseDate, $isSingle, $imageName, $thumbnailName, $originalImageName);
+		$stmt->bind_param("isiisisss", $newAlbumID, $name, $length, $duration, $releaseDate, $isSingle, $imageName, $thumbnailName, $originalImageName);
 		$stmt->execute();
 		$stmt->close();
 
@@ -320,7 +320,7 @@ class AlbumController
 			try {
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/large/" . $result['imageName']);
 				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/thumbnail/" . $result['thumbnailName']);
-				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/orginal/" . $result['originalImageName']);
+				unlink($GLOBALS['PROJECT_ROOT_DIR'] . "/images/album/original/" . $result['originalImageName']);
 			} catch (Exception) {
 			}
 		}

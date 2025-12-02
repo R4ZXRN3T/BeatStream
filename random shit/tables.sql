@@ -16,11 +16,11 @@ CREATE TABLE album
 (
 	albumID           INT PRIMARY KEY,
 	title             VARCHAR(255),
-	imageName         VARCHAR(255),
 	length            INT,
 	duration          INT,
 	releaseDate       DATE,
 	isSingle          BOOLEAN NOT NULL DEFAULT FALSE,
+	imageName         VARCHAR(255),
 	thumbnailName     VARCHAR(255),
 	originalImageName VARCHAR(255)
 );
