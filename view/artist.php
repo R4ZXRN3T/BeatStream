@@ -123,11 +123,9 @@ $songQueueData = array_map(function ($song) {
 				</div>
 
 				<!-- Albums Section -->
-				<div class="container mb-5">
-					<h2 class="mb-4">Albums</h2>
-					<?php if (empty($albums)): ?>
-						<div class="alert alert-info">No albums available for this artist.</div>
-					<?php else: ?>
+				<?php if (!empty($albums)): ?>
+					<div class="container mb-5">
+						<h2 class="mb-4">Albums</h2>
 						<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 g-3">
 							<?php foreach ($albums as $album): ?>
 								<?php
@@ -139,14 +137,14 @@ $songQueueData = array_map(function ($song) {
 								?>
 							<?php endforeach; ?>
 						</div>
-					<?php endif; ?>
-				</div>
+
+					</div>
+				<?php endif; ?>
+
 				<!-- Singles Section -->
-				<div class="container mb-5">
-					<h2 class="mb-4">Singles</h2>
-					<?php if (empty($singles)): ?>
-						<div class="alert alert-info">No singles available for this artist.</div>
-					<?php else: ?>
+				<?php if (!empty($singles)): ?>
+					<div class="container mb-5">
+						<h2 class="mb-4">Singles</h2>
 						<?php
 						$options = [
 								'containerClass' => 'col-md-4 mb-2',
@@ -156,8 +154,8 @@ $songQueueData = array_map(function ($song) {
 						$albumList = $singles;
 						include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 						?>
-					<?php endif; ?>
-				</div>
+					</div>
+				<?php endif; ?>
 			</div>
 		</main>
 	</div>
