@@ -210,9 +210,11 @@
 				this.audio.addEventListener('error', () => this.handleAudioError());
 				this.audio.addEventListener('play', () => {
 					if (!this.isLoading) this.playPauseBtn.innerHTML = this.icons.pause;
+					this.savePlayingState();
 				});
 				this.audio.addEventListener('pause', () => {
 					if (!this.isLoading) this.playPauseBtn.innerHTML = this.icons.play;
+					this.savePlayingState();
 				});
 
 				this.progressContainer.addEventListener('click', (e) => this.seekTo(e));
@@ -276,7 +278,6 @@
 					};
 					localStorage.setItem('queueState', JSON.stringify(state));
 				} catch (err) {
-					// ignore quota errors
 				}
 			}
 
@@ -286,7 +287,6 @@
 					const currentTime = this.audio.currentTime;
 					localStorage.setItem('currentTime', JSON.stringify(currentTime));
 				} catch (err) {
-					// ignore quota errors
 				}
 			}
 
@@ -295,7 +295,14 @@
 					const volume = this.audio.volume;
 					localStorage.setItem('volume', JSON.stringify(volume))
 				} catch (err) {
+				}
+			}
 
+			savePlayingState() {
+				try {
+					const paused = this.audio.paused;
+					localStorage.setItem('isPaused', JSON.stringify(paused))
+				} catch (err) {
 				}
 			}
 
@@ -304,21 +311,30 @@
 					const queueState = JSON.parse(localStorage.getItem('queueState'));
 					const currentTime = JSON.parse(localStorage.getItem('currentTime'));
 					const volume = JSON.parse(localStorage.getItem('volume'));
+					const isPaused = JSON.parse(localStorage.getItem('isPaused')); // note renamed key
+
 					if (queueState && queueState.queue && queueState.queue.length > 0) {
 						this.queue = queueState.queue;
 						this.currentIndex = Math.min(Math.max(queueState.currentIndex || 0, 0), this.queue.length - 1);
 						this.playerUI.classList.remove('d-none');
 						this.updateQueueDisplay();
 						this.playSong(this.queue[this.currentIndex]);
+
 						this.audio.addEventListener('loadedmetadata', () => {
 							this.audio.currentTime = currentTime || 0;
+							if (isPaused === false) {
+								this.audio.play().catch(() => {
+								});
+							} else {
+								this.audio.pause();
+							}
 						}, {once: true});
+
 						this.audio.volume = volume;
-						this.volumeControl.value = volume * 100;
+						this.volumeControl.value = (volume !== null && volume !== undefined) ? volume * 100 : this.volumeControl.value;
 						this.updateVolumeIcon();
 					}
 				} catch (err) {
-					// ignore invalid state
 				}
 			}
 
@@ -462,6 +478,7 @@
 					document.title = `❚❚ ${this.playerTitle.textContent} by ${this.playerArtist.textContent} - BeatStream`;
 				}
 				this.saveDuration();
+				this.savePlayingState();
 			}
 
 			playNext() {
