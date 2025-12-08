@@ -41,7 +41,7 @@ class ArtistController
 		$activeSinceStr = $artist->getActiveSince()->format("Y-m-d");
 		$userID = $artist->getUserID();
 
-		$stmt->bind_param("issssi", $newArtistID, $artistName, $activeSinceStr, $userID, $imageName, $thumbnailName);
+		$stmt->bind_param("ississ", $newArtistID, $artistName, $activeSinceStr, $userID, $imageName, $thumbnailName);
 		$stmt->execute();
 		$stmt->close();
 
