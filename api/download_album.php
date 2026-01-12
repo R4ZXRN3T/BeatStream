@@ -52,13 +52,6 @@ $cleanup = function () use ($workDir) {
 };
 
 // Helper to flush output chunks for progress tracking
-function flushChunk(): void
-{
-	if (ob_get_level() > 0) {
-		@ob_flush();
-	}
-	@flush();
-}
 
 // Build scaled cover (640x640 JPEG) for embedding
 $scaledCoverPath = $workDir . DIRECTORY_SEPARATOR . 'cover_640.jpg';
