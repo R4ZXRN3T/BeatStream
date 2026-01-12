@@ -1,6 +1,8 @@
 <?php
-session_start();
-// File: api/download_album.php
+if (session_status() === PHP_SESSION_NONE) {
+	@session_start();
+}
+@session_write_close();
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
@@ -50,7 +52,7 @@ $cleanup = function () use ($workDir) {
 };
 
 // Helper to flush output chunks for progress tracking
-function flushChunk()
+function flushChunk(): void
 {
 	if (ob_get_level() > 0) {
 		@ob_flush();
@@ -205,7 +207,6 @@ while (ob_get_level() > 0) {
 @header_remove('Content-Encoding');
 
 // Send zip with chunked output for progress
-clearstatcache(true, $zipPath);
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="' . $zipName . '"');
 $size = filesize($zipPath);
@@ -213,15 +214,7 @@ if ($size !== false) {
 	header('Content-Length: ' . $size);
 }
 
-$fh = fopen($zipPath, 'rb');
-if ($fh) {
-	$chunkSize = 1024 * 1024; // 1MB chunks
-	while (!feof($fh)) {
-		echo fread($fh, $chunkSize);
-		flushChunk();
-	}
-	fclose($fh);
-}
+readfile($zipPath);
 
 // Cleanup
 @unlink($zipPath);

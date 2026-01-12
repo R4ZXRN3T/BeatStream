@@ -1,4 +1,9 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+	@session_start();
+}
+@session_write_close();
+
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
 
 $songID = $_GET['id'] ?? null;

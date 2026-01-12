@@ -1,4 +1,9 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+	@session_start();
+}
+@session_write_close();
+
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 $id = $_GET['id'] ?? null;
 $imageType = $_GET['type'] ?? null;

@@ -3,7 +3,7 @@
 class Converter
 {
 	private static int $opusBitrate = 160;
-	private static int $flacCompressionLevel = 8;
+	private static int $flacCompressionLevel = 5;
 
 	public static function uploadAudio($file): array
 	{
@@ -45,7 +45,7 @@ class Converter
 
 			// Convert to FLAC
 			$flacCmd = sprintf(
-				'ffmpeg -i "%s" -vn -map 0:a -compression_level %d -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
+				'ffmpeg -i "%s" -vn -map 0:a -compression_level %d -map_metadata -1 "%s" 2>&1',
 				escapeshellarg($file['tmp_name']),
 				self::$flacCompressionLevel,
 				escapeshellarg($flacPath)
@@ -58,7 +58,7 @@ class Converter
 
 			// Convert to Opus
 			$opusCmd = sprintf(
-				'ffmpeg -i "%s" -vn -map 0:a -c:a libopus -b:a %dk -vbr on -map_metadata -1 -metadata ENCODER= "%s" 2>&1',
+				'ffmpeg -i "%s" -vn -map 0:a -c:a libopus -b:a %dk -vbr on -map_metadata -1 "%s" 2>&1',
 				escapeshellarg($file['tmp_name']),
 				self::$opusBitrate,
 				escapeshellarg($opusPath)
