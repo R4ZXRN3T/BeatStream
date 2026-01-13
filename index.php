@@ -83,17 +83,10 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
-		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
-			<div class="nav flex-column py-4">
-				<a href="" class="nav-link mb-2 active">Home</a>
-				<a href="search/" class="nav-link mb-2">Search</a>
-				<a href="discover/" class="nav-link mb-2">Discover</a>
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
-				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
-				<?php endif; ?>
-			</div>
-		</nav>
+		<?php
+		$activePage = 'home';
+		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
+		?>
 		<!-- Main Content -->
 		<main class="main col-md">
 			<div class="container" style="max-width: 1700px;">

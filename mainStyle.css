@@ -92,6 +92,18 @@ body {
 	border-bottom: #495057 2px solid
 }
 
+.topbar-search {
+	width: 100%;
+	max-width: 420px;
+	margin: 0 auto;
+}
+
+.topbar-search .form-control {
+	padding: 0.35rem 0.6rem;
+	font-size: 0.95rem;
+	border-radius: 999px;
+}
+
 /* =========================
    TABLES
    ========================= */
