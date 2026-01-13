@@ -110,8 +110,8 @@ class AlbumController
 	public static function getArtistAlbums(int $artistID, string $sortBy = "album.releaseDate DESC"): array
 	{
 		$stmt = DBConn::getConn()->prepare("
-			SELECT album.albumID, title, name, album.imageName, album.thumbnailName, album.originalImageName, length, duration, album.releaseDate, artist.artistID, album.isSingle
-			FROM album, artist, releases_album
+			SELECT album.albumID
+			FROM album, releases_album, artist
 			WHERE releases_album.artistID = artist.artistID
 			AND album.albumID = releases_album.albumID
 			AND artist.artistID = ?
@@ -119,6 +119,23 @@ class AlbumController
 		");
 
 		$stmt->bind_param("i", $artistID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$albumIDs = [];
+		while ($row = $result->fetch_assoc()) {
+			$albumIDs[] = $row['albumID'];
+		}
+
+		$stmt = DBConn::getConn()->prepare("
+			SELECT album.albumID, title, name, album.imageName, album.thumbnailName, album.originalImageName, length, duration, album.releaseDate, artist.artistID, album.isSingle
+			FROM album, artist, releases_album
+			WHERE album.albumID = releases_album.albumID
+			AND releases_album.artistID = artist.artistID
+			AND album.albumID IN (" . implode(',', $albumIDs) . ")
+			ORDER BY " . $sortBy . ", releases_album.artistIndex;
+		");
+
 		$stmt->execute();
 		$result = $stmt->get_result();
 
@@ -135,33 +152,6 @@ class AlbumController
 				}
 			}
 			if (!$alreadyExists) $albumList[] = $newAlbum;
-		}
-		$stmt->close();
-
-		$stmt = DBConn::getConn()->prepare("SELECT album.albumID, in_album.songID, in_album.songIndex
-								   FROM in_album, album
-								   WHERE in_album.albumId = album.albumID
-								   AND album.albumID IN (SELECT albumID FROM releases_album WHERE artistID = ?)
-								   ORDER BY album.albumID, in_album.songIndex");
-		$stmt->bind_param("i", $artistID);
-		$stmt->execute();
-		$result = $stmt->get_result();
-
-		$albumSongs = [];
-		while ($row = $result->fetch_assoc()) {
-			$albumID = $row['albumID'];
-			if (!isset($albumSongs[$albumID])) {
-				$albumSongs[$albumID] = [];
-			}
-			$albumSongs[$albumID][] = $row['songID'];
-		}
-		foreach ($albumSongs as $albumID => $songs) {
-			for ($i = 0; $i < count($albumList); $i++) {
-				if ($albumList[$i]->getAlbumID() == $albumID) {
-					$albumList[$i]->setSongIDs($songs);
-					break;
-				}
-			}
 		}
 		$stmt->close();
 		return $albumList;
