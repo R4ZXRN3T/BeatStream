@@ -95,7 +95,7 @@ $songQueueData = array_map(function ($song) use ($album) {
 						<p><?php echo count($albumSongs); ?> songs ·
 							<?php echo $album->getFormattedDuration(); ?>
 						</p>
-						<button class="btn btn-primary" id="downloadAlbumBtn" data-album-id="<?= $albumId ?>">Download
+						<button class="btn btn-primary" id="downloadAlbumBtn" data-album-id="<?= $albumId ?>">Download Album
 						</button>
 						<button class="btn btn-secondary" id="cancelDownloadAlbumBtn">Cancel
 						</button>
