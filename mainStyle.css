@@ -92,6 +92,10 @@ body {
 	border-bottom: #495057 2px solid
 }
 
+.admin-nav {
+	z-index: unset;
+}
+
 .topbar-search {
 	width: 100%;
 	max-width: 420px;

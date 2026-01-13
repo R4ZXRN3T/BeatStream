@@ -48,7 +48,7 @@ require $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
 		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<!-- Admin Navigation Bar -->
-			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary admin-nav">
 				<div class="container-fluid">
 					<ul class="navbar-nav">
 						<li class="nav-item"><a class="nav-link"
