@@ -10,8 +10,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $albumId = (int)$_GET['id'];
 
 // Include controllers
-include_once("../controller/AlbumController.php");
-include_once("../controller/SongController.php");
+require_once("../controller/AlbumController.php");
+require_once("../controller/SongController.php");
 
 $album = AlbumController::getAlbumByID($albumId);
 
@@ -105,6 +105,8 @@ $songQueueData = array_map(function ($song) use ($album) {
 						</p>
 						<button class="btn btn-primary" id="downloadAlbumBtn" data-album-id="<?= $albumId ?>">Download
 						</button>
+						<button class="btn btn-secondary" id="cancelDownloadAlbumBtn">Cancel
+						</button>
 						<div id="downloadProgress" class="mt-3" style="display: none;">
 							<div class="progress" style="height: 10px !important; width: 50%;">
 								<div class="progress-bar progress-bar-striped progress-bar-animated"
@@ -155,86 +157,132 @@ $songQueueData = array_map(function ($song) use ($album) {
 </script>
 <script src="<?= $GLOBALS['PROJECT_ROOT'] ?>/addMenuContent.js"></script>
 <script>
-	document.getElementById('downloadAlbumBtn').addEventListener('click', async function () {
-		const albumId = this.dataset.albumId;
+	// Holds the active download controller (if any)
+	let albumDownloadController = null;
+
+	function setDownloadUIState({downloading}) {
+		const btnDownload = document.getElementById('downloadAlbumBtn');
+		const btnCancel = document.getElementById('cancelDownloadAlbumBtn');
 		const progressContainer = document.getElementById('downloadProgress');
 		const progressBar = document.getElementById('downloadProgressBar');
 		const statusText = document.getElementById('downloadStatus');
-		const btn = this;
 
-		btn.disabled = true;
-		progressContainer.style.display = 'block';
-		progressBar.style.width = '0%';
-		progressBar.textContent = '0%';
-		statusText.textContent = 'Preparing download...';
-
-		try {
-			const response = await fetch(`<?= $GLOBALS['PROJECT_ROOT'] ?>/api/download_album.php?id=${albumId}`);
-
-			if (!response.ok) {
-				throw new Error('Download failed');
-			}
-
-			const contentLength = response.headers.get('content-length');
-			const total = parseInt(contentLength, 10);
-			let loaded = 0;
-
-			const reader = response.body.getReader();
-			const chunks = [];
-
-			while (true) {
-				const {done, value} = await reader.read();
-
-				if (done) break;
-
-				chunks.push(value);
-				loaded += value.length;
-
-				if (total) {
-					const progress = Math.round((loaded / total) * 100);
-					progressBar.style.width = progress + '%';
-					progressBar.textContent = progress + '%';
-					statusText.textContent = `Downloading... ${(loaded / 1024 / 1024).toFixed(2)} MB / ${(total / 1024 / 1024).toFixed(2)} MB`;
-				}
-			}
-
-			const blob = new Blob(chunks);
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-
-			const disposition = response.headers.get('content-disposition');
-			let filename = 'album.zip';
-			if (disposition) {
-				const matches = /filename="?([^"]+)"?/.exec(disposition);
-				if (matches) filename = matches[1];
-			}
-
-			a.download = filename;
-			document.body.appendChild(a);
-			a.click();
-			window.URL.revokeObjectURL(url);
-			document.body.removeChild(a);
-
-			progressBar.classList.remove('progress-bar-animated');
-			progressBar.classList.add('bg-success');
-			statusText.textContent = 'Download complete!';
-
-			setTimeout(() => {
-				progressContainer.style.display = 'none';
-				btn.disabled = false;
-			}, 2000);
-
-		} catch (error) {
-			progressBar.classList.remove('progress-bar-animated');
-			progressBar.classList.add('bg-danger');
-			statusText.textContent = 'Download failed. Please try again.';
-			btn.disabled = false;
-
-			setTimeout(() => {
-				progressContainer.style.display = 'none';
-			}, 3000);
+		if (downloading) {
+			btnDownload.disabled = true;
+			btnCancel.style.visibility = 'visible';
+			btnCancel.disabled = false;
+			progressContainer.style.display = 'block';
+			progressBar.classList.add('progress-bar-animated');
+			progressBar.classList.remove('bg-success', 'bg-danger');
+			progressBar.style.width = '0%';
+			progressBar.textContent = '0%';
+			statusText.textContent = 'Preparing download...';
+		} else {
+			btnDownload.disabled = false;
+			btnCancel.style.visibility = 'hidden';
+			btnCancel.disabled = true;
 		}
+	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		const btnDownload = document.getElementById('downloadAlbumBtn');
+		const btnCancel = document.getElementById('cancelDownloadAlbumBtn');
+		const progressContainer = document.getElementById('downloadProgress');
+		const progressBar = document.getElementById('downloadProgressBar');
+		const statusText = document.getElementById('downloadStatus');
+
+		// Disable cancel by default
+		btnCancel.style.visibility = 'hidden';
+
+		btnCancel.addEventListener('click', function () {
+			if (albumDownloadController) {
+				albumDownloadController.abort();
+			}
+		});
+
+		btnDownload.addEventListener('click', async function () {
+			const albumId = this.dataset.albumId;
+
+			// If something is already downloading, abort it before starting a new one
+			if (albumDownloadController) {
+				albumDownloadController.abort();
+			}
+
+			albumDownloadController = new AbortController();
+			const {signal} = albumDownloadController;
+
+			setDownloadUIState({downloading: true});
+
+			try {
+				const response = await fetch(
+					`<?= $GLOBALS['PROJECT_ROOT'] ?>/api/download_album.php?id=${albumId}`,
+					{signal}
+				);
+
+				if (!response.ok) throw new Error('Download failed');
+
+				const contentLength = response.headers.get('content-length');
+				const total = contentLength ? parseInt(contentLength, 10) : 0;
+				let loaded = 0;
+
+				const reader = response.body.getReader();
+				const chunks = [];
+
+				while (true) {
+					const {done, value} = await reader.read();
+					if (done) break;
+
+					chunks.push(value);
+					loaded += value.length;
+
+					if (total) {
+						const progress = Math.round((loaded / total) * 100);
+						progressBar.style.width = progress + '%';
+						progressBar.textContent = progress + '%';
+						statusText.textContent =
+							`Downloading... ${(loaded / 1024 / 1024).toFixed(2)} MB / ${(total / 1024 / 1024).toFixed(2)} MB`;
+					} else {
+						statusText.textContent = 'Downloading...';
+					}
+				}
+
+				const blob = new Blob(chunks);
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+
+				const disposition = response.headers.get('content-disposition');
+				let filename = 'album.zip';
+				if (disposition) {
+					const matches = /filename="?([^"]+)"?/.exec(disposition);
+					if (matches) filename = matches[1];
+				}
+
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+
+				progressBar.classList.remove('progress-bar-animated');
+				progressBar.classList.add('bg-success');
+				statusText.textContent = 'Download complete!';
+			} catch (error) {
+				const wasAborted = error && (error.name === 'AbortError');
+
+				progressBar.classList.remove('progress-bar-animated');
+				progressBar.classList.add(wasAborted ? 'bg-danger' : 'bg-danger');
+				statusText.textContent = wasAborted ? 'Download cancelled.' : 'Download failed. Please try again.';
+			} finally {
+				albumDownloadController = null;
+				setDownloadUIState({downloading: false});
+
+				// Hide progress after a moment
+				setTimeout(() => {
+					progressContainer.style.display = 'none';
+				}, 1500);
+			}
+		});
 	});
 </script>
 </body>
