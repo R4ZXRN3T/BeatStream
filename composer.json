@@ -3,6 +3,7 @@
 	"ext-mysqli": "*",
 	"ext-imagick": "*",
 	"ext-fileinfo": "*",
-	"ext-zip": "*"
+	"ext-zip": "*",
+	"james-heinrich/getid3": "*"
   }
 }
