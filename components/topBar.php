@@ -4,7 +4,8 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
 	<div class="container-fluid">
-		<div class="d-flex w-100 align-items-center">
+		<div class="d-flex w-100 align-items-center position-relative">
+
 			<!-- Left: Brand -->
 			<div class="flex-shrink-0">
 				<a class="navbar-brand" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/">
@@ -13,9 +14,10 @@
 				</a>
 			</div>
 
-			<!-- Center: Search (true center of navbar width) -->
-			<div class="flex-grow-1 d-flex justify-content-center">
-				<form class="d-none d-md-flex topbar-search" role="search" method="GET"
+			<!-- Center: Search (globally centered) -->
+			<div class="position-absolute start-50 translate-middle-x d-none d-md-block"
+				 style="width: min(640px, 50vw);">
+				<form class="d-flex topbar-search" role="search" method="GET"
 					  action="<?= $GLOBALS['PROJECT_ROOT'] ?>/search/index.php">
 					<input class="form-control me-2" type="search" name="q"
 						   placeholder="Search everything..." aria-label="Search"
@@ -25,7 +27,7 @@
 			</div>
 
 			<!-- Right: Controls -->
-			<div class="flex-shrink-0 d-flex align-items-center">
+			<div class="flex-shrink-0 d-flex align-items-center ms-auto">
 				<button id="audioFormatToggle" class="btn btn-secondary me-2" title="Toggle Audio Format"
 						style="background-color: transparent; border: none;">
 					<img id="audioFormatImage" class="codec-image"
@@ -66,8 +68,10 @@
 					</div>
 				<?php endif; ?>
 			</div>
+
 		</div>
 	</div>
+
 	<script>
 		const toggle = document.getElementById('darkModeToggle');
 		const body = document.body;
