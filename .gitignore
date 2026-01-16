@@ -1,7 +1,6 @@
 .idea/
 vendor/
 beatstream.sql
-für BeatStream/
 composer.lock
 config.php
 audio/flac/*.flac
