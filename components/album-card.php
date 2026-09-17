@@ -17,8 +17,8 @@ $compact = $options['compact'] ?? false;
 // Image handling
 $imageFolder = $isLarge ? "{$GLOBALS['PROJECT_ROOT']}/images/album/large/" : "{$GLOBALS['PROJECT_ROOT']}/images/album/thumbnail/";
 $imageSrc = !empty($album->getImageName())
-		? $imageFolder . htmlspecialchars($album->getImageName())
-		: "../images/defaultAlbum.webp";
+	? $imageFolder . htmlspecialchars($album->getImageName())
+	: "../images/defaultAlbum.webp";
 
 // Common data
 $albumName = htmlspecialchars($album->getName());

@@ -12,7 +12,7 @@ class Album
 	private string $originalImageName;
 	private int $length;
 	private int $duration;
-	private DateTime $releaseDate; // Add releaseDate property
+	private DateTime $releaseDate;
 	private bool $isSingle;
 
 	public function __construct(int $albumID, string $name, array $songIDs, array $artists, array $artistIds, string $imageName, string $thumbnailName, int $length, int $duration, string $releaseDate, bool $isSingle = false, string $originalImageName = "")
@@ -30,7 +30,7 @@ class Album
 		try {
 			$this->releaseDate = new DateTime($releaseDate);
 		} catch (Exception) {
-			$this->releaseDate = new DateTime(); // Default to current date if parsing fails
+			$this->releaseDate = new DateTime();
 		}
 		$this->isSingle = $isSingle;
 	}
@@ -141,5 +141,23 @@ class Album
 	public function getOriginalImageName(): string
 	{
 		return $this->originalImageName;
+	}
+
+	public function json_encode(): array
+	{
+		return [
+			'albumID' => $this->albumID,
+			'name' => $this->name,
+			'songIDs' => $this->songIDs,
+			'artists' => $this->artists,
+			'artistIDs' => $this->artistIDs,
+			'imageName' => $this->imageName,
+			'thumbnailName' => $this->thumbnailName,
+			'originalImageName' => $this->originalImageName,
+			'length' => $this->length,
+			'duration' => $this->duration,
+			'releaseDate' => $this->releaseDate->format('Y-m-d'),
+			'isSingle' => $this->isSingle
+		];
 	}
 }

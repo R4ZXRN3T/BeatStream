@@ -34,7 +34,7 @@ $isValid = true;
 $imageName = '';
 $thumbnailName = '';
 
-if (!(!empty($_POST["artistName"]) && !empty($_POST["activeSince"]))) {
+if (!(!empty($_POST["artistName"]))) {
 	$isValid = false;
 }
 
@@ -54,12 +54,12 @@ if ($isValid && $_FILES['imageFile']['error'] === UPLOAD_ERR_OK && $_FILES['imag
 if ($isValid) {
 
 	ArtistController::insertArtist(new Artist(
-			0,
-			$_POST["artistName"],
-			$imageName,
-			$thumbnailName,// Use same image for thumbnail for now
-			$_POST["activeSince"],
-			$_SESSION['userID']
+		0,
+		$_POST["artistName"],
+		$imageName,
+		$thumbnailName,
+		"",
+		$_SESSION['userID']
 	));
 	header("Location: ../account/profile.php");
 }
@@ -83,10 +83,6 @@ if ($isValid) {
 					<div class="mb-3">
 						<label for="artistName" class="form-label">Your Name:</label>
 						<input type="text" class="form-control" id="artistName" name="artistName" required>
-					</div>
-					<div class="form-group">
-						<label for="activeSince" class="form-label">When did you start making music?</label>
-						<input type="date" class="form-control" id="activeSince" name="activeSince" required>
 					</div>
 					<div class="form-group">
 						<label for="image" class="form-label">Your image:</label>

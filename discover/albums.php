@@ -73,9 +73,9 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 			<div class="container mt-4">
 				<?php
 				$options = [
-						'containerClass' => 'col-md-4 mb',
-						'emptyMessage' => 'No albums available at the moment.',
-						'compact' => true
+					'containerClass' => 'col-md-4 mb',
+					'emptyMessage' => 'No albums available at the moment.',
+					'compact' => true
 				];
 				$albumListVar = $albumList; // To avoid variable name conflict
 				include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");

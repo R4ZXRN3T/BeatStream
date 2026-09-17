@@ -39,14 +39,14 @@ if (!empty($_GET['q'])) {
 	// Create song queue data for player
 	$songQueueData = array_map(function ($song) {
 		return [
-				'songID' => $song->getSongID(),
-				'title' => $song->getTitle(),
-				'artists' => implode(", ", $song->getArtists()),
-				'artistIDs' => $song->getArtistIDs(),
-				'flacFilename' => $song->getFlacFileName(),
-				'opusFilename' => $song->getOpusFileName(),
-				'imageName' => $song->getImageName(),
-				'thumbnailName' => $song->getThumbnailName(),
+			'songID' => $song->getSongID(),
+			'title' => $song->getTitle(),
+			'artists' => implode(", ", $song->getArtists()),
+			'artistIDs' => $song->getArtistIDs(),
+			'flacFilename' => $song->getFlacFileName(),
+			'opusFilename' => $song->getOpusFileName(),
+			'imageName' => $song->getImageName(),
+			'thumbnailName' => $song->getThumbnailName(),
 		];
 	}, $songResults);
 }
@@ -89,29 +89,29 @@ if (!empty($_GET['q'])) {
 							<label class="mb-2">Filter by:</label>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="c" id="all" value="all"
-										<?php echo ($searchCategory == 'all') ? 'checked' : ''; ?>>
+									<?php echo ($searchCategory == 'all') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="all">All</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="c" id="songs" value="songs"
-										<?php echo ($searchCategory == 'songs') ? 'checked' : ''; ?>>
+									<?php echo ($searchCategory == 'songs') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="songs">Songs</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="c" id="artists"
 									   value="artists"
-										<?php echo ($searchCategory == 'artists') ? 'checked' : ''; ?>>
+									<?php echo ($searchCategory == 'artists') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="artists">Artists</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="c" id="albums" value="albums"
-										<?php echo ($searchCategory == 'albums') ? 'checked' : ''; ?>>
+									<?php echo ($searchCategory == 'albums') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="albums">Albums</label>
 							</div>
 							<div class="form-check form-check-inline">
 								<input class="form-check-input" type="radio" name="c" id="playlists"
 									   value="playlists"
-										<?php echo ($searchCategory == 'playlists') ? 'checked' : ''; ?>>
+									<?php echo ($searchCategory == 'playlists') ? 'checked' : ''; ?>>
 								<label class="form-check-label" for="playlists">Playlists</label>
 							</div>
 						</div>
@@ -134,12 +134,12 @@ if (!empty($_GET['q'])) {
 								<div class="result-count"><?php echo count($songResults); ?> results</div>
 								<?php
 								$songListOptions = [
-										'layout' => 'grid',
-										'showIndex' => false,
-										'showDuration' => true,
-										'showArtistLinks' => true,
-										'containerClass' => 'col-12 col-md-6 col-lg-4',
-										'emptyMessage' => 'No songs found.'
+									'layout' => 'grid',
+									'showIndex' => false,
+									'showDuration' => true,
+									'showArtistLinks' => true,
+									'containerClass' => 'col-12 col-md-6 col-lg-4',
+									'emptyMessage' => 'No songs found.'
 								];
 
 								$songs = $songResults;
@@ -162,10 +162,11 @@ if (!empty($_GET['q'])) {
 												<div class="card shadow-sm border-0" style="border-radius: 10px;">
 													<div class="card-body d-flex align-items-center p-3">
 														<?php if (!empty($artist->getThumbnailName())): ?>
-															<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
-																 class="me-3 rounded"
-																 alt="<?php echo htmlspecialchars($artist->getName()); ?>"
-																 style="width: 60px; height: 60px; object-fit: cover;">
+															<img
+																src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
+																class="me-3 rounded"
+																alt="<?php echo htmlspecialchars($artist->getName()); ?>"
+																style="width: 60px; height: 60px; object-fit: cover;">
 														<?php else: ?>
 															<img src="../images/defaultArtist.webp" class="me-3 rounded"
 																 alt="Default Artist image"
@@ -192,10 +193,10 @@ if (!empty($_GET['q'])) {
 								<?php
 								$albumList = $albumResults;
 								$options = [
-										'containerClass' => 'col-12 col-md-6 col-lg-4',
-										'emptyMessage' => 'No albums found.',
-										'large' => false,
-										'compact' => true,
+									'containerClass' => 'col-12 col-md-6 col-lg-4',
+									'emptyMessage' => 'No albums found.',
+									'large' => false,
+									'compact' => true,
 								];
 								include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 								?>
@@ -209,10 +210,10 @@ if (!empty($_GET['q'])) {
 								<div class="result-count"><?php echo count($playlistResults); ?> results</div>
 								<?php
 								$options = [
-										'containerClass' => 'col-12 col-md-6 col-lg-4',
-										'showCreator' => true,
-										'emptyMessage' => 'No playlists found.',
-										'homepageStyle' => false
+									'containerClass' => 'col-12 col-md-6 col-lg-4',
+									'showCreator' => true,
+									'emptyMessage' => 'No playlists found.',
+									'homepageStyle' => false
 								];
 								$playlistList = $playlistResults;
 								include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");

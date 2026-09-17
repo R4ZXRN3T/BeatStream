@@ -16,7 +16,7 @@ $albums = $albumList ?? [];
 		<?php foreach ($albums as $album): ?>
 			<?php
 			$cardOptions = [
-					'containerClass' => $containerClass
+				'containerClass' => $containerClass
 			];
 			if (!empty($options['compact'])) {
 				$cardOptions['compact'] = true;

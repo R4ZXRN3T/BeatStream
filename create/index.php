@@ -36,8 +36,8 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 	<div class="row">
 		<!-- Sidebar -->
 		<?php
-			$activePage = 'create';
-			include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
+		$activePage = 'create';
+		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
 		?>
 
 		<!-- Main Content -->

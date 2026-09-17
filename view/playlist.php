@@ -27,13 +27,13 @@ $playlistSongs = SongController::getPlaylistSongs($playlistId);
 // Prepare song queue data for player
 $songQueueData = array_map(function ($song) use ($playlist) {
 	return [
-			'songID' => $song->getSongID(),
-			'title' => $song->getTitle(),
-			'artists' => $song->getArtists(),
-			'flacFilename' => $song->getFlacFileName(),
-			'opusFilename' => $song->getOpusFileName(),
-			'imageName' => $song->getImageName(),
-			'thumbnailName' => $song->getThumbnailName(),
+		'songID' => $song->getSongID(),
+		'title' => $song->getTitle(),
+		'artists' => $song->getArtists(),
+		'flacFilename' => $song->getFlacFileName(),
+		'opusFilename' => $song->getOpusFileName(),
+		'imageName' => $song->getImageName(),
+		'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $playlistSongs);
 ?>
@@ -65,10 +65,11 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 				<div class="row">
 					<div class="col-md-4 text-center">
 						<?php if (!empty($playlist->getImageName())): ?>
-							<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/playlist/large/" . htmlspecialchars($playlist->getImageName()); ?>"
-								 class="img-fluid rounded shadow"
-								 alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
-								 style="max-width: 300px;">
+							<img
+								src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/playlist/large/" . htmlspecialchars($playlist->getImageName()); ?>"
+								class="img-fluid rounded shadow"
+								alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
+								style="max-width: 300px;">
 						<?php else: ?>
 							<img src="../images/defaultPlaylist.webp" class="img-fluid rounded shadow"
 								 alt="Default Playlist Cover"
@@ -98,12 +99,12 @@ $songQueueData = array_map(function ($song) use ($playlist) {
 			<div class="container" style="max-width: 800px; margin-top: 50px;">
 				<?php
 				$songListOptions = [
-						'layout' => 'list',
-						'showIndex' => true,
-						'showDuration' => true,
-						'showArtistLinks' => false,
-						'containerClass' => 'col-12',
-						'emptyMessage' => 'No songs available in this playlist.'
+					'layout' => 'list',
+					'showIndex' => true,
+					'showDuration' => true,
+					'showArtistLinks' => false,
+					'containerClass' => 'col-12',
+					'emptyMessage' => 'No songs available in this playlist.'
 				];
 
 				$songs = $playlistSongs;

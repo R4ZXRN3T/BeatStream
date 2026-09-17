@@ -71,9 +71,9 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 			<div class="container mt-4">
 				<?php
 				$options = [
-						'containerClass' => 'col-md-4 mb',
-						'showCreator' => true,
-						'emptyMessage' => 'No playlists available at the moment.'
+					'containerClass' => 'col-md-4 mb',
+					'showCreator' => true,
+					'emptyMessage' => 'No playlists available at the moment.'
 				];
 				include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 				?>

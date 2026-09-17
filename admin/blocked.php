@@ -22,8 +22,8 @@ session_start();
 	<div class="row">
 		<!-- Sidebar -->
 		<?php
-			$activePage = 'admin';
-			include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
+		$activePage = 'admin';
+		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
 		?>
 		<!-- Main Content -->
 		<main class="main col-md ms-sm-auto px-0 py-0">

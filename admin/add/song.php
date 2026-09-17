@@ -122,18 +122,18 @@ require $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
 
 				if ($isValid) {
 					SongController::insertSong(new Song(
-							0,
-							$_POST["titleInput"],
-							[],
-							$_POST["artistInput"],
-							$_POST["genreInput"],
-							$_POST["releaseDateInput"],
-							$songLength,
-							$flacFilename,
-							$opusFilename,
-							$imageName,
-							$thumbnailName,
-							$originalImageName ?? ""
+						0,
+						$_POST["titleInput"],
+						[],
+						$_POST["artistInput"],
+						$_POST["genreInput"],
+						$_POST["releaseDateInput"],
+						$songLength,
+						$flacFilename,
+						$opusFilename,
+						$imageName,
+						$thumbnailName,
+						$originalImageName ?? ""
 					));
 				}
 			}

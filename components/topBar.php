@@ -44,12 +44,15 @@
 						<button class="btn d-flex align-items-center dropdown-toggle p-0 bg-transparent border-0"
 								type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 							<div class="text-end">
-								<div class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
-								<div class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
+								<div
+									class="fw-bold text-white"><?php echo htmlspecialchars($_SESSION['username']); ?></div>
+								<div
+									class="small text-white-50"><?php echo htmlspecialchars($_SESSION['email']); ?></div>
 							</div>
-							<img src="<?php echo $_SESSION['imageName'] ? "{$GLOBALS['PROJECT_ROOT']}/images/user/thumbnail/" . $_SESSION['imageName'] : "{$GLOBALS['PROJECT_ROOT']}/images/defaultUser.webp"; ?>"
-								 alt="Profile" class="rounded-circle me-2"
-								 style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
+							<img
+								src="<?php echo $_SESSION['imageName'] ? "{$GLOBALS['PROJECT_ROOT']}/images/user/thumbnail/" . $_SESSION['imageName'] : "{$GLOBALS['PROJECT_ROOT']}/images/defaultUser.webp"; ?>"
+								alt="Profile" class="rounded-circle me-2"
+								style="width:40px; height:40px; object-fit:cover; margin-left: 15px; margin-right: 15px;">
 						</button>
 						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
 							<li><a class="dropdown-item" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/account/profile.php">View

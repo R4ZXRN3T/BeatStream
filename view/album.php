@@ -27,14 +27,14 @@ $albumSongs = SongController::getAlbumSongs($albumId);
 // Prepare song queue data for player
 $songQueueData = array_map(function ($song) use ($album) {
 	return [
-			'songID' => $song->getSongID(),
-			'title' => $song->getTitle(),
-			'artists' => implode(", ", $song->getArtists()),
-			'artistIDs' => $song->getArtistIDs(),
-			'flacFilename' => $song->getFlacFileName(),
-			'opusFilename' => $song->getOpusFileName(),
-			'imageName' => "../../album/large/" . $album->getImageName(),
-			'thumbnailName' => "../../album/thumbnail/" . $album->getThumbnailName()
+		'songID' => $song->getSongID(),
+		'title' => $song->getTitle(),
+		'artists' => implode(", ", $song->getArtists()),
+		'artistIDs' => $song->getArtistIDs(),
+		'flacFilename' => $song->getFlacFileName(),
+		'opusFilename' => $song->getOpusFileName(),
+		'imageName' => "../../album/large/" . $album->getImageName(),
+		'thumbnailName' => "../../album/thumbnail/" . $album->getThumbnailName()
 	];
 }, $albumSongs);
 ?>
@@ -66,10 +66,11 @@ $songQueueData = array_map(function ($song) use ($album) {
 				<div class="row">
 					<div class="col-md-4 text-center">
 						<?php if (!empty($album->getImageName())): ?>
-							<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/album/large/" . htmlspecialchars($album->getImageName()); ?>"
-								 class="img-fluid rounded shadow"
-								 alt="<?php echo htmlspecialchars($album->getName()); ?>"
-								 style="max-width: 300px;">
+							<img
+								src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/album/large/" . htmlspecialchars($album->getImageName()); ?>"
+								class="img-fluid rounded shadow"
+								alt="<?php echo htmlspecialchars($album->getName()); ?>"
+								style="max-width: 300px;">
 						<?php else: ?>
 							<img src="../images/defaultAlbum.webp" class="img-fluid rounded shadow"
 								 alt="Default Album Cover"
@@ -95,7 +96,8 @@ $songQueueData = array_map(function ($song) use ($album) {
 						<p><?php echo count($albumSongs); ?> songs ·
 							<?php echo $album->getFormattedDuration(); ?>
 						</p>
-						<button class="btn btn-primary" id="downloadAlbumBtn" data-album-id="<?= $albumId ?>">Download Album
+						<button class="btn btn-primary" id="downloadAlbumBtn" data-album-id="<?= $albumId ?>">Download
+							Album
 						</button>
 						<button class="btn btn-secondary" id="cancelDownloadAlbumBtn">Cancel
 						</button>
@@ -117,13 +119,13 @@ $songQueueData = array_map(function ($song) use ($album) {
 			<div class="container" style="max-width: 800px; margin-top: 50px;">
 				<?php
 				$songListOptions = [
-						'layout' => 'list',
-						'showIndex' => false,
-						'showDuration' => true,
-						'showArtistLinks' => true,
-						'containerClass' => 'col-12',
-						'emptyMessage' => 'No songs available in this album.',
-						'albumView' => true
+					'layout' => 'list',
+					'showIndex' => false,
+					'showDuration' => true,
+					'showArtistLinks' => true,
+					'containerClass' => 'col-12',
+					'emptyMessage' => 'No songs available in this album.',
+					'albumView' => true
 				];
 
 				$songs = $albumSongs;

@@ -22,14 +22,14 @@ $songList = SongController::getSongList($sortBy);
 
 $songQueueData = array_map(function ($song) {
 	return [
-			'songID' => $song->getSongID(),
-			'title' => $song->getTitle(),
-			'artists' => implode(", ", $song->getArtists()),
-			'artistIDs' => $song->getArtistIDs(),
-			'flacFilename' => $song->getFlacFileName(),
-			'opusFilename' => $song->getOpusFileName(),
-			'imageName' => $song->getImageName(),
-			'thumbnailName' => $song->getThumbnailName(),
+		'songID' => $song->getSongID(),
+		'title' => $song->getTitle(),
+		'artists' => implode(", ", $song->getArtists()),
+		'artistIDs' => $song->getArtistIDs(),
+		'flacFilename' => $song->getFlacFileName(),
+		'opusFilename' => $song->getOpusFileName(),
+		'imageName' => $song->getImageName(),
+		'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $songList);
 include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
@@ -85,12 +85,12 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php");
 			<div class="container mt-4">
 				<?php
 				$songListOptions = [
-						'layout' => 'grid',
-						'showIndex' => false,
-						'showDuration' => true,
-						'showArtistLinks' => true,
-						'containerClass' => 'col-md-4 mb',
-						'emptyMessage' => 'No songs available at the moment.'
+					'layout' => 'grid',
+					'showIndex' => false,
+					'showDuration' => true,
+					'showArtistLinks' => true,
+					'containerClass' => 'col-md-4 mb',
+					'emptyMessage' => 'No songs available at the moment.'
 				];
 
 				$songs = $songList;

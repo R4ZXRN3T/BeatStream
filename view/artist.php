@@ -41,14 +41,14 @@ foreach ($artistAlbums as $album) {
 
 $songQueueData = array_map(function ($song) {
 	return [
-			'songID' => $song->getSongID(),
-			'title' => $song->getTitle(),
-			'artists' => implode(", ", $song->getArtists()),
-			'artistIDs' => $song->getArtistIDs(),
-			'flacFilename' => $song->getFlacFileName(),
-			'opusFilename' => $song->getOpusFileName(),
-			'imageName' => $song->getImageName(),
-			'thumbnailName' => $song->getThumbnailName(),
+		'songID' => $song->getSongID(),
+		'title' => $song->getTitle(),
+		'artists' => implode(", ", $song->getArtists()),
+		'artistIDs' => $song->getArtistIDs(),
+		'flacFilename' => $song->getFlacFileName(),
+		'opusFilename' => $song->getOpusFileName(),
+		'imageName' => $song->getImageName(),
+		'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $artistSongs);
 ?>
@@ -76,13 +76,14 @@ $songQueueData = array_map(function ($song) {
 		<main class="main col-md ms-sm-auto px-0 py-0 justify-content-center">
 			<div class="container-fluid py-3">
 				<!-- Artist Header -->
-				<div class="artist-header">
+				<div class="artist-header container mb-5">
 					<div class="container">
 						<div class="row align-items-center">
 							<div class="col-md-4 text-center">
-								<img src="<?php echo $artist->getImageName() ? '../images/artist/large/' . $artist->getImageName() : '../images/defaultArtist.webp'; ?>"
-									 alt="<?php echo $artist->getName(); ?>"
-									 class="artist-image mb-3">
+								<img
+									src="<?php echo $artist->getImageName() ? '../images/artist/large/' . $artist->getImageName() : '../images/defaultArtist.webp'; ?>"
+									alt="<?php echo $artist->getName(); ?>"
+									class="artist-image mb-3">
 							</div>
 							<div class="col-md-8">
 								<h1><?php echo $artist->getName(); ?></h1>
@@ -100,12 +101,12 @@ $songQueueData = array_map(function ($song) {
 					<h2 class="mb-4">Songs</h2>
 					<?php
 					$songListOptions = [
-							'layout' => 'grid',
-							'showIndex' => false,
-							'showDuration' => true,
-							'showArtistLinks' => true,
-							'containerClass' => 'col-md-4 mb-2',
-							'emptyMessage' => 'No songs available for this artist.'
+						'layout' => 'grid',
+						'showIndex' => false,
+						'showDuration' => true,
+						'showArtistLinks' => true,
+						'containerClass' => 'col-md-4 mb-2',
+						'emptyMessage' => 'No songs available for this artist.'
 					];
 
 					$songs = $artistSongs;
@@ -122,8 +123,8 @@ $songQueueData = array_map(function ($song) {
 							<?php foreach ($albums as $album): ?>
 								<?php
 								$options = [
-										'containerClass' => 'col-md-3 mb-3',
-										'large' => true
+									'containerClass' => 'col-md-3 mb-3',
+									'large' => true
 								];
 								include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-card.php");
 								?>
@@ -139,9 +140,9 @@ $songQueueData = array_map(function ($song) {
 						<h2 class="mb-4">Singles</h2>
 						<?php
 						$options = [
-								'containerClass' => 'col-md-4 mb-2',
-								'compact' => true,
-								'emptyMessage' => 'No singles available for this artist.'
+							'containerClass' => 'col-md-4 mb-2',
+							'compact' => true,
+							'emptyMessage' => 'No singles available for this artist.'
 						];
 						$albumList = $singles;
 						include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
@@ -159,4 +160,3 @@ $songQueueData = array_map(function ($song) {
 <script src="<?= $GLOBALS['PROJECT_ROOT'] ?>/addMenuContent.js"></script>
 </body>
 </html>
-

@@ -21,12 +21,12 @@ $albumView = $options['albumView'] ?? false;
 		<?php foreach ($songs as $index => $song): ?>
 			<?php
 			$options = [
-					'showIndex' => $showIndex,
-					'showDuration' => $showDuration,
-					'showArtistLinks' => $showArtistLinks,
-					'index' => $index,
-					'containerClass' => $containerClass,
-					'albumView' => $albumView
+				'showIndex' => $showIndex,
+				'showDuration' => $showDuration,
+				'showArtistLinks' => $showArtistLinks,
+				'index' => $index,
+				'containerClass' => $containerClass,
+				'albumView' => $albumView
 			];
 			// Pass required variables to song-card.php
 			include('song-card.php');

@@ -84,7 +84,7 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 			$imageName = '';
 			$thumbnailName = '';
 
-			if (!(!empty($_POST["nameInput"]) && !empty($_POST["activeSinceInput"]) && !empty($_POST["userIDInput"]))) {
+			if (!(!empty($_POST["nameInput"]) && !empty($_POST["userIDInput"]))) {
 				$isValid = false;
 			}
 
@@ -103,12 +103,12 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 			if ($isValid) {
 				ArtistController::insertArtist(new Artist(
-						12345,
-						$_POST["nameInput"],
-						$imageName,
-						$thumbnailName,
-						$_POST["activeSinceInput"],
-						$_POST["userIDInput"]
+					12345,
+					$_POST["nameInput"],
+					$imageName,
+					$thumbnailName,
+					"",
+					$_POST["userIDInput"]
 				));
 				?>
 				<div class="alert alert-success">
@@ -133,16 +133,12 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*">
 					</div>
 					<div class="form-group">
-						<label for="activeSince">active since:</label>
-						<input type="date" id="activeSince" name="activeSinceInput" class="form-control"
-							   placeholder="Enter creation date" required>
-					</div>
-					<div class="form-group">
 						<label for="userID">User:</label>
 						<select name="userIDInput" id="userID" class="form-control" required>
 							<option value="">--Please Select--</option>
 							<?php foreach ($userList as $user): ?>
-								<option value="<?php echo $user->getUserID(); ?>"><?php echo $user->getUsername(); ?></option>
+								<option
+									value="<?php echo $user->getUserID(); ?>"><?php echo $user->getUsername(); ?></option>
 							<?php endforeach; ?>
 						</select>
 					</div>
@@ -158,4 +154,3 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 </body>
 
 </html>
-

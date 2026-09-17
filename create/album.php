@@ -80,18 +80,18 @@ if (isset($_POST['albumName']) && isset($_POST['songInput']) && isset($_POST['ar
 	$isSingle = isset($_POST['isSingleInput']);
 
 	AlbumController::insertAlbum(new Album(
-			0,
-			$_POST['albumName'],
-			$_POST['songInput'],
-			$artistNames,
-			$selectedArtistIDs,
-			$imageName,
-			$thumbnailName,
-			count($_POST['songInput']),
-			$totalMilliSeconds,
-			$releaseDate,
-			$isSingle,
-			$originalImageName ?? ""
+		0,
+		$_POST['albumName'],
+		$_POST['songInput'],
+		$artistNames,
+		$selectedArtistIDs,
+		$imageName,
+		$thumbnailName,
+		count($_POST['songInput']),
+		$totalMilliSeconds,
+		$releaseDate,
+		$isSingle,
+		$originalImageName ?? ""
 	));
 	echo "<div class='alert alert-success'>Album created successfully!</div>";
 }
@@ -234,4 +234,3 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

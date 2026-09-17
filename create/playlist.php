@@ -40,8 +40,8 @@ if ($isValid) {
 	if (isset($_POST['songInput']) && is_array($_POST['songInput'])) {
 		// Keep only positive integers, drop empty/invalid values
 		$songIDs = array_values(array_filter(
-				array_map('intval', $_POST['songInput']),
-				fn(int $id) => $id > 0
+			array_map('intval', $_POST['songInput']),
+			fn(int $id) => $id > 0
 		));
 	}
 
@@ -56,15 +56,15 @@ if ($isValid) {
 
 	// Insert playlist (works with zero songs)
 	PlaylistController::insertPlaylist(new Playlist(
-			0,
-			$_POST['playlistName'],
-			$songIDs,
-			$totalDuration,
-			count($songIDs),
-			$imageName,
-			$thumbnailName,
-			$_SESSION['userID'],
-			""
+		0,
+		$_POST['playlistName'],
+		$songIDs,
+		$totalDuration,
+		count($songIDs),
+		$imageName,
+		$thumbnailName,
+		$_SESSION['userID'],
+		""
 	));
 }
 
@@ -74,8 +74,8 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 	<div class="row">
 		<!-- Sidebar -->
 		<?php
-			$activePage = 'create';
-			include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
+		$activePage = 'create';
+		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
 		?>
 
 		<!-- Main Content -->

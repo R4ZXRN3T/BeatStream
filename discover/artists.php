@@ -78,10 +78,11 @@ include $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
 									<div class="card shadow-sm border-0" style="border-radius: 10px;">
 										<div class="card-body d-flex align-items-center p-3">
 											<?php if (!empty($artist->getImageName())): ?>
-												<img src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
-													 class="me-3 rounded"
-													 alt="<?php echo htmlspecialchars($artist->getName()); ?>"
-													 style="width: 60px; height: 60px; object-fit: cover;">
+												<img
+													src="<?php echo "{$GLOBALS['PROJECT_ROOT']}/images/artist/thumbnail/" . htmlspecialchars($artist->getThumbnailName()); ?>"
+													class="me-3 rounded"
+													alt="<?php echo htmlspecialchars($artist->getName()); ?>"
+													style="width: 60px; height: 60px; object-fit: cover;">
 											<?php else: ?>
 												<img src="../images/defaultArtist.webp" class="me-3 rounded"
 													 alt="Default Artist image"

@@ -39,18 +39,18 @@ foreach ($userList as $user) {
 
 $recommendedSongs = SongController::getRandomSongs();
 $recommendedAlbums = AlbumController::getRandomAlbums();
-$recommendedPlaylists = PlaylistController::getPlaylistList();
+$recommendedPlaylists = PlaylistController::getRandomPlaylists();
 
 $songQueueData = array_map(function ($song) {
 	return [
-			'songID' => $song->getSongID(),
-			'title' => $song->getTitle(),
-			'artists' => implode(", ", $song->getArtists()),
-			'artistIDs' => $song->getArtistIDs(),
-			'flacFilename' => $song->getFlacFileName(),
-			'opusFilename' => $song->getOpusFileName(),
-			'imageName' => $song->getImageName(),
-			'thumbnailName' => $song->getThumbnailName(),
+		'songID' => $song->getSongID(),
+		'title' => $song->getTitle(),
+		'artists' => implode(", ", $song->getArtists()),
+		'artistIDs' => $song->getArtistIDs(),
+		'flacFilename' => $song->getFlacFileName(),
+		'opusFilename' => $song->getOpusFileName(),
+		'imageName' => $song->getImageName(),
+		'thumbnailName' => $song->getThumbnailName(),
 	];
 }, $recommendedSongs);
 
@@ -100,12 +100,12 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 							<h2 class="text-start mb-4 recommended-header">Recommended Songs:</h2>
 							<?php
 							$songListOptions = [
-									'layout' => 'grid',
-									'showIndex' => false,
-									'showDuration' => true,
-									'showArtistLinks' => true,
-									'containerClass' => 'col-12 col-md-6',
-									'emptyMessage' => 'No recommended songs available.'
+								'layout' => 'grid',
+								'showIndex' => false,
+								'showDuration' => true,
+								'showArtistLinks' => true,
+								'containerClass' => 'col-12 col-md-6',
+								'emptyMessage' => 'No recommended songs available.'
 							];
 
 							$songs = $recommendedSongs;
@@ -122,9 +122,9 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 							<?php
 							$albumList = $recommendedAlbums;
 							$options = [
-									'containerClass' => 'col-12',
-									'emptyMessage' => 'No recommended albums available.',
-									'compact' => false
+								'containerClass' => 'col-12',
+								'emptyMessage' => 'No recommended albums available.',
+								'compact' => false
 							];
 							include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/album-list.php");
 							?>
@@ -135,10 +135,10 @@ include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
 							<?php
 							$playlistList = $recommendedPlaylists;
 							$options = [
-									'containerClass' => 'col-12',
-									'showCreator' => true,
-									'emptyMessage' => 'No recommended playlists available.',
-									'compact' => false,
+								'containerClass' => 'col-12',
+								'showCreator' => true,
+								'emptyMessage' => 'No recommended playlists available.',
+								'compact' => false,
 							];
 							include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 							?>

@@ -44,7 +44,7 @@ $successMessage = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"][0]) && !empty($_POST["genreInput"]) &&
-			!empty($_POST["releaseDateInput"]) && !empty($_FILES["fileInput"]))) {
+		!empty($_POST["releaseDateInput"]) && !empty($_FILES["fileInput"]))) {
 		$isValid = false;
 		$errorMessage = "Please fill all required fields";
 	}
@@ -92,18 +92,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if ($isValid) {
 		try {
 			SongController::insertSong(new Song(
-					0,
-					$_POST["titleInput"],
-					[],
-					$_POST["artistInput"],
-					$_POST["genreInput"],
-					$_POST["releaseDateInput"],
-					$duration,
-					$flacFileName,
-					$opusFileName,
-					$imageName,
-					$thumbnailName,
-					$originalImageName ?? ""
+				0,
+				$_POST["titleInput"],
+				[],
+				$_POST["artistInput"],
+				$_POST["genreInput"],
+				$_POST["releaseDateInput"],
+				$duration,
+				$flacFileName,
+				$opusFileName,
+				$imageName,
+				$thumbnailName,
+				$originalImageName ?? ""
 			));
 			$successMessage = "Song uploaded successfully!";
 		} catch (Exception $e) {
@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 								<select name="artistInput[]" class="form-control me-2" required>
 									<?php foreach ($artistList as $artist): ?>
 										<option value="<?php echo htmlspecialchars($artist->getArtistID()); ?>"
-												<?php echo ($currentArtist && $artist->getArtistID() == $currentArtist['artistID']) ? 'selected' : ''; ?>>
+											<?php echo ($currentArtist && $artist->getArtistID() == $currentArtist['artistID']) ? 'selected' : ''; ?>>
 											<?php echo htmlspecialchars($artist->getName()); ?>
 										</option>
 									<?php endforeach; ?>

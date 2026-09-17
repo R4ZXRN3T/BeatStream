@@ -114,15 +114,15 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				}
 
 				PlaylistController::insertPlaylist(new Playlist(
-						0,
-						$_POST["nameInput"],
-						$_POST["songInput"],
-						$totalMilliSeconds,
-						count($_POST['songInput']),
-						$imageName,
-						$thumbnailName,
-						$_POST["creatorInput"],
-						UserController::getUserById($_POST["creatorInput"])->getUsername()
+					0,
+					$_POST["nameInput"],
+					$_POST["songInput"],
+					$totalMilliSeconds,
+					count($_POST['songInput']),
+					$imageName,
+					$thumbnailName,
+					$_POST["creatorInput"],
+					UserController::getUserById($_POST["creatorInput"])->getUsername()
 				));
 
 			}
@@ -174,7 +174,8 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 									<?php
 									for ($i = 0; $i < count($userList); $i++) {
 										?>
-										<option value="<?php echo $userList[$i]->getUserID() ?>"><?php echo $userList[$i]->getUsername() ?></option>
+										<option
+											value="<?php echo $userList[$i]->getUserID() ?>"><?php echo $userList[$i]->getUsername() ?></option>
 										<?php
 									}
 									?>

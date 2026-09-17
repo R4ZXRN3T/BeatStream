@@ -125,18 +125,18 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 
 				try {
 					AlbumController::insertAlbum(new Album(
-							0,
-							$_POST["nameInput"],
-							$_POST["songInput"],
-							$artistNames,
-							$_POST["artistInput"],
-							$imageName,
-							$thumbnailName,
-							$albumLength,
-							$totalMilliSeconds,
-							$releaseDate,
-							$isSingle,
-							$originalImageName ?? ""
+						0,
+						$_POST["nameInput"],
+						$_POST["songInput"],
+						$artistNames,
+						$_POST["artistInput"],
+						$imageName,
+						$thumbnailName,
+						$albumLength,
+						$totalMilliSeconds,
+						$releaseDate,
+						$isSingle,
+						$originalImageName ?? ""
 					));
 					$successMessage = "Album successfully added!";
 				} catch (Exception $e) {
