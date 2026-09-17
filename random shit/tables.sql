@@ -127,8 +127,10 @@ CREATE TABLE api_key
 CREATE TABLE image
 (
 	imageID           INT PRIMARY KEY,
-	imageType         ENUM ('album', 'artist', 'playlist', 'song', 'user') NOT NULL,
+	pHash             VARCHAR(255) NOT NULL,
+	sha256Hash        VARCHAR(255) NOT NULL,
 	largeName         VARCHAR(255),
 	thumbnailName     VARCHAR(255),
-	originalImageName VARCHAR(255)
+	originalImageName VARCHAR(255),
+	jpegImageName     VARCHAR(255)
 );
