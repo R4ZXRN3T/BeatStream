@@ -71,6 +71,25 @@ class ApiController
 		return $deletedRows > 0;
 	}
 
+	public static function apiKeyBelongsToUser(string $apiKey, int $userID): bool
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT 1 FROM api_key WHERE apiKey = ? AND userID = ?");
+		if (!$stmt) {
+			throw new RuntimeException("Prepare failed: " . DBConn::getConn()->error);
+		}
+
+		$stmt->bind_param("si", $apiKey, $userID);
+		if (!$stmt->execute()) {
+			throw new RuntimeException("Execute failed: " . $stmt->error);
+		}
+
+		$result = $stmt->get_result();
+		$exists = $result->num_rows > 0;
+		$stmt->close();
+
+		return $exists;
+	}
+
 	public static function deleteUserApiKeys(int $userID): bool
 	{
 		$conn = DBConn::getConn();

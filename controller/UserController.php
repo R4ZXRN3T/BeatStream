@@ -150,4 +150,21 @@ class UserController
 
 		return $user;
 	}
+
+	public static function getUserArtistID(int $userID): ?int
+	{
+		$stmt = DBConn::getConn()->prepare("SELECT artistID FROM artist WHERE userID = ? LIMIT 1");
+		$stmt->bind_param("i", $userID);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$artistID = null;
+		if ($row = $result->fetch_assoc()) {
+			$artistID = $row["artistID"];
+		}
+
+		$stmt->close();
+
+		return $artistID;
+	}
 }

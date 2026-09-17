@@ -13,4 +13,14 @@ class Utils
 		for ($i = 0; $i < $iterations; $i++) $password = hash("sha256", $password . $salt);
 		return $password;
 	}
+
+	public static function comparePHashes(string $hash1, string $hash2): bool
+	{
+		if (strlen($hash1) !== strlen($hash2)) return false;
+		$result = 0;
+		for ($i = 0; $i < strlen($hash1); $i++) {
+			$result |= ord($hash1[$i]) ^ ord($hash2[$i]);
+		}
+		return $result === 0;
+	}
 }
