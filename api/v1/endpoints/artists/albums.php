@@ -18,6 +18,7 @@ try {
 	$albumList = AlbumController::getArtistAlbums($artistID);
 	$jsonReady = array_map(fn(Album $a) => $a->json_encode(), $albumList);
 	echo json_encode($jsonReady);
+	http_response_code(200);
 } catch (Exception $e) {
 	http_response_code(500);
 	echo json_encode(["error" => "Failed to retrieve albums for artist: " . $e->getMessage()]);
