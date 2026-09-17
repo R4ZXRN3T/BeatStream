@@ -402,6 +402,7 @@ tr:nth-child(even) {
 	background-color: #ffffff;
 	margin-bottom: 2rem;
 	padding: 2rem 0;
+	border-radius: 15px;
 }
 
 .artist-image {
@@ -664,7 +665,7 @@ body.dark-mode .song-artist {
 
 /* --- Artist --- */
 body.dark-mode .artist-header {
-	background-color: #23272b;
+	background-color: #23272b8c;
 }
 
 /* --- Forms --- */
