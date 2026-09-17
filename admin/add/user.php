@@ -104,15 +104,16 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 				if ($isValid) {
 					$isAdmin = isset($_POST["isAdminInput"]);
 					UserController::insertUser(new User(
-							0,
-							$_POST["usernameInput"],
-							$_POST["emailInput"],
-							$_POST["userPasswordInput"],
-							"",
-							$isAdmin, // Use the correctly processed boolean value
-							FALSE,
-							$imageName,
-							$thumbnailName
+						0,
+						$_POST["usernameInput"],
+						$_POST["emailInput"],
+						$_POST["userPasswordInput"],
+						"",
+						false,
+						$isAdmin, // Use the correctly processed boolean value
+						FALSE,
+						$imageName,
+						$thumbnailName
 					));
 				} else {
 					echo "<h1 class='text-center mt-4 text-danger'>Error uploading file!</h1>";
