@@ -1,4 +1,55 @@
 <script>
+	/* Blurred background from currently playing song cover
+	   - Uses a CSS variable --player-bg applied to body::before
+	   - Toggle the `player-bg` class on <body> to show/hide the blur
+	*/
+	(function () {
+		const style = document.createElement('style');
+		style.textContent = `
+			/* base hidden state */
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				background-repeat: no-repeat;
+				background-position: center;
+				background-size: cover;
+				filter: blur(32px) brightness(.45) saturate(.95);
+				transform: scale(1.06);
+				transition: opacity .45s ease, filter .45s ease;
+				opacity: 0;
+				z-index: -1;
+				pointer-events: none;
+			}
+			/* subtle dark overlay so text stays legible */
+			body::after {
+				content: "";
+				position: fixed;
+				inset: 0;
+				background: rgba(0,0,0,0.25);
+				transition: opacity .45s ease;
+				opacity: 0;
+				z-index: -1;
+				pointer-events: none;
+			}
+			/* when enabled, body uses the CSS var --player-bg as the image */
+			body.player-bg::before {
+				background-image: var(--player-bg, none);
+				opacity: 1;
+			}
+			body.player-bg::after { opacity: 1; }
+
+			/* Light-mode variant: brighter, subtle white overlay */
+			body.player-bg.player-bg--light::before {
+				filter: blur(32px) brightness(1.15) saturate(1.05);
+			}
+			body.player-bg.player-bg--light::after {
+				background: rgba(255,255,255,0.12);
+			}
+		`;
+		document.head.appendChild(style);
+	})();
+
 	// Function to highlight the currently playing song
 	function updateCurrentlyPlaying(songId) {
 		// Remove highlight from all cards
@@ -53,11 +104,11 @@
 						<!-- Main playback controls -->
 						<div class="controls d-flex align-items-center justify-content-center">
 							<button id="prevBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
-										class="bi bi-skip-backward-fill"></i></button>
+									class="bi bi-skip-backward-fill"></i></button>
 							<button id="playPauseBtn" class="btn btn-sm btn-primary rounded-circle mx-2"><i
-										class="bi bi-play-fill"></i></button>
+									class="bi bi-play-fill"></i></button>
 							<button id="nextBtn" class="btn btn-sm btn-outline-light rounded-circle mx-2"><i
-										class="bi bi-skip-forward-fill"></i></button>
+									class="bi bi-skip-forward-fill"></i></button>
 						</div>
 					</div>
 
@@ -136,6 +187,8 @@
 				this.prevBtn = document.getElementById('prevBtn');
 				this.nextBtn = document.getElementById('nextBtn');
 				this.killPlayerBtn = document.getElementById('killPlayerBtn');
+				this.bgModeBtn = document.getElementById('bgModeBtn');
+				this.bgModeIcon = document.getElementById('bgModeIcon');
 				this.queueBtn = document.getElementById('queueBtn');
 				this.queuePanel = document.getElementById('queuePanel');
 				this.queueList = document.getElementById('queueList');
@@ -159,9 +212,9 @@
 
 				// Throttle / save control
 				this._lastQueueSave = 0;
-				this._queueSaveIntervalMs = 20_000; // 20 seconds
+				this._queueSaveIntervalMs = 20_000;
 				this._lastDurationSave = 0;
-				this._durationSaveIntervalMs = 1000; // 1 second
+				this._durationSaveIntervalMs = 250;
 				localStorage.setItem('volume', JSON.stringify(1.0));
 
 				this.init();
@@ -171,6 +224,13 @@
 				this.audio.volume = this.volumeControl.value / 100;
 				this.playerUI.classList.add('d-none');
 				this.setupEventListeners();
+				// restore background mode preference first so icon reflects state
+				try {
+					this.bgMode = localStorage.getItem('playerBgMode') || 'dark';
+					if (this.bgMode === 'light') document.body.classList.add('player-bg--light');
+					if (this.bgModeIcon) this.bgModeIcon.className = (this.bgMode === 'light') ? 'bi bi-sun' : 'bi bi-moon-stars';
+				} catch (err) {
+				}
 				this.restoreState();
 			}
 
@@ -225,6 +285,7 @@
 				});
 				this.volumeIcon.addEventListener('click', () => this.toggleMute());
 				this.killPlayerBtn.addEventListener('click', () => this.killPlayer());
+				if (this.bgModeBtn) this.bgModeBtn.addEventListener('click', () => this.toggleBackgroundMode());
 
 				// Event delegation for song cards - handles dynamic content
 				document.addEventListener('click', (e) => {
@@ -267,6 +328,26 @@
 				// Save on unload to keep state consistent
 				window.addEventListener('beforeunload', () => this.saveQueue());
 				window.addEventListener('beforeunload', () => this.saveDuration());
+			}
+
+			setBackgroundMode(mode) {
+				try {
+					this.bgMode = mode === 'light' ? 'light' : 'dark';
+					localStorage.setItem('playerBgMode', this.bgMode);
+					if (this.bgMode === 'light') {
+						document.body.classList.add('player-bg--light');
+						if (this.bgModeIcon) this.bgModeIcon.className = 'bi bi-sun';
+					} else {
+						document.body.classList.remove('player-bg--light');
+						if (this.bgModeIcon) this.bgModeIcon.className = 'bi bi-moon-stars';
+					}
+				} catch (err) {
+					// ignore
+				}
+			}
+
+			toggleBackgroundMode() {
+				this.setBackgroundMode(this.bgMode === 'light' ? 'dark' : 'light');
 			}
 
 			saveQueue() {
@@ -352,6 +433,9 @@
 				this.playerCoverLarge.classList.add('d-none');
 				this.coverPanel.classList.add('d-none');
 				document.title = this.originalTitle;
+				// remove blurred background
+				document.body.classList.remove('player-bg');
+				document.body.style.removeProperty('--player-bg');
 				localStorage.removeItem('playerState');
 			}
 
@@ -421,6 +505,15 @@
 
 				this.playerCoverLarge.src = song.imageName ? `${this.largeImagePath}${song.imageName}` : `${this.basePath}/images/defaultSong.webp`;
 				this.playerCoverSmall.src = song.thumbnailName ? `${this.imageBasePath}${song.thumbnailName}` : `${this.basePath}/images/defaultSong.webp`;
+
+				// Update blurred page background to current song cover
+				try {
+					const bgUrl = song.imageName ? `${this.largeImagePath}${song.imageName}` : `${this.basePath}/images/defaultSong.webp`;
+					document.body.style.setProperty('--player-bg', `url("${bgUrl}")`);
+					document.body.classList.add('player-bg');
+				} catch (err) {
+					// ignore failures setting background
+				}
 
 				this.audio.play().catch(() => { /* ignore play errors */
 				});
@@ -555,6 +648,12 @@
 			updateQueueDisplay() {
 				this.queueList.innerHTML = '';
 				if (this.queue.length === 0) {
+					// clear blurred background if queue is empty
+					try {
+						document.body.classList.remove('player-bg');
+						document.body.style.removeProperty('--player-bg');
+					} catch (err) {
+					}
 					const emptyMessage = document.createElement('li');
 					emptyMessage.className = 'list-group-item bg-dark text-white';
 					emptyMessage.textContent = 'Queue is empty';
