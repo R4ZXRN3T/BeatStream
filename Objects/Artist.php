@@ -23,8 +23,6 @@ class Artist
 		$this->userID = $userID;
 	}
 
-	// getter methods
-
 	public function getArtistID(): int
 	{
 		return $this->artistID;
@@ -53,5 +51,17 @@ class Artist
 	public function getUserID(): int
 	{
 		return $this->userID;
+	}
+
+	public function json_encode(): array
+	{
+		return [
+			'artistID' => $this->artistID,
+			'name' => $this->name,
+			'imageName' => $this->imageName,
+			'thumbnailName' => $this->thumbnailName,
+			'activeSince' => $this->activeSince->format('Y-m-d'),
+			'userID' => $this->userID
+		];
 	}
 }

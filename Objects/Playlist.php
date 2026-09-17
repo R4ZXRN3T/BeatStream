@@ -25,7 +25,6 @@ class Playlist
 		$this->creatorName = $creatorName;
 	}
 
-	// Getter methods
 	public function getPlaylistID(): int
 	{
 		return $this->playlistID;
@@ -90,5 +89,20 @@ class Playlist
 		if (!in_array($songID, $this->songIDs)) {
 			$this->songIDs[] = $songID;
 		}
+	}
+
+	public function json_encode(): array
+	{
+		return [
+			'playlistID' => $this->playlistID,
+			'name' => $this->name,
+			'songIDs' => $this->songIDs,
+			'duration' => $this->duration,
+			'length' => $this->length,
+			'imageName' => $this->imageName,
+			'thumbnailName' => $this->thumbnailName,
+			'creatorID' => $this->creatorID,
+			'creatorName' => $this->creatorName
+		];
 	}
 }

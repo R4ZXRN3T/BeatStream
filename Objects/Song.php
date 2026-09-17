@@ -117,4 +117,22 @@ class Song
 	{
 		return $this->originalImageName;
 	}
+
+	public function json_encode(): array
+	{
+		return [
+			'songID' => $this->songID,
+			'title' => $this->title,
+			'artists' => $this->artists,
+			'artistIDs' => $this->artistIDs,
+			'genre' => $this->genre,
+			'releaseDate' => $this->releaseDate->format('Y-m-d'),
+			'songLength' => $this->songLength,
+			'flacFileName' => $this->flacFileName,
+			'opusFileName' => $this->opusFileName,
+			'imageName' => $this->imageName,
+			'thumbnailName' => $this->thumbnailName,
+			'originalImageName' => $this->originalImageName
+		];
+	}
 }
