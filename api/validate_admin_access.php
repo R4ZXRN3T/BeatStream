@@ -2,6 +2,8 @@
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/ApiController.php';
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/UserController.php';
 
+$redirect = $redirect ?? null;
+
 $authorized = false;
 $adminAccess = false;
 $apiKey = $_POST["api_key"];
@@ -12,6 +14,7 @@ if ($apiKey != NULL) {
 		$authorized = false;
 		http_response_code(401);
 		echo json_encode(["error" => $apiKeyStatus["status"]]);
+		if ($redirect != null) header("Location: $redirect");
 		exit();
 	} else {
 		$authorized = true;
@@ -25,6 +28,7 @@ if (!$authorized) {
 	if ($userID === null) {
 		http_response_code(401);
 		echo json_encode(["error" => "User is not logged in"]);
+		if ($redirect != null) header("Location: $redirect");
 		exit();
 	} else {
 		$authorized = UserController::getUserById($userID)->isHasAccess();
@@ -35,11 +39,13 @@ if (!$authorized) {
 if (!$authorized) {
 	http_response_code(403);
 	echo json_encode(["error" => "User does not have access"]);
+	if ($redirect != null) header("Location: $redirect");
 	exit();
 }
 
 if (!$adminAccess) {
 	http_response_code(403);
 	echo json_encode(["error" => "User does not have admin access"]);
+	if ($redirect != null) header("Location: $redirect");
 	exit();
 }

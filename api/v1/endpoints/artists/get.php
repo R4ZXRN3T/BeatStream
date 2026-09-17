@@ -23,6 +23,7 @@ try {
 	}
 
 	echo json_encode($artist->json_encode());
+	http_response_code(200);
 } catch (Exception $e) {
 	http_response_code(500);
 	echo json_encode(["error" => "Failed to retrieve albums for artist: " . $e->getMessage()]);
