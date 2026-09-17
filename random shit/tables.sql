@@ -32,6 +32,7 @@ CREATE TABLE user
 	email         VARCHAR(255) NOT NULL UNIQUE,
 	userPassword  VARCHAR(255) NOT NULL,
 	salt          VARCHAR(255) NOT NULL,
+	hasAccess     BOOLEAN      NOT NULL DEFAULT FALSE,
 	isAdmin       BOOLEAN      NOT NULL DEFAULT FALSE,
 	isArtist      BOOLEAN      NOT NULL DEFAULT FALSE,
 	imageName     VARCHAR(255),
@@ -111,4 +112,23 @@ CREATE TABLE in_playlist
 	FOREIGN KEY (playlistID) REFERENCES playlist (playlistID),
 
 	CONSTRAINT inPlaylistKey PRIMARY KEY (songID, playlistID)
+);
+
+CREATE TABLE api_key
+(
+	apiKey         VARCHAR(255) PRIMARY KEY,
+	userID         INT,
+	FOREIGN KEY (userID) REFERENCES user (userID),
+	canExpire      BOOLEAN   DEFAULT FALSE,
+	expirationDate TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 30 DAY),
+	adminAccess    BOOLEAN   DEFAULT FALSE
+);
+
+CREATE TABLE image
+(
+	imageID           INT PRIMARY KEY,
+	imageType         ENUM ('album', 'artist', 'playlist', 'song', 'user') NOT NULL,
+	largeName         VARCHAR(255),
+	thumbnailName     VARCHAR(255),
+	originalImageName VARCHAR(255)
 );
