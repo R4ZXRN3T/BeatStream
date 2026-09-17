@@ -44,26 +44,19 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
-		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
-			<div class="nav flex-column py-4">
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/" class="nav-link mb-2">Home</a>
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/search/" class="nav-link mb-2">Search</a>
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/discover/" class="nav-link mb-2">Discover</a>
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
-				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
-				<?php endif; ?>
-			</div>
-		</nav>
+		<?php
+		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
+		?>
 		<main class="main col-md" style="min-height: 80vh; margin-left: 150px; padding: 2rem;">
 			<div class="container mt-5">
 				<div class="row">
 					<!-- Profile Info -->
 					<div class="col-md-4">
 						<div class="card">
-							<img src="<?= htmlspecialchars("{$GLOBALS['PROJECT_ROOT']}/images/user/large/" . ($user->getImageName() ?: 'defaultUser.webp')) ?>"
-								 class="card-img-top" alt="Profile Image"
-								 style="object-fit: cover; height: 300px; width: 100%;">
+							<img
+								src="<?= htmlspecialchars("{$GLOBALS['PROJECT_ROOT']}/images/user/large/" . ($user->getImageName() ?: 'defaultUser.webp')) ?>"
+								class="card-img-top" alt="Profile Image"
+								style="object-fit: cover; height: 300px; width: 100%;">
 							<div class="card-body">
 								<h4 class="card-title"><?= htmlspecialchars($user->getUsername()) ?></h4>
 								<p class="card-text"><?= htmlspecialchars($user->getEmail()) ?></p>
@@ -104,9 +97,9 @@ $favSongIDs = $_SESSION['favoriteSongs'] ?? [];
 						// Set up options for playlist list component
 						$playlistList = $userPlaylists;
 						$options = [
-								'containerClass' => 'col-md-6 col-lg-4',
-								'showCreator' => false, // Don't show creator since it's the user's own playlists
-								'emptyMessage' => 'No playlists created yet.'
+							'containerClass' => 'col-md-6 col-lg-4',
+							'showCreator' => false,
+							'emptyMessage' => 'No playlists created yet.'
 						];
 						include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/playlist-list.php");
 						?>

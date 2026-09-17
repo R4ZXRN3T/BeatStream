@@ -7,6 +7,57 @@ if (isset($_SESSION['account_loggedin'])) {
 }
 ?>
 
+<?php
+
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
+require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/Utils.php");
+
+$isValid = true;
+$credentialsCorrect = true;
+
+if (isset($_POST['submit'])) {
+	$email = $_POST['emailInput'] ?? '';
+	$password = $_POST['userPasswordInput'] ?? '';
+
+	if (empty($email) || empty($password)) {
+		$isValid = false;
+		return;
+	}
+
+	$mysqli = DBConn::getConn();
+
+	$stmt = $mysqli->prepare("SELECT userPassword, salt, username, userID,isAdmin, hasAccess, thumbnailName FROM user WHERE email = ?");
+	if (!$stmt) {
+		throw new RuntimeException('Prepare failed: ' . $mysqli->error);
+	}
+
+	$stmt->bind_param('s', $email);
+	$stmt->execute();
+
+	$user = $stmt->get_result()->fetch_assoc();
+	$stmt->close();
+
+	if ($user && Utils::hashPassword($password, $user['salt']) === $user['userPassword']) {
+		session_regenerate_id(true);
+
+		$_SESSION += [
+			'account_loggedin' => true,
+			'email' => $email,
+			'username' => $user['username'],
+			'userID' => $user['userID'],
+			'hasAccess' => (bool)$user['hasAccess'],
+			'isAdmin' => (bool)$user['isAdmin'],
+			'imageName' => $user['thumbnailName'],
+		];
+
+		header('Location: ' . $GLOBALS['PROJECT_ROOT'] . '/account/loginSuccess.php');
+		exit;
+	}
+
+	$credentialsCorrect = false;
+}
+?>
+
 <!Doctype html>
 <html lang="en">
 
@@ -24,18 +75,6 @@ if (isset($_SESSION['account_loggedin'])) {
 
 <div class="container-fluid">
 	<div class="row">
-		<!-- Sidebar -->
-		<nav class="col-md-2 d-none d-md-block bg-light sidebar py-4 fixed-top">
-			<div class="nav flex-column py-4">
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/" class="nav-link mb-2">Home</a>
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/search/" class="nav-link mb-2">Search</a>
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/discover/" class="nav-link mb-2">Discover</a>
-				<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/create/" class="nav-link mb-2">Create</a>
-				<?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
-					<a href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/" class="nav-link mb-2">Admin</a>
-				<?php endif; ?>
-			</div>
-		</nav>
 		<!-- Main Content -->
 		<main class="main col-md ms-sm-auto px-0 py-0">
 
@@ -47,44 +86,6 @@ if (isset($_SESSION['account_loggedin'])) {
 							up</a></li>
 				</ul>
 			</div>
-
-			<?php
-			require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php");
-			require_once($GLOBALS['PROJECT_ROOT_DIR'] . "/Utils.php");
-
-			$isValid = true;
-			$credentialsCorrect = true;
-
-			if (isset($_POST['submit'])) {
-				if (!empty($_POST["emailInput"]) && !empty($_POST["userPasswordInput"])) {
-					$stmt = DBConn::getConn()->prepare("SELECT userPassword, salt, username, userID, isAdmin, thumbnailName FROM user WHERE email = ?");
-					$stmt->bind_param("s", $_POST['emailInput']);
-					$stmt->execute();
-					$result = $stmt->get_result()->fetch_assoc();
-					if ($result) {
-						$hashedPassword = $result['userPassword'];
-						$salt = $result['salt'];
-						if (Utils::hashPassword($_POST['userPasswordInput'], $salt) == $hashedPassword) {
-							$_SESSION['account_loggedin'] = true;
-							$_SESSION['email'] = $_POST['emailInput'];
-							$_SESSION['username'] = $result['username'];
-							$_SESSION['userID'] = $result['userID'];
-							$_SESSION['isAdmin'] = $result['isAdmin'] == 1;
-							$_SESSION['imageName'] = $result['thumbnailName'];
-							header("Location: {$GLOBALS['PROJECT_ROOT']}/account/loginSuccess.php");
-							exit();
-						} else {
-							$credentialsCorrect = false;
-						}
-					} else {
-						$credentialsCorrect = false;
-					}
-					$stmt->close();
-				} else {
-					$isValid = false;
-				}
-			}
-			?>
 
 			<div class="container mt-5">
 				<h1>Log in</h1>
