@@ -127,7 +127,7 @@ class Router
 
 		if (!is_array($body)) {
 			$this->json(['error' => 'Invalid JSON body',], 400);
-			exit;
+			exit();
 		}
 
 		return $body;

@@ -10,7 +10,7 @@ $artistID = isset($_GET['id']) ? intval($_GET['id']) : 0;
 // If no ID provided, redirect to home
 if ($artistID <= 0) {
 	header("Location: ../album.php");
-	exit;
+	exit();
 }
 
 // Get artist details
@@ -19,7 +19,7 @@ $artist = ArtistController::getArtistByID($artistID);
 // If artist not found, redirect
 if (!$artist) {
 	header("Location: {$GLOBALS['PROJECT_ROOT']}/");
-	exit;
+	exit();
 }
 
 // Get all songs by this artist (filter by artistID)

@@ -8,7 +8,7 @@ $imageID = $params['id'] ?? null;
 if ($imageSize === null || $imageID === null) {
 	http_response_code(400);
 	echo json_encode(["error" => "Missing size or id parameter"]);
-	exit;
+	exit();
 }
 
 if ($imageSize === 'large' || $imageSize === 'thumbnail') {
@@ -22,7 +22,7 @@ $image = ImageController::getImage($imageID);
 if ($image === false) {
 	http_response_code(404);
 	echo json_encode(["error" => "Image not found"]);
-	exit;
+	exit();
 }
 
 $correctImage = $image[$imageSize] ?? null;
@@ -30,7 +30,7 @@ $correctImage = $image[$imageSize] ?? null;
 if ($correctImage === null) {
 	http_response_code(404);
 	echo json_encode(["error" => "Image not found"]);
-	exit;
+	exit();
 }
 
 echo json_encode($correctImage);

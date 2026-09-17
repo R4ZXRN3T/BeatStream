@@ -10,7 +10,7 @@ require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 $respond = function (int $code, array $data) {
 	http_response_code($code);
 	echo json_encode($data);
-	exit;
+	exit();
 };
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') $respond(405, ['error' => 'Method not allowed']);

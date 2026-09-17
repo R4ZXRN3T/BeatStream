@@ -4,7 +4,7 @@ session_start();
 // Check if playlist ID is provided
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 	header('Location: ../discover/playlists.php');
-	exit;
+	exit();
 }
 
 $playlistId = (int)$_GET['id'];
@@ -18,7 +18,7 @@ $playlist = PlaylistController::getPlaylistById($playlistId);
 // If playlist not found, redirect
 if ($playlist === null) {
 	header('Location: ../discover/playlists.php');
-	exit;
+	exit();
 }
 
 // Get songs in the playlist

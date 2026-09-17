@@ -51,7 +51,7 @@ if (isset($_POST['submit'])) {
 		];
 
 		header('Location: ' . $GLOBALS['PROJECT_ROOT'] . '/account/loginSuccess.php');
-		exit;
+		exit();
 	}
 
 	$credentialsCorrect = false;

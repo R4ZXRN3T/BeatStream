@@ -10,7 +10,7 @@ require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 $response = function (int $code, array $data) {
 	http_response_code($code);
 	echo json_encode($data);
-	exit;
+	exit();
 };
 
 if (!isset($_SESSION['account_loggedin']) || $_SESSION['account_loggedin'] !== true) $response(401, ['error' => 'Not authenticated']);
@@ -33,7 +33,7 @@ try {
 	}
 	$stmt->close();
 	echo json_encode($rows);
-	exit;
+	exit();
 } catch (Throwable $e) {
 	$response(500, ['error' => 'Server error']);
 }

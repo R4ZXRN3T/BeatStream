@@ -1,9 +1,7 @@
 <?php
-
+header('Content-Type: application/json');
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/PlaylistController.php';
-
-header('Content-Type: application/json');
 
 try {
 	$playlistID = $params['id'] ?? null;
@@ -13,14 +11,14 @@ try {
 		if ($playlistID === null) {
 			http_response_code(400);
 			echo json_encode(["error" => "Missing id parameter"]);
-			exit;
+			exit();
 		}
 	}
 	$playlist = PlaylistController::getPlaylistByID($playlistID);
 	if ($playlist === null) {
 		http_response_code(404);
 		echo json_encode(["error" => "Playlist not found"]);
-		exit;
+		exit();
 	}
 
 	echo json_encode($playlist->json_encode());

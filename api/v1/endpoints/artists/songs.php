@@ -1,15 +1,14 @@
 <?php
+header('Content-Type: application/json');
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/SongController.php';
-
-header('Content-Type: application/json');
 
 $artistID = $params['id'] ?? null;
 
 if ($artistID === null) {
 	http_response_code(400);
 	echo json_encode(['error' => 'Missing artist ID parameter']);
-	exit;
+	exit();
 }
 
 try {

@@ -4,7 +4,7 @@ session_start();
 // Check if album ID is provided
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 	header('Location: ../discover/albums.php');
-	exit;
+	exit();
 }
 
 $albumId = (int)$_GET['id'];
@@ -18,7 +18,7 @@ $album = AlbumController::getAlbumByID($albumId);
 // If album not found, redirect
 if ($album === null) {
 	header('Location: ../discover/albums.php');
-	exit;
+	exit();
 }
 
 // Get songs in the album

@@ -212,4 +212,4 @@ readfile($zipPath);
 // Cleanup
 @unlink($zipPath);
 $cleanup();
-exit;
+exit();

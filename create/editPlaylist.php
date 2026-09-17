@@ -4,13 +4,13 @@ session_start();
 // Check if user is logged in
 if (!isset($_SESSION['userID'])) {
 	header('Location: ../login.php');
-	exit;
+	exit();
 }
 
 // Check if playlist ID is provided
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 	header('Location: ../discover/playlists.php');
-	exit;
+	exit();
 }
 
 $playlistId = (int)$_GET['id'];
@@ -25,13 +25,13 @@ $playlist = PlaylistController::getPlaylistById($playlistId);
 // If playlist not found, redirect
 if ($playlist === null) {
 	header('Location: ../discover/playlists.php');
-	exit;
+	exit();
 }
 
 // Check if the user owns this playlist
 if ($_SESSION['userID'] != $playlist->getCreatorID()) {
 	header('Location: ../view/playlist.php?id=' . $playlistId);
-	exit;
+	exit();
 }
 
 // Get all songs for selection
@@ -122,13 +122,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 					// Create a new playlist with the same ID
 					$updatedPlaylist = new Playlist(
-							$playlistId,
-							$newName,
-							$selectedSongs,
-							$totalDuration->format('H:i:s'),
-							$length,
-							$imageName,
-							$playlist->getCreatorID()
+						$playlistId,
+						$newName,
+						$selectedSongs,
+						$totalDuration->format('H:i:s'),
+						$length,
+						$imageName,
+						$playlist->getCreatorID()
 					);
 
 					PlaylistController::insertPlaylist($updatedPlaylist);
@@ -176,8 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<div class="row">
 		<!-- Sidebar -->
 		<?php
-			$activePage = 'create';
-			include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
+		$activePage = 'create';
+		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
 		?>
 
 		<main class="main col-md ms-sm-auto px-0 py-0 justify-content-center">
@@ -203,10 +203,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 						<div class="col-md-4 text-center">
 							<div class="mb-3">
 								<?php if (!empty($playlist->getimageName())): ?>
-									<img src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
-										 class="img-fluid rounded shadow mb-2"
-										 alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
-										 style="max-width: 200px; height: 200px; object-fit: cover;">
+									<img
+										src="<?php echo "/BeatStream/images/playlist/" . htmlspecialchars($playlist->getimageName()); ?>"
+										class="img-fluid rounded shadow mb-2"
+										alt="<?php echo htmlspecialchars($playlist->getName()); ?>"
+										style="max-width: 200px; height: 200px; object-fit: cover;">
 								<?php else: ?>
 									<img src="../images/defaultPlaylist.webp" class="img-fluid rounded shadow mb-2"
 										 alt="Default Playlist Cover"
@@ -258,7 +259,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 													<p class="song-title"><?php echo htmlspecialchars($song->getTitle()); ?></p>
 													<p class="song-artist"><?php echo htmlspecialchars(implode(', ', $song->getArtists())); ?></p>
 												</div>
-												<span class="song-duration"><?php echo $song->getSongLength()->format("i:s"); ?></span>
+												<span
+													class="song-duration"><?php echo $song->getSongLength()->format("i:s"); ?></span>
 											</div>
 										<?php endforeach; ?>
 
@@ -299,7 +301,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 													<p class="song-title"><?php echo htmlspecialchars($song->getTitle()); ?></p>
 													<p class="song-artist"><?php echo htmlspecialchars(implode(', ', $song->getArtists())); ?></p>
 												</div>
-												<span class="song-duration"><?php echo $song->getSongLength()->format("i:s"); ?></span>
+												<span
+													class="song-duration"><?php echo $song->getSongLength()->format("i:s"); ?></span>
 											</div>
 										<?php endforeach; ?>
 

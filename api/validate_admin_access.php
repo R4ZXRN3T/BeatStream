@@ -12,6 +12,7 @@ if ($apiKey != NULL) {
 		$authorized = false;
 		http_response_code(401);
 		echo json_encode(["error" => $apiKeyStatus["status"]]);
+		exit();
 	} else {
 		$authorized = true;
 		$adminAccess = $apiKeyStatus["adminAccess"];
@@ -24,6 +25,7 @@ if (!$authorized) {
 	if ($userID === null) {
 		http_response_code(401);
 		echo json_encode(["error" => "User is not logged in"]);
+		exit();
 	} else {
 		$authorized = UserController::getUserById($userID)->isHasAccess();
 		$adminAccess = UserController::getUserById($userID)->isAdmin();
@@ -33,11 +35,11 @@ if (!$authorized) {
 if (!$authorized) {
 	http_response_code(403);
 	echo json_encode(["error" => "User does not have access"]);
-	exit;
+	exit();
 }
 
 if (!$adminAccess) {
 	http_response_code(403);
 	echo json_encode(["error" => "User does not have admin access"]);
-	exit;
+	exit();
 }
