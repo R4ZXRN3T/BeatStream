@@ -1,5 +1,5 @@
 <?php
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/v1/Router.php';
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/v1/router.php';
 
 $router = new Router();
 

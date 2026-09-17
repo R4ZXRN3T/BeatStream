@@ -47,8 +47,8 @@ if ($showArtistLinks && !empty($song->getArtists())) {
 
 // Optimize image source
 $imageSrc = $song->getImageName()
-		? "{$GLOBALS['PROJECT_ROOT']}/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
-		: "../images/defaultSong.webp";
+	? "{$GLOBALS['PROJECT_ROOT']}/images/song/thumbnail/" . htmlspecialchars($song->getThumbnailName())
+	: "../images/defaultSong.webp";
 
 $songData = htmlspecialchars(json_encode($songQueueData));
 ?>

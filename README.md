@@ -24,7 +24,7 @@ profiles, admin management, and rich search and discovery features.
 - `controller`: Backend logic for handling requests and database interactions.
 - `discover/`: Discover music by albums, artists, or songs.
 - `search/`: Search functionality across all music entities.
-- `Objects/`: PHP classes representing core entities like `Album`, `Artist`, `User`, and `Playlist`.
+- `objects`: PHP classes representing core entities like `Album`, `Artist`, `User`, and `Playlist`.
 - `home/`: Main landing page and personalized recommendations.
 
 ## Entity Overview
@@ -42,18 +42,18 @@ profiles, admin management, and rich search and discovery features.
    git clone https://github.com/R4ZXRN3T/BeatStream.git
    ```
 
-2. **Set up your web server:**  
+2. **Set up your web server:**
    Ensure PHP and a MySQL database are available. Configure database credentials in `dbConnection.php`. Make sure you
    have ffmpeg installed on your server for converting uploaded audio. Please update the paths in `converter.php`. You
    will also need the ImageMagick extension for PHP to process the images for content upload.
 
-3. **Configure file permissions:**  
+3. **Configure file permissions:**
    Ensure the `images/` and `audio/` upload directories are writable by the web server.
 
-4. **Import database schema:**  
+4. **Import database schema:**
    Import any provided SQL files to create the necessary tables for users, songs, albums, artists, and playlists.
 
-5. **Access BeatStream:**  
+5. **Access BeatStream:**
    Open your browser at your server URL (e.g., `http://localhost/BeatStream/`) and sign up/log in.
 
 ## Dependencies
