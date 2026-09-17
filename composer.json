@@ -1,9 +1,10 @@
 {
-  "require": {
-	"ext-mysqli": "*",
-	"ext-imagick": "*",
-	"ext-fileinfo": "*",
-	"ext-zip": "*",
-	"james-heinrich/getid3": "*"
-  }
+	"require": {
+		"ext-mysqli": "*",
+		"ext-imagick": "*",
+		"ext-fileinfo": "*",
+		"ext-zip": "*",
+		"james-heinrich/getid3": "*",
+		"ext-pdo": "*"
+	}
 }
