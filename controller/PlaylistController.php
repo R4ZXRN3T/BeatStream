@@ -11,7 +11,7 @@ class PlaylistController
 			$newPlaylistID = rand();
 		} while (PlaylistController::IdExists($newPlaylistID));
 
-		$stmt = DBConn::getConn()->prepare("INSERT INTO playlist VALUES (?, ?, ?, ?, ?, ?, ?)");
+		$stmt = DBConn::getConn()->prepare("INSERT INTO playlist(playlistID, name, length, duration, imageName, thumbnailName, creatorID) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
 		$imageName = $playlist->getImageName();
 		$thumbnailName = $playlist->getThumbnailName();
@@ -20,7 +20,7 @@ class PlaylistController
 		$duration = $playlist->getDuration();
 		$creatorID = $playlist->getCreatorID();
 
-		$stmt->bind_param("isssiis", $newPlaylistID, $name, $length, $duration, $creatorID, $imageName, $thumbnailName);
+		$stmt->bind_param("isssiis", $newPlaylistID, $name, $length, $duration, $imageName, $thumbnailName, $creatorID);
 		$stmt->execute();
 		$stmt->close();
 
@@ -46,7 +46,7 @@ class PlaylistController
 			SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, playlist.length,
 			       playlist.duration, playlist.creatorID, user.username, song.songID, in_playlist.songIndex
 			FROM playlist
-			LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID 
+			LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID
 			LEFT JOIN song ON song.songID = in_playlist.songID
 			LEFT JOIN user ON playlist.creatorID = user.userID
 			ORDER BY $sortBy, in_playlist.songIndex;
@@ -113,7 +113,7 @@ class PlaylistController
 	public static function getPlaylistById(int $playlistID): ?Playlist
 	{
 		$stmt = DBConn::getConn()->prepare("SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, length, duration, creatorID, user.username, song.songID, songIndex
-		FROM playlist 
+		FROM playlist
 		LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID
 		LEFT JOIN song ON song.songID = in_playlist.songID
 		LEFT JOIN user ON playlist.creatorID = user.userID
@@ -140,26 +140,131 @@ class PlaylistController
 		return $playlist;
 	}
 
-	public static function searchPlaylist(string $query): array
+	public static function searchPlaylist(int $count): array
 	{
 		$stmt = DBConn::getConn()->prepare("
-			SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, length, duration, creatorID, user.username
+			SELECT DISTINCT playlist.playlistID
 			FROM playlist
-			JOIN user ON playlist.creatorID = user.userID
+			LEFT JOIN user ON playlist.creatorID = user.userID
 			WHERE playlist.name LIKE CONCAT('%', ?, '%') OR user.username LIKE CONCAT('%', ?, '%')
-			ORDER BY playlist.name
+			LIMIT ?;
 		");
-		$stmt->bind_param("ss", $query, $query);
+
+		$stmt->bind_param("i", $count);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$playlistIDs = [];
+		while ($row = $result->fetch_assoc()) {
+			$playlistIDs[] = $row["playlistID"];
+		}
+		$stmt->close();
+
+		$stmt = DBConn::getConn()->prepare("
+			SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, playlist.length,
+			       playlist.duration, playlist.creatorID, user.username, song.songID, in_playlist.songIndex
+			FROM playlist
+			LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID
+			LEFT JOIN song ON song.songID = in_playlist.songID
+			LEFT JOIN user ON playlist.creatorID = user.userID
+			WHERE playlist.playlistID IN (" . implode(',', array_fill(0, count($playlistIDs), '?')) . ")
+			ORDER BY in_playlist.songIndex;
+		");
+
+		$stmt->bind_param("i", $count);
+
 		$stmt->execute();
 		$result = $stmt->get_result();
 
 		$playlistList = [];
 		while ($row = $result->fetch_assoc()) {
-			$playlistList[] = new Playlist(
-				$row["playlistID"], $row["name"], [], $row["duration"], $row["length"],
-				$row["imageName"], $row["thumbnailName"], $row["creatorID"], $row["username"]
-			);
+			$alreadyExists = false;
+
+			// Start with empty songs if there is no song for this playlist
+			$songIds = $row["songID"] ? [$row["songID"]] : [];
+
+			$newPlaylist = new Playlist($row["playlistID"], $row["name"], $songIds, $row["duration"], $row["length"],
+				$row["imageName"], $row["thumbnailName"], $row["creatorID"], $row["username"] ?? "Unknown");
+
+			for ($i = 0; $i < count($playlistList); $i++) {
+				if ($playlistList[$i]->getPlaylistID() == $newPlaylist->getPlaylistID()) {
+					$alreadyExists = true;
+					if ($row["songID"]) $playlistList[$i]->setSongIDs(array_merge($playlistList[$i]->getSongIDs(), $newPlaylist->getSongIDs()));
+					break;
+				}
+			}
+
+			if (!$alreadyExists) $playlistList[] = $newPlaylist;
 		}
+
+		$stmt->close();
+		return $playlistList;
+	}
+
+	public static function getRandomPlaylists(int $count = 3): array
+	{
+		$stmt = DBConn::getConn()->prepare("
+			SELECT DISTINCT playlist.playlistID
+			FROM playlist
+			ORDER BY RAND()
+			LIMIT ?;
+		");
+
+		$stmt->bind_param("i", $count);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$playlistIDs = [];
+		while ($row = $result->fetch_assoc()) {
+			$playlistIDs[] = $row["playlistID"];
+		}
+		$stmt->close();
+
+		$placeholders = str_repeat('?,', count($playlistIDs) - 1) . '?';
+		$orderByCase = "CASE playlist.playlistID ";
+		for ($i = 0; $i < count($playlistIDs); $i++) {
+			$orderByCase .= "WHEN ? THEN $i ";
+		}
+		$orderByCase .= "END";
+
+		$stmt = DBConn::getConn()->prepare("
+			SELECT playlist.playlistID, playlist.imageName, playlist.thumbnailName, playlist.name, playlist.length,
+			       playlist.duration, playlist.creatorID, user.username, song.songID, in_playlist.songIndex
+			FROM playlist
+			LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID
+			LEFT JOIN song ON song.songID = in_playlist.songID
+			LEFT JOIN user ON playlist.creatorID = user.userID
+			WHERE playlist.playlistID IN ($placeholders)
+			ORDER BY $orderByCase, in_playlist.songIndex;
+		");
+
+		$allParams = array_merge($playlistIDs, $playlistIDs);
+		$stmt->bind_param(str_repeat('i', count($allParams)), ...$allParams);
+
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		$playlistList = [];
+		while ($row = $result->fetch_assoc()) {
+			$alreadyExists = false;
+
+			// Start with empty songs if there is no song for this playlist
+			$songIds = $row["songID"] ? [$row["songID"]] : [];
+
+			$newPlaylist = new Playlist($row["playlistID"], $row["name"], $songIds, $row["duration"], $row["length"],
+				$row["imageName"], $row["thumbnailName"], $row["creatorID"], $row["username"] ?? "Unknown");
+
+			for ($i = 0; $i < count($playlistList); $i++) {
+				if ($playlistList[$i]->getPlaylistID() == $newPlaylist->getPlaylistID()) {
+					$alreadyExists = true;
+					if ($row["songID"]) $playlistList[$i]->setSongIDs(array_merge($playlistList[$i]->getSongIDs(), $newPlaylist->getSongIDs()));
+					break;
+				}
+			}
+
+			if (!$alreadyExists) $playlistList[] = $newPlaylist;
+		}
+
 		$stmt->close();
 		return $playlistList;
 	}

@@ -30,6 +30,24 @@ class SongController
 		$artistsInSong = $song->getArtistIDs();
 
 		for ($i = 0; $i < count($artistsInSong); $i++) {
+			$stmt = DBConn::getConn()->prepare("SELECT activeSince FROM artist WHERE artistID = ?");
+			$stmt->bind_param("i", $artistsInSong[$i]);
+			$stmt->execute();
+			$result = $stmt->get_result();
+			$row = $result->fetch_assoc();
+			$stmt->close();
+			if ($row["activeSince"] == "") {
+				$stmt = DBConn::getConn()->prepare("UPDATE artist SET activeSince = ? WHERE artistID = ?");
+				$stmt->bind_param("si", $releaseDate, $artistsInSong[$i]);
+				$stmt->execute();
+				$stmt->close();
+			} elseif (strtotime($releaseDate) < strtotime($row["activeSince"])) {
+				$stmt = DBConn::getConn()->prepare("UPDATE artist SET activeSince = ? WHERE artistID = ?");
+				$stmt->bind_param("si", $releaseDate, $artistsInSong[$i]);
+				$stmt->execute();
+				$stmt->close();
+			}
+
 			$stmt = DBConn::getConn()->prepare("INSERT INTO releases_song VALUES (?, ?, ?)");
 			$stmt->bind_param("iii", $artistsInSong[$i], $newSongID, $i);
 			$stmt->execute();
@@ -134,7 +152,7 @@ class SongController
 	public static function getAlbumSongs(int $albumID): array
 	{
 		$stmt = DBConn::getConn()->prepare("
-        SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
+        SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
                song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
         FROM song, artist, releases_song, in_album
         WHERE song.songID = releases_song.songID
@@ -163,8 +181,8 @@ class SongController
 			WHERE song.songID = releases_song.songID
 			AND artist.artistID = releases_song.artistID
 			AND song.songID IN (
-				SELECT DISTINCT songID 
-				FROM releases_song 
+				SELECT DISTINCT songID
+				FROM releases_song
 				WHERE artistID = ?
 			)
 			ORDER BY song.title, releases_song.artistIndex
@@ -183,7 +201,7 @@ class SongController
 	public static function getSongByID(int $songID): ?Song
 	{
 		$stmt = DBConn::getConn()->prepare("
-		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
+		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
 			   song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
 		FROM song, artist, releases_song
 		WHERE song.songID = releases_song.songID
@@ -213,7 +231,7 @@ class SongController
 	public static function getPlaylistSongs(int $playlistID): array
 	{
 		$stmt = DBConn::getConn()->prepare("
-		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre, 
+		SELECT song.songID, song.title, artist.name, artist.artistID, song.genre,
 			   song.releaseDate, song.imageName, song.thumbnailName, song.originalImageName, song.songLength, song.flacFilename, song.opusFilename
 		FROM song, artist, releases_song, in_playlist
 		WHERE song.songID = releases_song.songID
@@ -380,4 +398,3 @@ class SongController
 		return null;
 	}
 }
-

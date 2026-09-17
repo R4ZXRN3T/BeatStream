@@ -3,6 +3,7 @@
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Objects/User.php";
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php";
 require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/Utils.php";
+require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ApiController.php";
 
 class UserController
 {
@@ -15,7 +16,10 @@ class UserController
 			$newUserID = rand();
 		} while (self::IdExists($newUserID));
 
-		$stmt = DBConn::getConn()->prepare("INSERT INTO user VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt = DBConn::getConn()->prepare("
+			INSERT INTO user (userID, username, email, userPassword, salt, hasAccess, isAdmin, isArtist, imageName, thumbnailName)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		");
 
 		// Store values in variables to avoid reference errors
 		$username = $user->getUsername();
@@ -24,8 +28,9 @@ class UserController
 		$thumbnailName = $user->getThumbnailName();
 		$isAdmin = $user->isAdmin();
 		$isArtist = $user->isArtist();
+		$hasAccess = $user->isHasAccess();
 
-		$stmt->bind_param("issssiiss", $newUserID, $username, $email, $password, $salt, $isAdmin, $isArtist, $imageName, $thumbnailName);
+		$stmt->bind_param("issssiiiss", $newUserID, $username, $email, $password, $salt, $hasAccess, $isAdmin, $isArtist, $imageName, $thumbnailName);
 		$stmt->execute();
 		$stmt->close();
 	}
@@ -104,6 +109,8 @@ class UserController
 			ArtistController::deleteArtist($artistID);
 		}
 
+		ApiController::deleteUserApiKeys($userID);
+
 		$stmt = $conn->prepare("DELETE FROM user WHERE userID = ?;");
 		$stmt->bind_param("i", $userID);
 		$stmt->execute();
@@ -119,7 +126,7 @@ class UserController
 
 		$userList = array();
 		while ($row = $result->fetch_assoc()) {
-			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["isAdmin"], $row["isArtist"], $row["imageName"], $row["thumbnailName"]);
+			$userList[] = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["hasAccess"], $row["isAdmin"], $row["isArtist"], $row["imageName"], $row["thumbnailName"]);
 		}
 
 		$stmt->close();
@@ -136,7 +143,7 @@ class UserController
 
 		$user = null;
 		if ($row = $result->fetch_assoc()) {
-			$user = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["isAdmin"], $row["isArtist"], $row["imageName"], $row["thumbnailName"]);
+			$user = new User($row["userID"], $row["username"], $row["email"], $row["userPassword"], $row["salt"], $row["hasAccess"], $row["isAdmin"], $row["isArtist"], $row["imageName"], $row["thumbnailName"]);
 		}
 
 		$stmt->close();
