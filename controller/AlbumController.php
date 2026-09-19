@@ -20,7 +20,7 @@ class AlbumController
 		$releaseDate = $album->getReleaseDate()->format("Y-m-d");
 		$isSingle = (int)$album->isSingle();
 
-		$sqlAlbum = "INSERT INTO album VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		$sqlAlbum = "INSERT INTO album (albumID, title, length, duration, releaseDate, isSingle, imageName, thumbnailName, originalImageName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		$stmt = DBConn::getConn()->prepare($sqlAlbum);
 
 		$stmt->bind_param("isiisisss", $newAlbumID, $name, $length, $duration, $releaseDate, $isSingle, $imageName, $thumbnailName, $originalImageName);
@@ -31,7 +31,7 @@ class AlbumController
 
 		for ($j = 0; $j < count($artistsInAlbum); $j++) {
 			$stmt = DBConn::getConn()->prepare("SELECT activeSince FROM artist WHERE artistID = ?");
-			$stmt->bind_param("i", $artistsInSong[$j]);
+			$stmt->bind_param("i", $artistsInAlbum[$j]);
 			$stmt->execute();
 			$result = $stmt->get_result();
 			$row = $result->fetch_assoc();
