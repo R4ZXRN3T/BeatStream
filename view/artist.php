@@ -59,7 +59,7 @@ $songQueueData = array_map(function ($song) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><?php echo $artist->getName(); ?> - Artist Profile</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 	<link href="../mainStyle.css" rel="stylesheet">
 	<link href="../favicon.ico" rel="icon">
@@ -156,7 +156,7 @@ $songQueueData = array_map(function ($song) {
 
 <!-- Include the music player -->
 <?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/player.php"); ?>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $GLOBALS['PROJECT_ROOT'] ?>/addMenuContent.js"></script>
 </body>
 </html>
