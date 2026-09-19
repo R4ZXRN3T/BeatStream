@@ -20,7 +20,7 @@ if ($apiKey != NULL) {
 }
 
 if (!$authorized) {
-	session_start();
+	if (session_status() === PHP_SESSION_NONE) session_start();
 	$userID = $_SESSION["userID"] ?? null;
 	if ($userID === null) {
 		http_response_code(401);
