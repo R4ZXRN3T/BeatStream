@@ -1,9 +1,11 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/AlbumController.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/UserController.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/converter.php';
+requireAccess();
+includeController(ControllerType::ALBUM_CONTROLLER);
+includeController(ControllerType::ARTIST_CONTROLLER);
+includeController(ControllerType::SONG_CONTROLLER);
+includeController(ControllerType::USER_CONTROLLER);
+includeConverter();
 
 try {
 	$title = $_POST['name'] ?? null;
@@ -11,18 +13,16 @@ try {
 	$songIDs = $_POST['songIDs'] ?? null;
 	$image = $_FILES['image'] ?? null;
 	$releaseDate = $_POST['releaseDate'] ?? null;
-	$single = $_POST['single'] ?? null;
+	$single = $_POST['single'] ?? false;
 
 	if ($title === null || $artistIDs === null || $songIDs === null || $releaseDate === null || $single === null) {
 		http_response_code(400);
-		echo json_encode(["error" => "Missing required parameters"]);
+		echo json_encode(["success" => false, "message" => "Missing required parameters"]);
 		exit();
 	}
 
 	if (in_array(UserController::getUserArtistID($_SESSION['userID']), $artistIDs) === false) {
-		http_response_code(403);
-		echo json_encode(["error" => "You do not have permission to create an album for the specified artists."]);
-		exit();
+		requireAdminAccess();
 	}
 
 	if ($image !== null && $image['error'] === UPLOAD_ERR_OK) {
@@ -30,7 +30,7 @@ try {
 
 		if ($imageNames['success'] === false) {
 			http_response_code(400);
-			echo json_encode(["error" => "Image upload failed: " . $imageNames['error']]);
+			echo json_encode(["success" => false, "message" => "Image upload failed: " . $imageNames['error']]);
 			exit();
 		}
 	}
@@ -52,6 +52,7 @@ try {
 	);
 
 	echo json_encode(["success" => true, "message" => "Album created successfully"]);
+	http_response_code(201);
 } catch (Exception $e) {
 	http_response_code(500);
 	echo json_encode(["success" => false, "message" => "Failed to create album: " . $e->getMessage()]);
