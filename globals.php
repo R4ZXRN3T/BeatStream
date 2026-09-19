@@ -22,7 +22,7 @@ enum ControllerType: string
 	case USER_CONTROLLER = 'UserController.php';
 	case PLAYLIST_CONTROLLER = 'PlaylistController.php';
 	case ALBUM_CONTROLLER = 'AlbumController.php';
-	case API_CONTROLLER = 'APIController.php';
+	case API_CONTROLLER = 'ApiController.php';
 	case IMAGE_CONTROLLER = 'ImageController.php';
 }
 

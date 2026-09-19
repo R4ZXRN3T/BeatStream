@@ -1,8 +1,8 @@
 <?php
 session_start();
 header("Content-Type: application/json");
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
+includeController(ControllerType::USER_CONTROLLER);
+includeConverter();
 
 try {
 	$username = $_POST['usernameInput'] ?? null;

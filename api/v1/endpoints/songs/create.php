@@ -1,8 +1,10 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/SongController.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/converter.php';
+requireAccess();
+includeController(ControllerType::SONG_CONTROLLER);
+includeController(ControllerType::USER_CONTROLLER);
+includeController(ControllerType::ARTIST_CONTROLLER);
+includeConverter();
 
 try {
 	$title = $_POST['title'] ?? null;
@@ -16,6 +18,10 @@ try {
 		http_response_code(400);
 		echo json_encode(["error" => "Missing required parameters"]);
 		exit();
+	}
+
+	if (in_array(UserController::getUserArtistID($_SESSION['userID']), $artistIDs) === false) {
+		requireAdminAccess();
 	}
 
 	if ($imageFile !== null && $imageFile['error'] === UPLOAD_ERR_OK) {

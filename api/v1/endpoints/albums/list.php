@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/AlbumController.php';
+requireAccess();
+includeController(ControllerType::ALBUM_CONTROLLER);
 
 try {
 	$albumList = AlbumController::getAlbumList();

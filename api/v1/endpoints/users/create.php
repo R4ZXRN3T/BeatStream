@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_admin_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/PlaylistController.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/converter.php';
+requireAdminAccess();
+includeController(ControllerType::USER_CONTROLLER);
+includeConverter();
 
 try {
 	$username = $_POST['username'] ?? null;

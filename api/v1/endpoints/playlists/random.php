@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/PlaylistController.php';
+requireAccess();
+includeController(ControllerType::PLAYLIST_CONTROLLER);
 
 try {
 	$limit = $_POST['limit'] ?? $_GET['limit'] ?? 3;

@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/ApiController.php';
+requireAccess();
+includeController(ControllerType::API_CONTROLLER);
 
 try {
 	$apiKey = $_POST['api_key'] ?? null;
@@ -13,7 +13,7 @@ try {
 	}
 
 	if (ApiController::apiKeyBelongsToUser($apiKey, $_SESSION['userID'])) {
-		require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_admin_access.php';
+		requireAdminAccess();
 	}
 
 	$deleted = ApiController::deleteApiKey($apiKey);

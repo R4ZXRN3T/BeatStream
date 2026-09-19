@@ -1,6 +1,6 @@
 <?php
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/ImageController.php';
+requireAccess();
+includeController(ControllerType::IMAGE_CONTROLLER);
 
 $imageSize = $_POST['s'] ?? $_GET['s'] ?? null;
 $imageID = $params['id'] ?? null;

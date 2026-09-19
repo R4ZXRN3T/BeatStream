@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/ArtistController.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/converter.php';
+requireAccess();
+includeController(ControllerType::ARTIST_CONTROLLER);
+includeConverter();
 
 try {
 	$name = $_POST['name'] ?? null;

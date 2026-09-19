@@ -140,17 +140,16 @@ class PlaylistController
 		return $playlist;
 	}
 
-	public static function searchPlaylist(int $count): array
+	public static function searchPlaylist(string $query): array
 	{
 		$stmt = DBConn::getConn()->prepare("
 			SELECT DISTINCT playlist.playlistID
 			FROM playlist
 			LEFT JOIN user ON playlist.creatorID = user.userID
 			WHERE playlist.name LIKE CONCAT('%', ?, '%') OR user.username LIKE CONCAT('%', ?, '%')
-			LIMIT ?;
 		");
 
-		$stmt->bind_param("i", $count);
+		$stmt->bind_param("ss", $query, $query);
 		$stmt->execute();
 		$result = $stmt->get_result();
 
@@ -167,11 +166,12 @@ class PlaylistController
 			LEFT JOIN in_playlist ON playlist.playlistID = in_playlist.playlistID
 			LEFT JOIN song ON song.songID = in_playlist.songID
 			LEFT JOIN user ON playlist.creatorID = user.userID
-			WHERE playlist.playlistID IN (" . implode(',', array_fill(0, count($playlistIDs), '?')) . ")
+			WHERE playlist.playlistID IN (?)
 			ORDER BY in_playlist.songIndex;
 		");
 
-		$stmt->bind_param("i", $count);
+		$str = str_repeat('?,', count($playlistIDs) - 1) . '?';
+		$stmt->bind_param("s", $str);
 
 		$stmt->execute();
 		$result = $stmt->get_result();

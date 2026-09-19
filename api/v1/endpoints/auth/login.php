@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/UserController.php';
+includeController(ControllerType::USER_CONTROLLER);
 
 try {
 	$email = $_POST['email'] ?? '';

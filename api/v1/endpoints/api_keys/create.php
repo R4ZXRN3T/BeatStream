@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/ApiKeyController.php';
+requireAccess();
+includeController(ControllerType::API_CONTROLLER);
 
 try {
 	$userID = $_SESSION['userID'];
@@ -16,7 +16,7 @@ try {
 	}
 
 	if ($isAdmin === true) {
-		require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_admin_access.php';
+		requireAdminAccess();
 	}
 
 	$apiKey = ApiController::createApiKey($userID, $canExpire, $expiresAt ? new DateTime($expiresAt) : null, $isAdmin);

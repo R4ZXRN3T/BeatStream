@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/json');
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_access.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/PlaylistController.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/controller/SongController.php';
-require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/converter.php';
+requireAccess();
+includeController(ControllerType::PLAYLIST_CONTROLLER);
+includeController(ControllerType::SONG_CONTROLLER);
+includeConverter();
 
 try {
 	$name = $_POST['name'] ?? null;
@@ -12,7 +12,7 @@ try {
 	$creatorID = $_POST['creatorID'] ?? null;
 
 	if ($creatorID !== null) {
-		require_once $GLOBALS['PROJECT_ROOT_DIR'] . '/api/validate_admin_access.php';
+		requireAdminAccess();
 	} else {
 		$creatorID = $_SESSION['userID'];
 	}

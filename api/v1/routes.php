@@ -5,6 +5,7 @@ $router = new Router();
 
 // Songs
 $router->get('/songs', 'songs/list.php');
+$router->post('/songs', 'songs/create.php');
 $router->get('/songs/random', 'songs/random.php');
 $router->get('/songs/{id}', 'songs/get.php');
 $router->get('/songs/{id}/album', 'songs/album.php');
@@ -25,6 +26,7 @@ $router->get('/artists/{id}/songs', 'artists/songs.php');
 
 // Playlists
 $router->get('/playlists', 'playlists/list.php');
+$router->post('/playlists', 'playlists/create.php');
 $router->get('/playlists/{id}', 'playlists/get.php');
 $router->get('/playlists/random', 'playlists/random.php');
 $router->get('/playlists/{id}/songs', 'playlists/songs.php');
