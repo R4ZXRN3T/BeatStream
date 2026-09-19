@@ -1,24 +1,4 @@
-<?php
-include($GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
-session_start();
-$isAdmin = false;
-if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
-	$stmt = DBConn::getConn()->prepare("SELECT isAdmin FROM user WHERE userID = ?;");
-	$stmt->bind_param("i", $_SESSION['userID']);
-	$stmt->execute();
-	$isAdmin = $stmt->get_result()->fetch_assoc()['isAdmin'] ?? false;
-	$stmt->close();
-	if (!$isAdmin) {
-		$_SESSION['isAdmin'] = $isAdmin;
-		header("Location: {$GLOBALS['PROJECT_ROOT']}/admin/blocked.php");
-		exit();
-	}
-	$_SESSION['isAdmin'] = $isAdmin;
-} else {
-	header("Location: {$GLOBALS['PROJECT_ROOT']}/account/login.php");
-	exit();
-}
-?>
+<?php requireAdminAccess($GLOBALS['PROJECT_ROOT_DIR']); ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,216 +7,117 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>BeatStream - add a song</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css" rel="stylesheet">
 	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/favicon.ico" rel="icon">
 </head>
 
 <body>
-<?php
-require $GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php";
-?>
+<?php includeComponent('topBar.php'); ?>
 
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
-		<?php
-		$activePage = 'admin';
-		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
-		?>
+		<?php includeComponent('sidebar.php', ['activePage' => 'admin']); ?>
 		<!-- Main Content -->
 		<main class="main col-md ms-sm-auto px-0 py-0">
 
-			<!-- Admin Navigation Bar -->
-			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary admin-nav">
-				<div class="container-fluid">
-					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link"
-												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a>
-						</li>
-						<li class="nav-item"><a class="nav-link active"
-												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add
-								content</a></li>
-					</ul>
-				</div>
-			</nav>
-
-			<div class="tab">
-				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link active" href="">Song</a></li>
-					<li class="nav-item"><a class="nav-link"
-											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/artist.php">Artist</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/user.php">User</a>
-					</li>
-					<li class="nav-item"><a class="nav-link"
-											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/playlist.php">Playlist</a>
-					</li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/album.php">Album</a>
-					</li>
-				</ul>
-			</div>
-
 			<?php
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
-			$artistList = ArtistController::getArtistList();
-			$isValid = true;
-			$errorMessage = "";
-
-			if (!(!empty($_POST["titleInput"]) && !empty($_POST["artistInput"][0]) && !empty($_POST["genreInput"]) && !empty($_POST["releaseDateInput"]) && !empty($_FILES["fileInput"]))) {
-				$isValid = false;
-			}
-
-			$flacFilename = "";
-			$opusFilename = "";
-			$imageName = "";
-			$thumbnailName = "";
-			$songLength = 0;
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php";
-
-			if ($isValid) {
-				if (isset($_FILES['songImageInput']) && $_FILES['songImageInput']['error'] === UPLOAD_ERR_OK) {
-					$result = Converter::uploadImage($_FILES['songImageInput'], ImageType::SONG);
-					if ($result['success']) {
-						$imageName = $result['large_filename'];
-						$thumbnailName = $result['thumbnail_filename'];
-						$originalImageName = $result['original_filename'];
-					} else {
-						$isValid = false;
-						$errorMessage = $result['error'];
-					}
-				}
-
-				if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
-					$result = Converter::uploadAudio($_FILES['fileInput']);
-					if ($result['success']) {
-						$flacFilename = $result['flac_filename'];
-						$opusFilename = $result['opus_filename'];
-						$songLength = $result['duration'];
-					} else {
-						$isValid = false;
-						$errorMessage = $result['error'];
-					}
-				}
-
-				if ($isValid) {
-					SongController::insertSong(new Song(
-						0,
-						$_POST["titleInput"],
-						[],
-						$_POST["artistInput"],
-						$_POST["genreInput"],
-						$_POST["releaseDateInput"],
-						$songLength,
-						$flacFilename,
-						$opusFilename,
-						$imageName,
-						$thumbnailName,
-						$originalImageName ?? ""
-					));
-				}
-			}
+			includeComponent('adminNavBar.php', ['activePage' => 'add']);
+			includeComponent('adminTabBar.php', ['activePage' => 'song']);
 			?>
 
 			<!-- Song Form -->
 			<div class="container mt-5">
-				<h1>Add song</h1>
-
-				<form action="song.php" method="post" id="addSongForm" enctype="multipart/form-data">
-
-					<?php
-					if (!empty($errorMessage)) {
-						echo '<div class="alert alert-danger" role="alert">' . $errorMessage . '</div>';
-					}
-					?>
-
+				<h1>Add Song</h1>
+				<form action="<?= $GLOBALS['PROJECT_ROOT'] ?>/api/v1/songs" method="post" id="addSongForm"
+					  enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="title">Title:</label>
-						<input type="text" id="title" name="titleInput" class="form-control"
-							   placeholder="Enter song title"
-							   required>
+						<input type="text" id="title" name="title" class="form-control"
+							   placeholder="Enter song title" required>
 					</div>
 
 					<div class="form-group">
 						<label for="artist">Artists:</label>
 						<div id="artistFields">
 							<div class="artist-field d-flex mb-2">
-								<select name="artistInput[]" class="form-control me-2" required>
+								<label for="artist-select"></label>
+								<select id="artist-select" name="artistIDs[]" class="form-control me-2" required>
 									<option value="">--Please Select--</option>
-									<?php
-									foreach ($artistList as $artist) {
-										echo "<option value='{$artist->getArtistID()}'>" . $artist->getName() . " (" . UserController::getUserById($artist->getUserID())->getUsername() . ")" . "</option>";
-									}
-									?>
 								</select>
-								<button type="button" class="btn btn-danger remove-artist" style="display:none;"
-										onclick="removeArtist(this)">-
-								</button>
+								<button type="button" class="btn btn-danger remove-artist">-</button>
 							</div>
 						</div>
-						<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
+						<button type="button" id="addArtistButton" class="btn btn-info mt-2">+</button>
 					</div>
 
 					<div class="form-group">
 						<label for="genre">Genre:</label>
-						<input type="text" id="genre" name="genreInput" class="form-control" placeholder="Enter genre"
+						<input type="text" id="genre" name="genre" class="form-control" placeholder="Enter genre"
 							   required>
 					</div>
 
 					<div class="form-group">
 						<label for="releaseDate">Release Date:</label>
 
-						<input type="date" id="releaseDate" name="releaseDateInput" class="form-control"
+						<input type="date" id="releaseDate" name="releaseDate" class="form-control"
 							   placeholder="Enter release date" required>
 					</div>
 
 					<div class="form-group">
 						<label for="songFile">File:</label>
-						<input type="file" id="songFile" name="fileInput" class="form-control" accept="audio/*"
-							   placeholder="Upload song file"
-							   required>
+						<input type="file" id="songFile" name="audioFile" class="form-control" accept="audio/*"
+							   placeholder="Upload song file" required>
 					</div>
 
 					<div class="form-group">
 						<label for="songImage">Image:&nbsp;&nbsp;&nbsp;&nbsp;(not required)</label>
-						<input type="file" id="songImage" name="songImageInput" class="form-control" accept="image/*">
+						<input type="file" id="songImage" name="imageFile" class="form-control" accept="image/*">
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
 				</form>
+				<div id="toast-container" class="position-fixed bottom-10 start-50 translate-middle-x p-3"
+					 style="z-index:1200;"></div>
+				<div id="spinner"
+					 class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark opacity-75 d-none"
+					 style="pointer-events:none;">
+					<div class="spinner-border text-primary" role="status">
+						<span class="visually-hidden">Loading…</span>
+					</div>
+				</div>
 			</div>
-
-			<script>
-				function updateRemoveButtons() {
-					const fields = document.querySelectorAll('#artistFields .artist-field');
-					fields.forEach((field) => {
-						const btn = field.querySelector('.remove-artist');
-						btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
-					});
-				}
-
-				function addArtist() {
-					const artistFields = document.getElementById('artistFields');
-					const firstField = artistFields.querySelector('.artist-field');
-					const newField = firstField.cloneNode(true);
-					newField.querySelector('select').value = '';
-					artistFields.appendChild(newField);
-					updateRemoveButtons();
-				}
-
-				function removeArtist(btn) {
-					btn.closest('.artist-field').remove();
-					updateRemoveButtons();
-				}
-
-				document.addEventListener('DOMContentLoaded', updateRemoveButtons);
-			</script>
-
-			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 		</main>
 	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+	<script type="module">
+		import {initForm} from '<?= $GLOBALS['PROJECT_ROOT'] ?>/components/formHandler.js';
+		import {initDynamicFields} from '<?= $GLOBALS['PROJECT_ROOT'] ?>/components/dynamicFields.js';
+		import {populateSelect} from '<?= $GLOBALS['PROJECT_ROOT'] ?>/components/dynamicSelect.js';
+
+		const API = '<?= $GLOBALS["PROJECT_ROOT"] ?>/api/v1';
+
+		initForm({
+			selector: '#addSongForm',
+			spinnerSelector: '#spinner'
+		});
+
+		initDynamicFields({
+			containerSelector: '#artistFields',
+			fieldSelector: '.artist-field',
+			removeButtonSelector: '.remove-artist',
+			addButtonSelector: '#addArtistButton'
+		});
+
+		populateSelect({
+			selector: '#artistFields select',
+			url: `${API}/artists`,
+			valueKey: 'artistID',
+			textFormatter: artist => artist.name
+		});
+	</script>
 </div>
 </body>
-
 </html>

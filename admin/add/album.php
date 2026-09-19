@@ -1,25 +1,4 @@
-<?php
-include($GLOBALS['PROJECT_ROOT_DIR'] . "/dbConnection.php");
-include($GLOBALS['PROJECT_ROOT_DIR'] . "/converter.php");
-session_start();
-$isAdmin = false;
-if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === true) {
-	$stmt = DBConn::getConn()->prepare("SELECT isAdmin FROM user WHERE userID = ?;");
-	$stmt->bind_param("i", $_SESSION['userID']);
-	$stmt->execute();
-	$isAdmin = $stmt->get_result()->fetch_assoc()['isAdmin'] ?? false;
-	$stmt->close();
-	if (!$isAdmin) {
-		$_SESSION['isAdmin'] = $isAdmin;
-		header("Location: {$GLOBALS['PROJECT_ROOT']}/admin/blocked.php");
-		exit();
-	}
-	$_SESSION['isAdmin'] = $isAdmin;
-} else {
-	header("Location: {$GLOBALS['PROJECT_ROOT']}/account/login.php");
-	exit();
-}
-?>
+<?php requireAdminAccess($GLOBALS['PROJECT_ROOT'] . "/admin/blocked.php"); ?>
 
 <!Doctype html>
 <html lang="en">
@@ -27,129 +6,36 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>BeatStream - add an album</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<title>Add an album - BeatStream</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/mainStyle.css" rel="stylesheet">
 	<link href="<?= $GLOBALS['PROJECT_ROOT'] ?>/favicon.ico" rel="icon">
 </head>
 
 <body>
 
-<?php include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/topBar.php"); ?>
+<?php includeComponent('topBar.php'); ?>
 
 <div class="container-fluid">
 	<div class="row">
 		<!-- Sidebar -->
-		<?php
-		$activePage = 'admin';
-		include($GLOBALS['PROJECT_ROOT_DIR'] . "/components/sidebar.php");
-		?>
+		<?php includeComponent("sidebar.php", ['activePage' => 'admin']); ?>
 		<!-- Main Content -->
 		<main class="main col-md ms-sm-auto px-0 py-0">
 
 			<!-- Admin Navigation Bar -->
-			<nav class="navbar navbar-expand-lg navbar-dark bg-secondary admin-nav">
-				<div class="container-fluid">
-					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link"
-												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/view/songs.php">View</a>
-						</li>
-						<li class="nav-item"><a class="nav-link active"
-												href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Add
-								content</a></li>
-					</ul>
-				</div>
-			</nav>
-
-			<div class="tab">
-				<ul class="nav nav-tabs justify-content-center">
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/song.php">Song</a>
-					</li>
-					<li class="nav-item"><a class="nav-link"
-											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/artist.php">Artist</a></li>
-					<li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/user.php">User</a>
-					</li>
-					<li class="nav-item"><a class="nav-link"
-											href="<?= $GLOBALS['PROJECT_ROOT'] ?>/admin/add/playlist.php">Playlist</a>
-					</li>
-					<li class="nav-item"><a class="nav-link active" href="">Album</a></li>
-				</ul>
-			</div>
-
 			<?php
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/AlbumController.php";
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/ArtistController.php";
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/SongController.php";
-			require_once $GLOBALS['PROJECT_ROOT_DIR'] . "/controller/UserController.php";
-			$artistList = ArtistController::getArtistList();
-			$songList = SongController::getSongList();
-
-			$imageName = "";
-			$thumbnailName = "";
-			$isValid = true;
-
-			if (!(!empty($_POST["nameInput"]) && !empty($_POST["artistInput"]) && !empty($_POST["songInput"]))) {
-				$isValid = false;
-			}
-
-			if ($isValid && isset($_FILES['albumImageInput']) && $_FILES['albumImageInput']['error'] === UPLOAD_ERR_OK) {
-				$imageResult = Converter::uploadImage($_FILES['albumImageInput'], ImageType::ALBUM);
-
-				if ($imageResult['success']) {
-					$imageName = $imageResult['large_filename'];
-					$thumbnailName = $imageResult['thumbnail_filename'];
-					$originalImageName = $imageResult['original_filename'];
-				} else {
-					$isValid = false;
-					$errorMessage = $imageResult['error'];
-				}
-			}
-
-			if ($isValid) {
-				$totalMilliSeconds = 0;
-
-				foreach ($_POST['songInput'] as $selectedSongID) {
-					$totalMilliSeconds += SongController::getSongByID($selectedSongID)->getSongLength();
-				}
-
-				// Set album length to number of songs
-				$albumLength = count($_POST["songInput"]);
-
-				$artistNames = [];
-				foreach ($_POST['artistInput'] as $selectedArtistID) {
-					$artistNames[] = ArtistController::getArtistByID($selectedArtistID)->getName();
-				}
-
-				$releaseDate = $_POST['releaseDateInput'] ?? date('Y-m-d');
-				$isSingle = isset($_POST['isSingleInput']);
-
-				try {
-					AlbumController::insertAlbum(new Album(
-						0,
-						$_POST["nameInput"],
-						$_POST["songInput"],
-						$artistNames,
-						$_POST["artistInput"],
-						$imageName,
-						$thumbnailName,
-						$albumLength,
-						$totalMilliSeconds,
-						$releaseDate,
-						$isSingle,
-						$originalImageName ?? ""
-					));
-					$successMessage = "Album successfully added!";
-				} catch (Exception $e) {
-					$errorMessage = "Error: " . $e->getMessage();
-				}
-			}
+			includeComponent("adminNavBar.php", ['activePage' => 'add']);
+			includeComponent("adminTabBar.php", ['activePage' => 'album']);
 			?>
+
 			<div class="container mt-5">
 				<h1>Add Album</h1>
-				<form action="album.php" method="post" id="addAlbumForm" enctype="multipart/form-data">
+				<form action="<?= $GLOBALS['PROJECT_ROOT'] ?>/api/v1/albums" method="post" id="addAlbumForm"
+					  enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="name">Album title:</label>
-						<input type="text" id="name" name="nameInput" class="form-control"
+						<input type="text" id="name" name="name" class="form-control"
 							   placeholder="Enter album title" required>
 					</div>
 
@@ -157,20 +43,14 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<label for="artist">Artists:</label>
 						<div id="artistFields">
 							<div class="artist-field d-flex mb-2">
-								<select name="artistInput[]" class="form-control me-2" required>
+								<label for="artist-select"></label>
+								<select id="artist-select" name="artistIDs[]" class="form-control me-2" required>
 									<option value="">--Please Select--</option>
-									<?php
-									foreach ($artistList as $artist) {
-										echo "<option value='{$artist->getArtistID()}'>" . $artist->getName() . " (" . UserController::getUserById($artist->getUserID())->getUsername() . ")" . "</option>";
-									}
-									?>
 								</select>
-								<button type="button" class="btn btn-danger remove-artist" style="display:none;"
-										onclick="removeArtist(this)">-
-								</button>
+								<button type="button" class="btn btn-danger remove-artist">-</button>
 							</div>
 						</div>
-						<button type="button" onclick="addArtist()" class="btn btn-info mt-2">+</button>
+						<button type="button" id="addArtistButton" class="btn btn-info mt-2">+</button>
 					</div>
 
 
@@ -178,101 +58,88 @@ if (isset($_SESSION['account_loggedin']) && $_SESSION['account_loggedin'] === tr
 						<label for="song">Songs:</label>
 						<div id="songFields">
 							<div class="song-field d-flex mb-2">
-								<select name="songInput[]" class="form-control me-2" required>
+								<label for="song-select"></label>
+								<select id="song-select" name="songIDs[]" class="form-control me-2" required>
 									<option value="">--Please Select--</option>
-									<?php
-									foreach ($songList as $song) {
-										echo "<option value='{$song->getSongID()}'>{$song->getTitle()} - " . implode(", ", $song->getArtists()) . "</option>";
-									}
-									?>
 								</select>
-								<button type="button" class="btn btn-danger remove-song" style="display:none;"
-										onclick="removeSong(this)">-
-								</button>
+								<button type="button" class="btn btn-danger remove-song">-</button>
 							</div>
 						</div>
-						<button type="button" onclick="addSong()" class="btn btn-info mt-2">+</button>
+						<button type="button" id="addSongButton" class="btn btn-info mt-2">+</button>
 					</div>
 
 					<div class="form-group">
-						<label for="albumImage">Image:</label>
-						<input type="file" id="albumImage" name="albumImageInput" class="form-control" accept="image/*"
-							   required>
+						<label for="Image">Image:</label>
+						<input type="file" id="image" name="image" class="form-control" accept="image/*" required>
 					</div>
 
 					<div class="form-group">
-						<label for="releaseDateInput">Release Date:</label>
-						<input type="date" id="releaseDateInput" name="releaseDateInput" class="form-control" required>
+						<label for="releaseDate">Release Date:</label>
+						<input type="date" id="releaseDate" name="releaseDate" class="form-control" required>
 					</div>
 
 					<div class="form-group">
-						<label for="isSingleInput">Is this a single?</label>
-						<input type="checkbox" id="isSingleInput" name="isSingleInput" value="1">
+						<label for="single">Is this a single?</label>
+						<input type="checkbox" id="single" name="single" value="1">
 					</div>
 
 					<input type="submit" class="btn btn-primary mt-3" value="Submit">
 				</form>
+				<div id="toast-container" class="position-fixed bottom-10 start-50 translate-middle-x p-3"
+					 style="z-index:1200;"></div>
+				<div id="spinner"
+					 class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark opacity-75 d-none"
+					 style="pointer-events:none;">
+					<div class="spinner-border text-primary" role="status">
+						<span class="visually-hidden">Loading…</span>
+					</div>
+				</div>
 			</div>
+		</main>
 	</div>
 
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+	<script type="module">
+		import {initForm} from '<?= $GLOBALS['PROJECT_ROOT'] ?>/components/formHandler.js';
+		import {initDynamicFields} from '<?= $GLOBALS['PROJECT_ROOT'] ?>/components/dynamicFields.js';
+		import {populateSelect} from '<?= $GLOBALS['PROJECT_ROOT'] ?>/components/dynamicSelect.js';
 
-	<script>
-		function updateRemoveButtons() {
-			const fields = document.querySelectorAll('#artistFields .artist-field');
-			fields.forEach((field) => {
-				const btn = field.querySelector('.remove-artist');
-				btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
-			});
-		}
+		const API = '<?= $GLOBALS["PROJECT_ROOT"] ?>/api/v1';
 
-		function addArtist() {
-			const artistFields = document.getElementById('artistFields');
-			const firstField = artistFields.querySelector('.artist-field');
-			const newField = firstField.cloneNode(true);
-			newField.querySelector('select').value = '';
-			artistFields.appendChild(newField);
-			updateRemoveButtons();
-		}
+		initForm({
+			selector: '#addAlbumForm',
+			spinnerSelector: '#spinner'
+		});
 
-		function removeArtist(btn) {
-			btn.closest('.artist-field').remove();
-			updateRemoveButtons();
-		}
+		initDynamicFields({
+			containerSelector: '#artistFields',
+			fieldSelector: '.artist-field',
+			removeButtonSelector: '.remove-artist',
+			addButtonSelector: '#addArtistButton'
+		});
 
-		document.addEventListener('DOMContentLoaded', updateRemoveButtons);
+		initDynamicFields({
+			containerSelector: '#songFields',
+			fieldSelector: '.song-field',
+			removeButtonSelector: '.remove-song',
+			addButtonSelector: '#addSongButton'
+		});
 
-		function updateSongRemoveButtons() {
-			const fields = document.querySelectorAll('#songFields .song-field');
-			fields.forEach((field) => {
-				const btn = field.querySelector('.remove-song');
-				btn.style.display = (fields.length > 1) ? 'inline-block' : 'none';
-			});
-		}
+		populateSelect({
+			selector: '#artistFields select',
+			url: `${API}/artists`,
+			valueKey: 'artistID',
+			textFormatter: artist => artist.name
+		});
 
-		function addSong() {
-			const songFields = document.getElementById('songFields');
-			const firstField = songFields.querySelector('.song-field');
-			const newField = firstField.cloneNode(true);
-			newField.querySelector('select').value = '';
-			songFields.appendChild(newField);
-			updateSongRemoveButtons();
-		}
-
-		function removeSong(btn) {
-			btn.closest('.song-field').remove();
-			updateSongRemoveButtons();
-		}
-
-		document.addEventListener('DOMContentLoaded', function () {
-			updateRemoveButtons();
-			updateSongRemoveButtons();
+		populateSelect({
+			selector: '#songFields select',
+			url: `${API}/songs`,
+			valueKey: 'songID',
+			textFormatter: song =>
+				`${song.title} – ${song.artists.join(', ')}`
 		});
 	</script>
-
-	<!-- Bootstrap JS (optional for some interactive components) -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
 </div>
 </body>
-
 </html>
